@@ -1,49 +1,89 @@
-C:\SWP391\ReadTopiaBookstore\src\main\java\dao\DashboardDAO.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\admin\StaffListServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\admin\AccountEditServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\dao\BookDAO.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\category\CategoryEditServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\VerifyOTPResetServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\LogoutServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\book\SortBookServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\LoginServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\HomePageServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\category\CategoryDetailServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\book\BookListHomepageServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\dto\StaffDTO.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\admin\StaffEditServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\admin\AccountListServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\category\CategoryListServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\ForgotPasswordServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\dao\AccountDAO.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\util\DBContext.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\dao\CategoryDAO.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\admin\DashboardServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\book\BookListDashboardServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\book\DeleteBookServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\category\CategoryAddServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\book\EditBookServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\admin\AccountAddServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\dto\AccountDTO.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\admin\StaffDeleteServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\ResetPasswordServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\dto\BookDTO.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\EditProfileServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\admin\StaffAddServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\admin\StaffDetailServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\admin\AccountDeleteServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\ProfileServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\book\BookDetailServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\RegisterServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\util\SecurityUtil.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\dao\StaffDAO.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\book\AddBookServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\dto\CategoryDTO.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\admin\AccountDetailServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\category\CategoryDeleteServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\ChangePasswordServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\VerifyOTPRegisterServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\book\FilterBookServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\controller\book\BookDetailDashboardServlet.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\dto\BookSoldDTO.java
-C:\SWP391\ReadTopiaBookstore\src\main\java\util\MailUtil.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\book\SortBookServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\order\OrderCustomerDetailServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\ForgotPasswordServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\notification\NotificationDetailServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\dto\CategoryDTO.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\book\BookDetailServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\payment\PaymentConfirmServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\book\BookDetailCustomerServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\order\OrderSearchServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\dto\PaymentDTO.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\dao\StaffDAO.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\cart\CheckoutServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\ProfileServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\util\MailUtil.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\book\AddBookServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\VerifyOTPRegisterServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\dao\DashboardDAO.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\admin\StaffDeleteServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\notification\NotificationDeleteServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\RegisterServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\dao\PromotionLogDAO.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\HomePageServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\promotion\PromotionDetailServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\promotion\PromotionLogServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\dto\AccountDTO.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\book\BookDetailDashboardServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\book\BookListCustomerServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\order\OrderManagementServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\admin\AccountDetailServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\dto\CartDTO.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\dto\NotificationDTO.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\admin\StaffAddServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\dao\OrderDetailDAO.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\book\BookListDashboardServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\VerifyOTPResetServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\order\OrderHistoryServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\cart\CartDeleteServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\dao\CartDAO.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\dto\PromotionLogDTO.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\book\FilterBookServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\ResetPasswordServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\dao\PromotionDAO.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\admin\AccountListServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\dao\CategoryDAO.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\category\CategoryDeleteServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\admin\AccountEditServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\dto\PromotionDTO.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\cart\CartEditServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\promotion\PromotionDeleteServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\EditProfileServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\notification\NotificationAddServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\dao\NotificationDAO.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\cart\BuyNowServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\book\EditBookServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\dao\OrderDAO.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\category\CategoryAddServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\admin\StaffEditServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\dto\OrderDTO.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\dao\AccountDAO.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\order\OrderEditServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\book\BookListHomepageServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\admin\AccountAddServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\admin\StaffListServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\ChangePasswordServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\dao\PaymentDAO.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\cart\CartViewServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\category\CategoryDetailServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\LogoutServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\dto\BookDTO.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\payment\PaymentProcessServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\dao\BookDAO.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\admin\StaffDetailServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\promotion\PromotionListServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\cart\CartAddServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\notification\NotificationListServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\util\DBContext.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\LoginServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\dto\StaffDTO.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\promotion\PromotionAddServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\promotion\PromotionEditServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\order\OrderDetailServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\dto\OrderDetailDTO.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\util\SecurityUtil.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\admin\AccountDeleteServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\category\CategoryListServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\admin\DashboardServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\book\DeleteBookServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\controller\category\CategoryEditServlet.java
+C:\Users\NGUYEN THAI ANH\Desktop\New folder (2)\ReadTopiaBookstore\src\main\java\dto\BookSoldDTO.java
