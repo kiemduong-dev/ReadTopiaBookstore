@@ -32,7 +32,7 @@
             Staff Management
         </a>
 
-        <a href="${pageContext.request.contextPath}/admin/book/list" class="menu-item ${pageContext.request.requestURI.contains('/book') ? 'active' : ''}">
+        <a href="${pageContext.request.contextPath}/admin/book/list" class="menu-item" onclick="showPage('book-management')">
             <i class="fas fa-book"></i>
             Book Management
         </a>
@@ -52,10 +52,10 @@
             Supplier Management
         </a>
 
-        <a href="${pageContext.request.contextPath}/admin/category/list" class="menu-item">
+        <a href="${pageContext.request.contextPath}/admin/category/list" class="menu-item" onclick="showPage('category-management')">
             <i class="fas fa-list"></i>
             Category Management
-        </a>
+        </a> 
 
         <a href="${pageContext.request.contextPath}/admin/inventory/list" class="menu-item">
             <i class="fas fa-warehouse"></i>
