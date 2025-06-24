@@ -10,57 +10,74 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Servlet quản lý danh sách tài khoản người dùng cho Admin.
- * Hỗ trợ tìm kiếm tài khoản theo username, họ tên, email hoặc số điện thoại.
+ * AccountListServlet
+ *
+ * Handles the display and search of user accounts for administrators.
+ * Supports keyword-based search by username, full name, email, or phone.
+ * 
+ * URL mapping: /admin/account/list
+ * 
+ * Author: CE181518 Dương An Kiếm
  */
 @WebServlet(name = "AccountListServlet", urlPatterns = {"/admin/account/list"})
 public class AccountListServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Handles both GET and POST requests to display the account list.
+     *
+     * @param request  servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException      if an I/O error occurs
+     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         response.setContentType("text/html;charset=UTF-8");
 
-        // Lấy tham số tìm kiếm từ request (GET hoặc POST)
         String keyword = request.getParameter("keyword");
 
         AccountDAO dao = new AccountDAO();
         List<AccountDTO> accounts;
 
         if (keyword != null && !keyword.trim().isEmpty()) {
-            // Tìm kiếm theo từ khóa (đã trim khoảng trắng đầu cuối)
             accounts = dao.searchAccounts(keyword.trim());
-            // Đưa keyword lên JSP để giữ lại giá trị ô tìm kiếm
             request.setAttribute("keyword", keyword.trim());
         } else {
-            // Không có từ khóa -> lấy toàn bộ danh sách tài khoản
             accounts = dao.getAllAccounts();
         }
 
-        // Đưa danh sách tài khoản lên request để JSP hiển thị
         request.setAttribute("accounts", accounts);
-
-        // Chuyển tiếp đến trang JSP hiển thị danh sách tài khoản
         request.getRequestDispatcher("/WEB-INF/view/admin/account/list.jsp").forward(request, response);
     }
 
-    // Xử lý cả GET và POST đều gọi processRequest
+    /**
+     * Handles the HTTP GET method.
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
+    /**
+     * Handles the HTTP POST method.
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
+    /**
+     * Returns servlet description.
+     *
+     * @return servlet information string
+     */
     @Override
     public String getServletInfo() {
-        return "Admin - Quản lý danh sách tài khoản người dùng với chức năng tìm kiếm.";
+        return "Admin - Handles listing and searching of user accounts.";
     }
 }

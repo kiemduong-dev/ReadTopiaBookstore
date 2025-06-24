@@ -2,35 +2,35 @@
 
 <header class="header">
     <div class="header-content">
-        <!-- Logo -->
+        <!-- Logo section -->
         <div class="logo">
             <div class="logo-icon">?</div>
             ReadTopia
         </div>
 
-        <!-- Thanh tìm ki?m -->
+        <!-- Search bar -->
         <div class="search-container">
-            <input type="text" class="search-input" placeholder="search book..." aria-label="Search books">
-            <button class="header-icon" id="searchBtn" title="search">
+            <input type="text" class="search-input" placeholder="Search book..." aria-label="Search books">
+            <button class="header-icon" id="searchBtn" title="Search">
                 <i class="fas fa-search"></i>
             </button>
         </div>
 
-        <!-- Các hành ??ng -->
+        <!-- Action icons -->
         <div class="header-actions">
             <div class="header-icons">
-                <button class="header-icon" title="Thông báo" onclick="showPromotions()">
+                <button class="header-icon" title="Promotions" onclick="showPromotions()">
                     <i class="fas fa-bell"></i>
                 </button>
-                <button class="header-icon" title="Bi?u ?? th?ng kê">
+                <button class="header-icon" title="Statistics">
                     <i class="fas fa-chart-line"></i>
                 </button>
-                <button class="header-icon" title="th?ng kê" onclick="showCart()">
+                <button class="header-icon" title="Cart" onclick="showCart()">
                     <i class="fas fa-shopping-cart"></i>
                 </button>
             </div>
 
-            <!-- Menu ng??i dùng -->
+            <!-- User dropdown menu -->
             <div class="user-dropdown">
                 <div class="user-menu" onclick="toggleDropdown()" tabindex="0" role="button" aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-user"></i>

@@ -12,54 +12,83 @@ import java.util.List;
 /**
  * StaffListServlet
  *
- * Servlet hiển thị danh sách nhân viên cho Admin, hỗ trợ tìm kiếm theo keyword.
+ * Handles the display of staff list for admin, with optional keyword-based
+ * searching.
+ *
+ * @author CE181518 Dương An Kiếm
  */
 @WebServlet(name = "StaffListServlet", urlPatterns = {"/admin/staff/list"})
 public class StaffListServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Process GET or POST request to display staff list.
+     *
+     * @param request the HttpServletRequest object
+     * @param response the HttpServletResponse object
+     * @throws ServletException if servlet-specific error occurs
+     * @throws IOException if I/O error occurs
+     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
 
-        // Lấy từ khóa tìm kiếm (keyword) nếu có
         String keyword = request.getParameter("keyword");
 
         StaffDAO dao = new StaffDAO();
         List<StaffDTO> list;
 
         if (keyword != null && !keyword.trim().isEmpty()) {
-            // Tìm kiếm theo keyword
+            // Search staff by keyword
             list = dao.searchStaffs(keyword.trim());
-            // Đưa keyword lên JSP để giữ giá trị tìm kiếm
             request.setAttribute("keyword", keyword.trim());
         } else {
-            // Lấy tất cả nhân viên nếu không có từ khóa
+            // Get all staff if no keyword provided
             list = dao.findAll();
         }
 
-        // Đưa danh sách nhân viên lên JSP
         request.setAttribute("staffs", list);
         request.getRequestDispatcher("/WEB-INF/view/admin/staff/list.jsp").forward(request, response);
     }
 
+    /**
+     * Handles the HTTP GET method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
+    /**
+     * Handles the HTTP POST method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
     @Override
     public String getServletInfo() {
-        return "Admin - Quản lý danh sách nhân viên với chức năng tìm kiếm.";
+        return "Admin - Handles staff list display and keyword search.";
     }
 }

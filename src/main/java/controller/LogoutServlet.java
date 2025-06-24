@@ -9,48 +9,43 @@ import java.io.IOException;
 /**
  * LogoutServlet
  *
- * This servlet is responsible for logging out a user by invalidating their session.
- * It handles both GET and POST methods and redirects the user to the homepage.
+ * This servlet handles user logout by invalidating the session and redirecting
+ * the user to the homepage.
+ *
+ * URL Mapping: /logout
  */
 @WebServlet(name = "LogoutServlet", urlPatterns = {"/logout"})
 public class LogoutServlet extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
+
     /**
-     * This method handles both GET and POST logout requests.
+     * Handles logout request by invalidating the current session (if it exists)
+     * and redirecting the user to the homepage.
      *
-     * Algorithm:
-     * 1. Retrieve the current session without creating a new one.
-     * 2. If a session exists, invalidate it to log out the user.
-     * 3. Redirect the user to the homepage after logout.
-     *
-     * @param request  HttpServletRequest object from client
-     * @param response HttpServletResponse object to client
-     * @throws ServletException if a servlet error occurs
-     * @throws IOException      if an I/O error occurs
+     * @param request HttpServletRequest object
+     * @param response HttpServletResponse object
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Step 1: Get the current session if it exists; do not create a new session
-        HttpSession session = request.getSession(false);
-
-        // Step 2: If a session exists, invalidate it to log out the user
+        HttpSession session = request.getSession(false); // Do not create new session
         if (session != null) {
-            session.invalidate();
+            session.invalidate(); // Invalidate the current session
         }
 
-        // Step 3: Redirect to homepage after logout
-        response.sendRedirect(request.getContextPath() + "/home");
+        response.sendRedirect(request.getContextPath() + "/home"); // Redirect to homepage
     }
 
     /**
-     * Handles GET request to logout the user.
-     * Delegates to processRequest().
+     * Handles GET request to log out the user.
      *
-     * @param request  HttpServletRequest
+     * @param request HttpServletRequest
      * @param response HttpServletResponse
-     * @throws ServletException in case of servlet error
-     * @throws IOException      in case of I/O error
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -59,13 +54,12 @@ public class LogoutServlet extends HttpServlet {
     }
 
     /**
-     * Handles POST request to logout the user.
-     * Delegates to processRequest().
+     * Handles POST request to log out the user.
      *
-     * @param request  HttpServletRequest
+     * @param request HttpServletRequest
      * @param response HttpServletResponse
-     * @throws ServletException in case of servlet error
-     * @throws IOException      in case of I/O error
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -74,12 +68,12 @@ public class LogoutServlet extends HttpServlet {
     }
 
     /**
-     * Provides a short description of this servlet's purpose.
+     * Returns a short description of this servlet.
      *
-     * @return description of LogoutServlet
+     * @return A brief description of the servlet's functionality
      */
     @Override
     public String getServletInfo() {
-        return "Handles user logout by invalidating session and redirecting to homepage.";
+        return "Handles user logout by invalidating the session and redirecting to the homepage.";
     }
 }

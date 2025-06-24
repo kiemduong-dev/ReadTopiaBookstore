@@ -11,19 +11,52 @@ import java.io.IOException;
 import java.sql.Date;
 import java.util.Random;
 
+/**
+ * RegisterServlet
+ *
+ * Handles user registration and OTP verification via email.
+ *
+ * URL mapping: /register
+ *
+ * @author CE181518
+ */
 @WebServlet(name = "RegisterServlet", urlPatterns = {"/register"})
 public class RegisterServlet extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * Generates a 6-digit OTP string.
+     *
+     * @return the OTP code as a string
+     */
     private String generateOTP() {
         return String.valueOf(100000 + new Random().nextInt(900000));
     }
 
+    /**
+     * Handles GET request: Displays the registration form.
+     *
+     * @param request the HttpServletRequest object
+     * @param response the HttpServletResponse object
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.getRequestDispatcher("/WEB-INF/view/account/register.jsp").forward(request, response);
     }
 
+    /**
+     * Handles POST request: Validates form, sends OTP, stores temporary account
+     * in session.
+     *
+     * @param request the HttpServletRequest object
+     * @param response the HttpServletResponse object
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -31,7 +64,6 @@ public class RegisterServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         HttpSession session = request.getSession();
 
-        // Lấy dữ liệu từ form
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         String confirmPassword = request.getParameter("confirmPassword");
@@ -40,31 +72,31 @@ public class RegisterServlet extends HttpServlet {
         String email = request.getParameter("email");
         String phone = request.getParameter("phone");
         String address = request.getParameter("address");
-        String dobStr = request.getParameter("dob");
+        String dobRaw = request.getParameter("dob");
         String gender = request.getParameter("sex");
 
         try {
-            // Kiểm tra thiếu trường
+            // Validate required fields
             if (username == null || password == null || confirmPassword == null || email == null
-                    || firstName == null || lastName == null || dobStr == null) {
-                request.setAttribute("error", "⚠️ Please fill in all required fields.");
+                    || firstName == null || lastName == null || dobRaw == null) {
+                request.setAttribute("error", "Please fill in all required fields.");
                 request.getRequestDispatcher("/WEB-INF/view/account/register.jsp").forward(request, response);
                 return;
             }
 
-            // Kiểm tra xác nhận mật khẩu
+            // Confirm password match
             if (!password.equals(confirmPassword)) {
-                request.setAttribute("error", "⚠️ Passwords do not match.");
+                request.setAttribute("error", "Passwords do not match.");
                 request.getRequestDispatcher("/WEB-INF/view/account/register.jsp").forward(request, response);
                 return;
             }
 
-            // Parse ngày sinh
+            // Parse date of birth
             Date dob;
             try {
-                dob = Date.valueOf(dobStr);
+                dob = Date.valueOf(dobRaw);
             } catch (IllegalArgumentException e) {
-                request.setAttribute("error", "⚠️ Invalid date format.");
+                request.setAttribute("error", "Invalid date format.");
                 request.getRequestDispatcher("/WEB-INF/view/account/register.jsp").forward(request, response);
                 return;
             }
@@ -73,39 +105,35 @@ public class RegisterServlet extends HttpServlet {
 
             AccountDAO dao = new AccountDAO();
 
-            // Kiểm tra tồn tại username/email
+            // Check if username or email already exists
             if (dao.getAccountByUsername(username) != null || dao.findByEmail(email) != null) {
-                request.setAttribute("error", "⚠️ Username or email already exists.");
+                request.setAttribute("error", "Username or email already exists.");
                 request.getRequestDispatcher("/WEB-INF/view/account/register.jsp").forward(request, response);
                 return;
             }
 
-            // Tạo đối tượng pendingAccount chưa hash mật khẩu
-            AccountDTO pendingAcc = new AccountDTO(
+            // Create pending account
+            AccountDTO pendingAccount = new AccountDTO(
                     username, password, firstName, lastName,
                     dob, email, phone,
-                    1,      // role = customer
-                    address,
-                    sex,
-                    1,      // accStatus = active
-                    null    // otp code
+                    1, address, sex, 1, null
             );
 
-            // Tạo mã OTP và gửi email
+            // Generate OTP and send via email
             String otp = generateOTP();
-            MailUtil.sendOTP(email, otp);
+            MailUtil.sendOtp(email, otp);
 
-            // Lưu session để dùng sau xác minh
+            // Store data in session for verification
             session.setAttribute("otp", otp);
             session.setAttribute("otpPurpose", "register");
-            session.setAttribute("pendingAccount", pendingAcc);
+            session.setAttribute("pendingAccount", pendingAccount);
 
-            // Chuyển hướng đến trang nhập mã OTP
+            // Redirect to OTP verification
             request.getRequestDispatcher("/WEB-INF/view/account/verify-otp-register.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("error", "❌ Registration failed: " + e.getMessage());
+            request.setAttribute("error", "Registration failed: " + e.getMessage());
             request.getRequestDispatcher("/WEB-INF/view/account/register.jsp").forward(request, response);
         }
     }

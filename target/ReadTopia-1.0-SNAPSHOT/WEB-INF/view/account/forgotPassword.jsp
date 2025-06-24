@@ -20,10 +20,10 @@
                     <div class="logo-text">READTOPIA</div>
                 </div>
 
-                <!-- Tiêu đề -->
-                <h2 class="text-center mb-4">🔐 Quên Mật Khẩu</h2>
+                <!-- Title -->
+                <h2 class="text-center mb-4">🔐 Forgot Password</h2>
 
-                <!-- Thông báo -->
+                <!-- Notifications -->
                 <c:if test="${not empty error}">
                     <div class="alert alert-danger text-center" role="alert">
                         <i class="fas fa-exclamation-circle"></i> ${error}
@@ -35,25 +35,25 @@
                     </div>
                 </c:if>
 
-                <!-- Form -->
+                <!-- OTP Form -->
                 <form action="${pageContext.request.contextPath}/forgot-password" method="post" autocomplete="off">
                     <div class="form-group mb-3">
-                        <label class="form-label">* Tên đăng nhập:</label>
-                        <input type="text" name="username" class="form-control" required />
+                        <label class="form-label">* Username</label>
+                        <input type="text" name="username" class="form-control" required value="${param.username}" />
                     </div>
 
                     <div class="form-group mb-4">
-                        <label class="form-label">* Email:</label>
-                        <input type="email" name="email" class="form-control" required />
+                        <label class="form-label">* Email</label>
+                        <input type="email" name="email" class="form-control" required value="${param.email}" />
                     </div>
 
                     <button type="submit" class="btn btn-primary w-100">
-                        <i class="fas fa-paper-plane"></i> Gửi mã OTP
+                        <i class="fas fa-paper-plane"></i> Send OTP
                     </button>
 
                     <div class="text-center mt-4">
                         <a href="${pageContext.request.contextPath}/login" class="link">
-                            🔙 Quay lại đăng nhập
+                            🔙 Back to Login
                         </a>
                     </div>
                 </form>

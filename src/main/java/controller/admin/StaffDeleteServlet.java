@@ -11,13 +11,27 @@ import java.io.IOException;
 /**
  * StaffDeleteServlet
  *
- * Servlet xử lý xóa nhân viên (không xóa được admin - role != 0).
+ * Handles deletion of staff accounts by admin. Only non-admin (role != 0) staff
+ * accounts can be deleted.
+ *
+ * URL mapping: /admin/staff/delete Method: GET or POST
+ *
+ * Author: CE181518 Dương An Kiếm
  */
 @WebServlet(name = "StaffDeleteServlet", urlPatterns = {"/admin/staff/delete"})
 public class StaffDeleteServlet extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
     private final StaffDAO dao = new StaffDAO();
 
+    /**
+     * Handles both GET and POST requests to delete a staff member.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -25,19 +39,15 @@ public class StaffDeleteServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
 
         HttpSession session = request.getSession();
-
         String idParam = request.getParameter("id");
 
         if (idParam != null && !idParam.trim().isEmpty()) {
             try {
                 int staffID = Integer.parseInt(idParam.trim());
-
-                // Lấy thông tin nhân viên theo ID
                 StaffDTO staff = dao.getStaffByID(staffID);
 
-                // Chỉ cho phép xóa nếu staff tồn tại và không phải admin (role != 0)
+                // Allow deletion only if staff exists and is not an admin
                 if (staff != null && staff.getRole() != 0) {
-                    // Sử dụng method đúng để xóa cả staff và account
                     boolean deleted = dao.deleteStaffByID(staffID);
 
                     if (deleted) {
@@ -56,22 +66,33 @@ public class StaffDeleteServlet extends HttpServlet {
             session.setAttribute("message", "Staff ID is required.");
         }
 
-        // Quay lại trang danh sách nhân viên sau khi xử lý
+        // Redirect to staff list page after processing
         response.sendRedirect("list");
     }
 
+    /**
+     * Handles the HTTP GET method.
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
+    /**
+     * Handles the HTTP POST method.
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
+    /**
+     * Returns servlet description.
+     *
+     * @return servlet info string
+     */
     @Override
     public String getServletInfo() {
         return "Handles deletion of staff accounts (excluding admin) by administrator.";

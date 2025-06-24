@@ -8,16 +8,41 @@ import jakarta.servlet.http.*;
 
 import java.io.IOException;
 
+/**
+ * LoginServlet
+ *
+ * This servlet handles user login requests. It validates the input, checks the
+ * credentials using AccountDAO, and redirects users based on their role.
+ *
+ * URL mapping: /login
+ *
+ * Author: CE181518 Dương An Kiếm
+ */
 @WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
 public class LoginServlet extends HttpServlet {
 
+    /**
+     * Handles GET requests to show the login page.
+     *
+     * @param request HttpServletRequest
+     * @param response HttpServletResponse
+     * @throws ServletException if servlet error occurs
+     * @throws IOException if I/O error occurs
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Chuyển hướng đến trang login.jsp
         request.getRequestDispatcher("/WEB-INF/view/account/login.jsp").forward(request, response);
     }
 
+    /**
+     * Handles POST requests to process login.
+     *
+     * @param request HttpServletRequest
+     * @param response HttpServletResponse
+     * @throws ServletException if servlet error occurs
+     * @throws IOException if I/O error occurs
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -25,27 +50,25 @@ public class LoginServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
 
-        // Lấy dữ liệu từ form
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-        // Kiểm tra dữ liệu đầu vào có null không
-        if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
-            request.setAttribute("error", "⚠️ Please enter both username and password.");
+        // Validate input fields
+        if (username == null || password == null || username.trim().isEmpty() || password.trim().isEmpty()) {
+            request.setAttribute("error", "Please enter both username and password.");
             request.getRequestDispatcher("/WEB-INF/view/account/login.jsp").forward(request, response);
             return;
         }
 
-        // Gọi DAO để xử lý đăng nhập
         AccountDAO dao = new AccountDAO();
-        AccountDTO account = dao.login(username, password); // ✅ Bên trong đã dùng BCrypt.checkpw
+        AccountDTO account = dao.login(username.trim(), password);
 
         if (account != null) {
-            // ✅ Đăng nhập thành công
+            // Login successful, store account in session
             HttpSession session = request.getSession();
             session.setAttribute("account", account);
 
-            // 👉 Điều hướng theo vai trò
+            // Redirect based on user role
             switch (account.getRole()) {
                 case 0: // Admin
                 case 2: // Seller Staff
@@ -57,12 +80,17 @@ public class LoginServlet extends HttpServlet {
                     break;
             }
         } else {
-            // ❌ Đăng nhập thất bại
-            request.setAttribute("error", "❌ Invalid username or password.");
+            // Login failed
+            request.setAttribute("error", "Invalid username or password.");
             request.getRequestDispatcher("/WEB-INF/view/account/login.jsp").forward(request, response);
         }
     }
 
+    /**
+     * Provides a short description of the servlet.
+     *
+     * @return a string containing servlet description
+     */
     @Override
     public String getServletInfo() {
         return "Handles user login and role-based redirection.";

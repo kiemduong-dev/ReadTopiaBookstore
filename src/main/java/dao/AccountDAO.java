@@ -1,3 +1,10 @@
+/**
+ * AccountDAO - Provides data access functionalities for managing user accounts.
+ * This class supports account creation, login verification, OTP management,
+ * password update, and administrative operations on accounts.
+ *
+ * @author CE181518 Dương An Kiếm
+ */
 package dao;
 
 import dto.AccountDTO;
@@ -10,12 +17,16 @@ import java.util.List;
 
 public class AccountDAO {
 
-    // === THÊM TÀI KHOẢN MỚI ===
+    /**
+     * Adds a new account to the database.
+     *
+     * @param acc the AccountDTO object containing user information
+     * @return true if the account was added successfully, false otherwise
+     */
     public boolean addAccount(AccountDTO acc) {
         String sql = "INSERT INTO Account (username, password, firstName, lastName, email, phone, role, address, accStatus, dob, sex, code) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
-
             ps.setString(1, acc.getUsername());
             ps.setString(2, SecurityUtil.hashPassword(acc.getPassword()));
             ps.setString(3, acc.getFirstName());
@@ -28,7 +39,6 @@ public class AccountDAO {
             ps.setDate(10, acc.getDob());
             ps.setInt(11, acc.getSex());
             ps.setString(12, acc.getCode());
-
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
@@ -36,14 +46,18 @@ public class AccountDAO {
         return false;
     }
 
-    // === ĐĂNG NHẬP ===
+    /**
+     * Verifies login credentials.
+     *
+     * @param username the username
+     * @param password the raw password
+     * @return AccountDTO if credentials match, null otherwise
+     */
     public AccountDTO login(String username, String password) {
         String sql = "SELECT * FROM Account WHERE username = ? AND accStatus = 1";
         try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
-
             ps.setString(1, username);
             ResultSet rs = ps.executeQuery();
-
             if (rs.next()) {
                 String hashed = rs.getString("password");
                 if (SecurityUtil.checkPassword(password, hashed)) {
@@ -56,52 +70,61 @@ public class AccountDAO {
         return null;
     }
 
-    // === TÌM THEO EMAIL ===
+    /**
+     * Finds account by email.
+     *
+     * @param email the email to search
+     * @return AccountDTO if found, null otherwise
+     */
     public AccountDTO findByEmail(String email) {
         String sql = "SELECT * FROM Account WHERE email = ?";
         try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
-
             ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return extractAccount(rs);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    // === TÌM THEO USERNAME ===
+    /**
+     * Gets account by username.
+     *
+     * @param username the username to search
+     * @return AccountDTO if found, null otherwise
+     */
     public AccountDTO getAccountByUsername(String username) {
         String sql = "SELECT * FROM Account WHERE username = ?";
         try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
-
             ps.setString(1, username);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return extractAccount(rs);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    // === CẬP NHẬT HỒ SƠ NGƯỜI DÙNG ===
+    /**
+     * Updates user profile.
+     *
+     * @param acc the AccountDTO with updated info
+     * @return true if update successful, false otherwise
+     */
     public boolean updateProfile(AccountDTO acc) {
         String sql = "UPDATE Account SET firstName=?, lastName=?, email=?, phone=?, address=? WHERE username=?";
         try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
-
             ps.setString(1, acc.getFirstName());
             ps.setString(2, acc.getLastName());
             ps.setString(3, acc.getEmail());
             ps.setString(4, acc.getPhone());
             ps.setString(5, acc.getAddress());
             ps.setString(6, acc.getUsername());
-
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
@@ -109,44 +132,57 @@ public class AccountDAO {
         return false;
     }
 
-    // === ĐỔI MẬT KHẨU BẰNG EMAIL ===
+    /**
+     * Updates user password using email.
+     *
+     * @param email the user email
+     * @param newPassword the new password
+     * @return true if updated successfully
+     */
     public boolean updatePassword(String email, String newPassword) {
         String sql = "UPDATE Account SET password = ? WHERE email = ?";
         try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
-
             ps.setString(1, SecurityUtil.hashPassword(newPassword));
             ps.setString(2, email);
             return ps.executeUpdate() > 0;
-
         } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
     }
 
-    // === ĐỔI MẬT KHẨU BẰNG USERNAME ===
+    /**
+     * Updates password by username.
+     *
+     * @param username the username
+     * @param newPassword the new password
+     * @return true if successful
+     */
     public boolean updatePasswordByUsername(String username, String newPassword) {
         String sql = "UPDATE Account SET password = ? WHERE username = ?";
         try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
-
             ps.setString(1, SecurityUtil.hashPassword(newPassword));
             ps.setString(2, username);
             return ps.executeUpdate() > 0;
-
         } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
     }
 
-    // === ĐỔI MẬT KHẨU CÓ KIỂM TRA MẬT KHẨU CŨ ===
+    /**
+     * Changes password if the old password matches.
+     *
+     * @param username the username
+     * @param oldPass the old password
+     * @param newPass the new password
+     * @return true if successful
+     */
     public boolean updatePasswordByOld(String username, String oldPass, String newPass) {
         String sql = "SELECT password FROM Account WHERE username = ?";
         try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
-
             ps.setString(1, username);
             ResultSet rs = ps.executeQuery();
-
             if (rs.next()) {
                 String currentHashed = rs.getString("password");
                 if (SecurityUtil.checkPassword(oldPass, currentHashed)) {
@@ -159,11 +195,15 @@ public class AccountDAO {
         return false;
     }
 
-    // === ADMIN CẬP NHẬT THÔNG TIN NGƯỜI DÙNG ===
+    /**
+     * Admin updates all user account fields.
+     *
+     * @param acc the updated account
+     * @return true if successful
+     */
     public boolean updateAccountByAdmin(AccountDTO acc) {
         String sql = "UPDATE Account SET firstName=?, lastName=?, email=?, phone=?, address=?, role=?, sex=?, dob=? WHERE username=?";
         try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
-
             ps.setString(1, acc.getFirstName());
             ps.setString(2, acc.getLastName());
             ps.setString(3, acc.getEmail());
@@ -173,7 +213,6 @@ public class AccountDAO {
             ps.setInt(7, acc.getSex());
             ps.setDate(8, acc.getDob());
             ps.setString(9, acc.getUsername());
-
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
@@ -181,13 +220,17 @@ public class AccountDAO {
         return false;
     }
 
+    /**
+     * Updates account status.
+     *
+     * @param acc the account to update
+     * @return true if updated
+     */
     public boolean updateAccountStatus(AccountDTO acc) {
         String sql = "UPDATE Account SET accStatus = ? WHERE username = ?";
         try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
-
             ps.setInt(1, acc.getAccStatus());
             ps.setString(2, acc.getUsername());
-
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
@@ -195,23 +238,31 @@ public class AccountDAO {
         return false;
     }
 
-    // === LẤY TOÀN BỘ TÀI KHOẢN ===
+    /**
+     * Retrieves all user accounts.
+     *
+     * @return list of AccountDTO
+     */
     public List<AccountDTO> getAllAccounts() {
         List<AccountDTO> list = new ArrayList<>();
         String sql = "SELECT * FROM Account";
         try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
-
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 list.add(extractAccount(rs));
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
         return list;
     }
 
+    /**
+     * Searches accounts by keyword.
+     *
+     * @param keyword the search keyword
+     * @return list of matched accounts
+     */
     public List<AccountDTO> searchAccounts(String keyword) {
         List<AccountDTO> list = new ArrayList<>();
         String sql = "SELECT * FROM Account WHERE LOWER(username) LIKE ? "
@@ -219,49 +270,59 @@ public class AccountDAO {
                 + "OR LOWER(email) LIKE ? "
                 + "OR phone LIKE ?";
         try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
-
             String search = "%" + keyword.toLowerCase() + "%";
             for (int i = 1; i <= 4; i++) {
                 ps.setString(i, search);
             }
-
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 list.add(extractAccount(rs));
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
         return list;
     }
 
-    // === LƯU MÃ OTP ĐỂ RESET MẬT KHẨU ===
+    /**
+     * Saves OTP code for a specific user.
+     *
+     * @param username the username
+     * @param otp the OTP code
+     */
     public void saveOTPForReset(String username, String otp) {
         String sql = "UPDATE Account SET code = ? WHERE username = ?";
         try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, otp);
             ps.setString(2, username);
             ps.executeUpdate();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    // === XOÁ MÃ OTP ===
+    /**
+     * Clears OTP code for a specific user.
+     *
+     * @param username the username
+     */
     public void clearOTP(String username) {
         String sql = "UPDATE Account SET code = NULL WHERE username = ?";
         try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, username);
             ps.executeUpdate();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    // === XÁC THỰC MÃ OTP ===
+    /**
+     * Verifies if the OTP code matches the one stored.
+     *
+     * @param username the username
+     * @param otp the OTP code
+     * @return true if match
+     */
     public boolean verifyOTP(String username, String otp) {
         String sql = "SELECT 1 FROM Account WHERE username = ? AND code = ?";
         try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -269,14 +330,18 @@ public class AccountDAO {
             ps.setString(2, otp);
             ResultSet rs = ps.executeQuery();
             return rs.next();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
     }
 
-    // === LẤY MÃ OTP THEO USERNAME ===
+    /**
+     * Retrieves OTP code for a user.
+     *
+     * @param username the username
+     * @return the OTP code or null
+     */
     public String getOTPCode(String username) {
         String sql = "SELECT code FROM Account WHERE username = ?";
         try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -285,14 +350,19 @@ public class AccountDAO {
             if (rs.next()) {
                 return rs.getString("code");
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    // === CHUYỂN KẾT QUẢ THÀNH DTO ===
+    /**
+     * Converts result set to AccountDTO.
+     *
+     * @param rs the ResultSet
+     * @return AccountDTO instance
+     * @throws SQLException if data cannot be read
+     */
     private AccountDTO extractAccount(ResultSet rs) throws SQLException {
         return new AccountDTO(
                 rs.getString("username"),

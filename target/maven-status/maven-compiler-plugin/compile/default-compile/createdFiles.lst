@@ -22,7 +22,6 @@ controller\EditProfileServlet.class
 dto\StaffDTO.class
 util\DBContext.class
 dao\StaffDAO.class
-HashGenerator.class
 controller\admin\StaffAddServlet.class
 controller\LogoutServlet.class
 controller\admin\AccountAddServlet.class

@@ -9,11 +9,30 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.sql.Date;
 
+/**
+ * AccountEditServlet
+ *
+ * Handles the admin functionality for editing an existing user account.
+ * Supports GET to load the edit form and POST to process updates.
+ * 
+ * URL mapping: /admin/account/edit
+ * 
+ * Author: CE181518 Dương An Kiếm
+ */
 @WebServlet(name = "AccountEditServlet", urlPatterns = {"/admin/account/edit"})
 public class AccountEditServlet extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
     private final AccountDAO dao = new AccountDAO();
 
+    /**
+     * Handles GET request to load account data and forward to edit form.
+     *
+     * @param request  servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException      if an I/O error occurs
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -36,6 +55,14 @@ public class AccountEditServlet extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/view/admin/account/edit.jsp").forward(request, response);
     }
 
+    /**
+     * Handles POST request to process account update submitted by admin.
+     *
+     * @param request  servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException      if an I/O error occurs
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -71,14 +98,14 @@ public class AccountEditServlet extends HttpServlet {
             if (updated) {
                 response.sendRedirect("list");
             } else {
-                request.setAttribute("error", "❌ Failed to update account.");
+                request.setAttribute("error", "Failed to update account. Please try again.");
                 request.setAttribute("account", acc);
                 request.getRequestDispatcher("/WEB-INF/view/admin/account/edit.jsp").forward(request, response);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("error", "⚠️ Invalid input.");
+            request.setAttribute("error", "Invalid input. Please check the fields.");
             request.getRequestDispatcher("/WEB-INF/view/admin/account/edit.jsp").forward(request, response);
         }
     }

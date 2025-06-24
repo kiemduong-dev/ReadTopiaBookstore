@@ -7,46 +7,46 @@ import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
 /**
- * Utility class for sending OTP emails with HTML styling.
+ * MailUtil - Utility class for sending OTP emails using Gmail SMTP. This class
+ * provides a static method to send HTML-formatted OTP messages.
+ *
+ * @author CE181518 Dương An Kiếm
  */
 public class MailUtil {
 
+    // Sender's email and app-specific password (should be moved to environment variables in production)
     private static final String FROM_EMAIL = "duongankiemdz@gmail.com";
-    private static final String APP_PASSWORD = "vfviafcvijutxqmz"; // 🔐 Recommend moving to config/env in production
+    private static final String APP_PASSWORD = "vfviafcvijutxqmz";
 
     /**
-     * Sends an OTP email to a user using Gmail SMTP.
+     * Sends an OTP (One-Time Password) email to the specified recipient.
      *
-     * @param toEmail Recipient's email address
-     * @param otp One-time password (6 digits)
-     * @throws MessagingException If sending fails
-     * @throws UnsupportedEncodingException If encoding fails
+     * @param toEmail The recipient's email address.
+     * @param otp The 6-digit one-time password.
+     * @throws MessagingException If an error occurs while sending the email.
+     * @throws UnsupportedEncodingException If encoding the sender name fails.
      */
-    public static void sendOTP(String toEmail, String otp) throws MessagingException, UnsupportedEncodingException {
-        
-        System.out.println("📧 Starting to send OTP to: " + toEmail);
-        
-        // Validate inputs
+    public static void sendOtp(String toEmail, String otp) throws MessagingException, UnsupportedEncodingException {
+
+        // Validate email and OTP inputs
         if (toEmail == null || toEmail.trim().isEmpty()) {
-            throw new IllegalArgumentException("Email address cannot be null or empty");
+            throw new IllegalArgumentException("Email address cannot be null or empty.");
         }
         if (otp == null || otp.trim().isEmpty()) {
-            throw new IllegalArgumentException("OTP cannot be null or empty");
+            throw new IllegalArgumentException("OTP cannot be null or empty.");
         }
 
         try {
-            // Step 1: Configure Gmail SMTP
+            // Set mail server properties for Gmail SMTP
             Properties props = new Properties();
             props.put("mail.smtp.auth", "true");
             props.put("mail.smtp.starttls.enable", "true");
             props.put("mail.smtp.host", "smtp.gmail.com");
             props.put("mail.smtp.port", "587");
             props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
-            props.put("mail.debug", "false"); // Set to true for debugging
+            props.put("mail.debug", "false");
 
-            System.out.println("✅ SMTP properties configured");
-
-            // Step 2: Authenticate Gmail session
+            // Create authenticated mail session
             Session session = Session.getInstance(props, new Authenticator() {
                 @Override
                 protected PasswordAuthentication getPasswordAuthentication() {
@@ -54,42 +54,34 @@ public class MailUtil {
                 }
             });
 
-            System.out.println("✅ Gmail session created");
-
-            // Step 3: Create the email content
+            // Construct email message with HTML content
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(FROM_EMAIL, "ReadTopia Support"));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
-            message.setSubject("🔐 Your ReadTopia OTP Code");
+            message.setSubject("Your ReadTopia OTP Code");
+            message.setContent(buildOtpEmailContent(otp), "text/html; charset=utf-8");
 
-            String htmlContent = buildOTPEmailContent(otp);
-            message.setContent(htmlContent, "text/html; charset=utf-8");
-
-            System.out.println("✅ Email message prepared");
-
-            // Step 4: Send email
+            // Send the email
             Transport.send(message);
-            System.out.println("✅ OTP email sent successfully to: " + toEmail);
 
         } catch (MessagingException e) {
-            System.err.println("❌ MessagingException while sending OTP: " + e.getMessage());
-            e.printStackTrace();
+            // Re-throw specific exception for upper layers to handle
             throw e;
         } catch (UnsupportedEncodingException e) {
-            System.err.println("❌ UnsupportedEncodingException while sending OTP: " + e.getMessage());
-            e.printStackTrace();
             throw e;
         } catch (Exception e) {
-            System.err.println("❌ Unexpected error while sending OTP: " + e.getMessage());
-            e.printStackTrace();
-            throw new MessagingException("Failed to send OTP email", e);
+            // Wrap unexpected exceptions
+            throw new MessagingException("Unexpected error occurred while sending OTP email.", e);
         }
     }
 
     /**
-     * Builds the HTML content for OTP email
+     * Builds the HTML content for the OTP email.
+     *
+     * @param otp The one-time password to include in the email.
+     * @return The HTML content as a string.
      */
-    private static String buildOTPEmailContent(String otp) {
+    private static String buildOtpEmailContent(String otp) {
         return "<html>"
                 + "<head>"
                 + "<style>"
@@ -102,18 +94,18 @@ public class MailUtil {
                 + "</head>"
                 + "<body>"
                 + "<div class='container'>"
-                + "<h2>📨 OTP Verification</h2>"
+                + "<h2>OTP Verification</h2>"
                 + "<p>Hello,</p>"
-                + "<p>You requested to create an account on <strong>ReadTopia</strong>.</p>"
+                + "<p>You have requested to create an account on <strong>ReadTopia</strong>.</p>"
                 + "<p>Your verification code is:</p>"
                 + "<div class='otp'>" + otp + "</div>"
                 + "<div class='warning'>"
-                + "<strong>⚠️ Important:</strong><br>"
-                + "• This code will expire in 5 minutes<br>"
-                + "• Do not share this code with anyone<br>"
-                + "• If you didn't request this, please ignore this email"
+                + "<strong>Important:</strong><br>"
+                + "• This code will expire in 5 minutes.<br>"
+                + "• Do not share this code with anyone.<br>"
+                + "• If you did not request this, please ignore this email."
                 + "</div>"
-                + "<div class='footer'>Thanks,<br>ReadTopia Team</div>"
+                + "<div class='footer'>Thank you,<br>ReadTopia Team</div>"
                 + "</div>"
                 + "</body>"
                 + "</html>";

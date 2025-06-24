@@ -20,15 +20,13 @@
                 </div>
 
                 <!-- Tiêu đề -->
-                <h2 class="text-center mb-3">📨 Xác thực OTP đăng ký</h2>
+                <h2 class="text-center mb-3">🔐 Verify Registration OTP</h2>
 
                 <!-- Mô tả -->
                 <p class="text-center mb-4">
-                    Một mã OTP đã được gửi đến email:
-                    <strong>
-                        <c:out value="${sessionScope.pendingAccount.email}" />
-                    </strong><br/>
-                    Vui lòng nhập mã gồm 6 chữ số bên dưới để xác nhận đăng ký.
+                    A verification code has been sent to:
+                    <strong><c:out value="${sessionScope.pendingAccount.email}" /></strong><br />
+                    Please enter the 6-digit OTP code below to complete your registration.
                 </p>
 
                 <!-- Thông báo lỗi -->
@@ -41,7 +39,7 @@
                 <!-- Form nhập OTP -->
                 <form action="${pageContext.request.contextPath}/verify-otp-register" method="post">
                     <div class="form-group mb-3">
-                        <label for="otp" class="form-label">* Mã OTP:</label>
+                        <label for="otp" class="form-label">OTP Code *</label>
                         <input type="text"
                                id="otp"
                                name="otp"
@@ -49,18 +47,20 @@
                                required
                                maxlength="6"
                                pattern="[0-9]{6}"
-                               placeholder="Nhập mã gồm 6 số" />
+                               placeholder="Enter 6-digit code" />
                     </div>
 
                     <div class="d-grid">
-                        <button type="submit" class="btn btn-primary w-100">✅ Xác nhận & Đăng ký</button>
+                        <button type="submit" class="btn btn-primary w-100">
+                            ✅ Confirm & Register
+                        </button>
                     </div>
                 </form>
 
                 <!-- Gợi ý quay lại -->
                 <div class="text-center mt-4">
                     <a href="${pageContext.request.contextPath}/register" class="link">
-                        🔁 Nhập lại thông tin đăng ký
+                        🔁 Re-enter registration information
                     </a>
                 </div>
             </div>

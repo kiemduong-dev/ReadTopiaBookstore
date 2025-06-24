@@ -2,7 +2,6 @@ D:\3\Readtopia_GR2_SE1816\src\main\java\controller\ForgotPasswordServlet.java
 D:\3\Readtopia_GR2_SE1816\src\main\java\controller\admin\AccountListServlet.java
 D:\3\Readtopia_GR2_SE1816\src\main\java\controller\ProfileServlet.java
 D:\3\Readtopia_GR2_SE1816\src\main\java\dto\StaffDTO.java
-D:\3\Readtopia_GR2_SE1816\src\main\java\HashGenerator.java
 D:\3\Readtopia_GR2_SE1816\src\main\java\controller\VerifyOTPRegisterServlet.java
 D:\3\Readtopia_GR2_SE1816\src\main\java\dto\AccountDTO.java
 D:\3\Readtopia_GR2_SE1816\src\main\java\util\DBContext.java

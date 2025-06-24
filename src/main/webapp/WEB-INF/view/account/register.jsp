@@ -17,18 +17,19 @@
             <!-- Toast Notification -->
             <jsp:include page="/WEB-INF/includes/toast.jsp" />
 
-            <!-- Thông báo lỗi/thành công -->
+            <!-- Manual Messages (if not using toast.jsp fully) -->
             <c:if test="${not empty error}">
-                <div class="success-message" style="background: #ffebee; color: #c62828;">
+                <div class="alert alert-danger">
                     <i class="fas fa-times-circle"></i> <span>${error}</span>
                 </div>
             </c:if>
             <c:if test="${not empty success}">
-                <div class="success-message">
+                <div class="alert alert-success">
                     <i class="fas fa-check-circle"></i> <span>${success}</span>
                 </div>
             </c:if>
 
+            <!-- Registration Form -->
             <form action="${pageContext.request.contextPath}/register" method="post">
 
                 <!-- Username + Email -->
@@ -90,7 +91,7 @@
                             </div>
                             <div class="radio-item">
                                 <input type="radio" id="male" name="sex" value="male"
-                                <c:if test="${param.sex != 'female'}">checked</c:if> />
+                                <c:if test="${param.sex == 'male' || param.sex == null}">checked</c:if> />
                                 <label for="male">Male</label>
                             </div>
                         </div>
@@ -102,7 +103,7 @@
                         <textarea name="address" class="form-input" rows="3" required>${param.address}</textarea>
                 </div>
 
-                <!-- Buttons -->
+                <!-- Action Buttons -->
                 <div class="btn-group mt-4">
                     <button type="submit" class="btn btn-primary">Register</button>
                     <button type="reset" class="btn btn-secondary">Reset</button>
