@@ -4,7 +4,6 @@ import dao.AccountDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
-import util.SecurityUtil;
 
 import java.io.IOException;
 
@@ -67,10 +66,9 @@ public class ResetPasswordServlet extends HttpServlet {
             return;
         }
 
-        // Hash và cập nhật mật khẩu
-        String hashedPassword = SecurityUtil.hashPassword(newPassword);
+        // Cập nhật mật khẩu (mã hóa sẽ được xử lý trong DAO)
         AccountDAO dao = new AccountDAO();
-        boolean updated = dao.updatePasswordByUsername(username, hashedPassword);
+        boolean updated = dao.updatePasswordByUsername(username, newPassword);
 
         if (updated) {
             // Clear thông tin liên quan đến OTP & reset

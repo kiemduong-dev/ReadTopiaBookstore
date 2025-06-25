@@ -21,7 +21,8 @@ function showPage(pageId, event) {
 // Initialize revenue chart
 function initRevenueChart() {
     const ctx = document.getElementById('revenueChart');
-    if (!ctx) return;
+    if (!ctx)
+        return;
 
     new Chart(ctx.getContext('2d'), {
         type: 'line',
@@ -56,48 +57,55 @@ function initRevenueChart() {
 // Modal functions - chỉ mở modal, không gán dữ liệu mẫu
 function showAddAccountModal() {
     const modal = document.getElementById('addAccountModal');
-    if (modal) modal.style.display = 'block';
+    if (modal)
+        modal.style.display = 'block';
 }
 
 function viewAccount(username) {
     // TODO: load dữ liệu account từ backend và gán vào modal trước khi show
     const modal = document.getElementById('viewAccountModal');
-    if (modal) modal.style.display = 'block';
+    if (modal)
+        modal.style.display = 'block';
 }
 
 function editAccount(username) {
     // TODO: load dữ liệu account từ backend và gán vào modal trước khi show
     const modal = document.getElementById('editAccountModal');
-    if (modal) modal.style.display = 'block';
+    if (modal)
+        modal.style.display = 'block';
 }
 
 let deleteAccountUsername = '';
 function deleteAccount(username) {
     deleteAccountUsername = username;
     const deleteMsg = document.getElementById('deleteMessage');
-    if (deleteMsg) deleteMsg.textContent = `Do you want to delete ${username} account?`;
+    if (deleteMsg)
+        deleteMsg.textContent = `Do you want to delete ${username} account?`;
 
     const modal = document.getElementById('deleteConfirmModal');
-    if (modal) modal.style.display = 'block';
+    if (modal)
+        modal.style.display = 'block';
 }
 
 function confirmDelete() {
-    // TODO: gọi API backend xóa account, ví dụ fetch hoặc AJAX
-
-    showSuccessMessage(`Account ${deleteAccountUsername} has been deleted successfully`);
-    closeModal('deleteConfirmModal');
-    deleteAccountUsername = '';
+    if (deleteAccountUsername) {
+        // Điều hướng tới servlet xử lý xóa mềm
+        window.location.href = `${contextPath}/admin/account/delete?username=${deleteAccountUsername}`;
+    }
 }
+
 
 function showChangePasswordModal() {
     closeModal('profileModal');
     const modal = document.getElementById('changePasswordModal');
-    if (modal) modal.style.display = 'block';
+    if (modal)
+        modal.style.display = 'block';
 }
 
 function closeModal(modalId) {
     const modal = document.getElementById(modalId);
-    if (modal) modal.style.display = 'none';
+    if (modal)
+        modal.style.display = 'none';
 }
 
 // Form submissions (giữ nguyên, xử lý gửi form thực tế ở backend)

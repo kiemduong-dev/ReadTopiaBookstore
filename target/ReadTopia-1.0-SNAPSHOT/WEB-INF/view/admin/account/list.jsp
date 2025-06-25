@@ -38,7 +38,7 @@
                         placeholder="Search by username or full name" 
                         class="search-box" 
                         autocomplete="off"
-                    />
+                        />
                     <button type="submit" class="btn btn-primary">Search</button>
                 </form>
             </div>

@@ -37,7 +37,7 @@
             Book Management
         </a>
 
-        <a href="${pageContext.request.contextPath}/admin/order/list" class="menu-item">
+        <a href="${pageContext.request.contextPath}/order/management" class="menu-item">
             <i class="fas fa-shopping-cart"></i>
             Order Management
         </a>

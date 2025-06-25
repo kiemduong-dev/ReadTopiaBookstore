@@ -32,7 +32,7 @@
             String username = (String) session.getAttribute("username");
             Integer role = (Integer) session.getAttribute("role");
 
-            if (username == null || role == null || role != 2) {
+            if (username == null || role == null || role != 0) {
                 response.sendRedirect(request.getContextPath() + "/login");
                 return;
             }

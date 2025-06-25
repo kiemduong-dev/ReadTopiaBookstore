@@ -245,7 +245,7 @@ public class AccountDAO {
      */
     public List<AccountDTO> getAllAccounts() {
         List<AccountDTO> list = new ArrayList<>();
-        String sql = "SELECT * FROM Account";
+        String sql = "SELECT * FROM Account WHERE accStatus = 1";
         try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -265,10 +265,11 @@ public class AccountDAO {
      */
     public List<AccountDTO> searchAccounts(String keyword) {
         List<AccountDTO> list = new ArrayList<>();
-        String sql = "SELECT * FROM Account WHERE LOWER(username) LIKE ? "
+        String sql = "SELECT * FROM Account WHERE accStatus = 1 AND ("
+                + "LOWER(username) LIKE ? "
                 + "OR LOWER(firstName + ' ' + lastName) LIKE ? "
                 + "OR LOWER(email) LIKE ? "
-                + "OR phone LIKE ?";
+                + "OR phone LIKE ?)";
         try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
             String search = "%" + keyword.toLowerCase() + "%";
             for (int i = 1; i <= 4; i++) {

@@ -67,14 +67,12 @@ public class LoginServlet extends HttpServlet {
                 case 3: // Warehouse Staff
                     response.sendRedirect(request.getContextPath() + "/admin/dashboard");
                     break;
-
+                default:
                 case 1: // Customer
                     response.sendRedirect(request.getContextPath() + "/customer/book/list");
                     break;
 
-                default: // Unknown or guest
-response.sendRedirect(request.getContextPath() + "/home");
-                    break;
+                // Unknown or guest
             }
 
         } else {
