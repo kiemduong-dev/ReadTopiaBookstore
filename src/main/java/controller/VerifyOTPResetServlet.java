@@ -1,4 +1,4 @@
-package controller;
+    package controller;
 
 import dao.AccountDAO;
 import jakarta.servlet.ServletException;
@@ -25,11 +25,6 @@ public class VerifyOTPResetServlet extends HttpServlet {
     /**
      * Handles HTTP POST request to verify the OTP code submitted by user. If
      * valid, redirects to reset password form.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if servlet-specific error occurs
-     * @throws IOException if I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -67,8 +62,9 @@ public class VerifyOTPResetServlet extends HttpServlet {
             return;
         }
 
-        // Mark session as verified
+        // ✅ Mark session as verified and ensure resetUser is still set
         session.setAttribute("verifiedReset", true);
+        session.setAttribute("resetUser", username); // 🟢 ĐẢM BẢO KHÔNG BỊ NULL SAU KHI XÁC THỰC
 
         // Forward to reset password page
         request.getRequestDispatcher("/WEB-INF/view/account/resetPassword.jsp").forward(request, response);
@@ -76,11 +72,6 @@ public class VerifyOTPResetServlet extends HttpServlet {
 
     /**
      * Prevent direct access via GET method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if servlet-specific error occurs
-     * @throws IOException if I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
