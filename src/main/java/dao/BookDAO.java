@@ -162,14 +162,35 @@ public class BookDAO {
      *
      * @param book the BookDTO object to insert
      */
-    public void insertBook(BookDTO book) {
+    public int insertBook(BookDTO book) {
         String sql = "INSERT INTO Book (bookTitle, author, translator, publisher, publicationYear, isbn, image, "
                 + "bookDescription, hardcover, dimension, weight, bookPrice, bookQuantity, bookStatus) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+        try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             setBookParams(ps, book);
+            ps.executeUpdate();
+
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                return rs.getInt(1); // return generated bookID
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return -1;
+    }
+
+    public void insertBookCategory(int bookID, int categoryID) {
+        String sql = "INSERT INTO Book_Category (book_id, cat_id) VALUES (?, ?)";
+
+        try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, bookID);
+            ps.setInt(2, categoryID);
             ps.executeUpdate();
 
         } catch (Exception e) {
@@ -216,6 +237,30 @@ public class BookDAO {
             e.printStackTrace();
             return false;
         }
+    }
+
+    /**
+     * Updates the quantity of a specific book.
+     *
+     * @param bookID ID of the book to update
+     * @param quantity new quantity value
+     * @return true if the update is successful, false otherwise
+     */
+    public boolean updateBookQuantity(int bookID, int quantity) {
+        String sql = "UPDATE Book SET bookQuantity = ? WHERE bookID = ?";
+
+        try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, quantity);
+            ps.setInt(2, bookID);
+
+            return ps.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 
     // --------------------------------------
@@ -270,33 +315,5 @@ public class BookDAO {
         ps.setDouble(12, book.getBookPrice());
         ps.setInt(13, book.getBookQuantity());
         ps.setInt(14, book.getBookStatus());
-    }
-
-    public void decreaseBookQuantity(int bookId, int quantity) throws Exception {
-        String sql = "UPDATE Book SET bookQuantity = bookQuantity - ? WHERE bookID = ? AND bookQuantity >= ?";
-
-        try ( Connection conn = DBContext.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, quantity);
-            ps.setInt(2, bookId);
-            ps.setInt(3, quantity); // Đảm bảo không trừ về âm
-
-            int rows = ps.executeUpdate();
-            if (rows == 0) {
-                throw new Exception("Not enough stock for bookID = " + bookId);
-            }
-        }
-    }
-
-    public boolean updateBookQuantity(int bookId, int newQuantity) {
-        String sql = "UPDATE Book SET bookQuantity = ? WHERE bookID = ?";
-        try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, newQuantity);
-            ps.setInt(2, bookId);
-            return ps.executeUpdate() > 0;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
     }
 }

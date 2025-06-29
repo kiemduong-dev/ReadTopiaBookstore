@@ -162,6 +162,30 @@ public class CategoryDAO {
     }
 
     /**
+     * Checks if a category with the given name already exists
+     * (case-insensitive).
+     *
+     * @param name the category name to check
+     * @return true if name exists, false otherwise
+     */
+    public boolean isCategoryNameExists(String name) {
+        String sql = "SELECT 1 FROM Category WHERE LOWER(catName) = LOWER(?) AND catStatus = 1";
+
+        try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, name);
+            ResultSet rs = ps.executeQuery();
+
+            return rs.next(); // Nếu có dòng nào trả về thì đã tồn tại
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    /**
      * (Optional) Retrieves categories that are linked with books. To be
      * implemented if needed.
      *
