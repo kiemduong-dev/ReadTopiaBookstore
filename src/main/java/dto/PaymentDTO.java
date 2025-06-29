@@ -14,15 +14,17 @@ public class PaymentDTO {
     private String orderId;
     private double amount;
     private String status;
+    private String paymentMethod;
 
     public PaymentDTO() {
     }
 
-    public PaymentDTO(String paymentId, String orderId, double amount, String status) {
+    public PaymentDTO(String paymentId, String orderId, double amount, String status, String paymentMethod) {
         this.paymentId = paymentId;
         this.orderId = orderId;
         this.amount = amount;
         this.status = status;
+        this.paymentMethod = paymentMethod;
     }
 
     // Getters and Setters
@@ -56,5 +58,13 @@ public class PaymentDTO {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 }

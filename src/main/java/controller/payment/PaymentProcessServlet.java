@@ -1,27 +1,26 @@
-/*
-     * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-     * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controller.payment;
 
+import dao.BookDAO;
+import dao.CartDAO;
 import dao.OrderDAO;
-import dao.PaymentDAO;
+import dao.OrderDetailDAO;
+import dto.BookDTO;
+import dto.CartDTO;
 import dto.OrderDTO;
-import dto.PaymentDTO;
+import dto.OrderDetailDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.io.IOException;
-import java.util.Date;
-import java.util.UUID;
 
-/**
- *
- * @author NGUYEN THAI ANH
- */
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 @WebServlet("/payment/process")
 public class PaymentProcessServlet extends HttpServlet {
 
@@ -39,50 +38,123 @@ public class PaymentProcessServlet extends HttpServlet {
             return;
         }
 
-        String orderIdStr = request.getParameter("orderId");
-        String amountStr = request.getParameter("amount");
         String paymentMethod = request.getParameter("paymentMethod");
         String orderAddress = request.getParameter("orderAddress");
+        String type = request.getParameter("type");
 
-        if (orderIdStr == null || amountStr == null || paymentMethod == null || orderAddress == null) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Thiếu thông tin thanh toán.");
+        if (paymentMethod == null || orderAddress == null || orderAddress.trim().isEmpty()) {
+            request.setAttribute("error", "Thiếu thông tin thanh toán.");
+            request.getRequestDispatcher("/WEB-INF/view/order/checkout.jsp").forward(request, response);
             return;
         }
 
         try {
-            int orderId = Integer.parseInt(orderIdStr);
-            double amount = Double.parseDouble(amountStr);
-
-            // Update địa chỉ giao hàng
+            CartDAO cartDAO = new CartDAO();
+            BookDAO bookDAO = new BookDAO();
             OrderDAO orderDAO = new OrderDAO();
-            OrderDTO order = orderDAO.getOrderByID(orderId);
-            if (order != null) {
-                order.setOrderAddress(orderAddress);
-                orderDAO.updateOrderAddress(order);
+            OrderDetailDAO orderDetailDAO = new OrderDetailDAO();
+
+            List<CartDTO> cartItems = new ArrayList<>();
+            List<Integer> selectedCartIDs = new ArrayList<>();
+            double totalAmount = 0;
+
+            if ("buynow".equals(type)) {
+                // Trường hợp "Buy Now"
+                int bookId = Integer.parseInt(request.getParameter("bookId"));
+                int quantity = Integer.parseInt(request.getParameter("quantity"));
+
+                BookDTO book = bookDAO.getBookByID(bookId);
+                if (book == null || quantity > book.getBookQuantity()) {
+                    request.setAttribute("error", "Sách không còn đủ số lượng.");
+                    request.getRequestDispatcher("/WEB-INF/view/order/checkout.jsp").forward(request, response);
+                    return;
+                }
+
+                CartDTO temp = new CartDTO();
+                temp.setBookID(bookId);
+                temp.setQuantity(quantity);
+                cartItems.add(temp);
+
+                totalAmount = quantity * book.getBookPrice();
+
+            } else {
+                // Trường hợp thanh toán từ giỏ hàng
+                String[] selectedCartIdsStr = request.getParameterValues("selectedCartIDs");
+
+                if (selectedCartIdsStr != null && selectedCartIdsStr.length > 0) {
+                    for (String idStr : selectedCartIdsStr) {
+                        int cartId = Integer.parseInt(idStr);
+                        CartDTO cartItem = cartDAO.findByCartID(cartId);
+                        if (cartItem != null) {
+                            BookDTO book = bookDAO.getBookByID(cartItem.getBookID());
+                            if (book != null) {
+                                totalAmount += cartItem.getQuantity() * book.getBookPrice();
+                                cartItems.add(cartItem);
+                                selectedCartIDs.add(cartId);
+                            }
+                        }
+                    }
+                } else {
+                    // Không chọn → thanh toán toàn bộ giỏ
+                    cartItems = cartDAO.getCartByUsername(username);
+                    for (CartDTO cartItem : cartItems) {
+                        BookDTO book = bookDAO.getBookByID(cartItem.getBookID());
+                        if (book != null) {
+                            totalAmount += cartItem.getQuantity() * book.getBookPrice();
+                            selectedCartIDs.add(cartItem.getCartID());
+                        }
+                    }
+                }
+
+                // Nếu không chọn gì và giỏ rỗng
+                if (cartItems.isEmpty()) {
+                    request.setAttribute("error", "Không có sản phẩm nào để thanh toán.");
+                    request.getRequestDispatcher("/WEB-INF/view/order/checkout.jsp").forward(request, response);
+                    return;
+                }
             }
 
-            if ("CASH".equals(paymentMethod)) {
-                // Thanh toán khi nhận hàng
-                orderDAO.updateOrderStatus(orderId, 0); // Đang xử lý
-                response.sendRedirect(request.getContextPath() + "/order/confirmation?orderId=" + orderId);
-                return;
+            // Tạo đơn hàng
+            OrderDTO order = new OrderDTO();
+            order.setUsername(username);
+            order.setOrderDate(new Timestamp(new Date().getTime()));
+            order.setTotalAmount(totalAmount);
+            order.setOrderStatus(0); // Đang xử lý
+            order.setOrderAddress(orderAddress);
+            int orderID = orderDAO.createOrder(order);
+
+            // Lưu chi tiết đơn hàng
+            for (CartDTO cart : cartItems) {
+                BookDTO book = bookDAO.getBookByID(cart.getBookID());
+                if (book != null) {
+                    // 1. Tạo chi tiết đơn hàng
+                    OrderDetailDTO detail = new OrderDetailDTO();
+                    detail.setOrderID(orderID);
+                    detail.setBookID(book.getBookID());
+                    detail.setQuantity(cart.getQuantity());
+                    detail.setTotalPrice(book.getBookPrice());
+                    orderDetailDAO.addOrderDetail(detail);
+
+                    // 2. Trừ kho
+                    int newQuantity = book.getBookQuantity() - cart.getQuantity();
+                    if (newQuantity < 0) {
+                        newQuantity = 0; // đảm bảo không âm
+                    }
+                    bookDAO.updateBookQuantity(book.getBookID(), newQuantity);
+                }
             }
 
-            if ("CREDIT_CARD".equals(paymentMethod)) {
-                // Chuyển hướng sang trang nhập thông tin thẻ
-                response.sendRedirect(request.getContextPath() + "/payment/credit?orderId=" + orderId + "&amount=" + amount);
-                return;
-            }
+            // Xóa giỏ nếu không phải "Buy Now"
+            cartDAO.deleteMultipleFromCart(selectedCartIDs, username);
 
-            // Các phương thức khác bạn có thể xử lý sau (QR_CODE, BANK_TRANSFER,...)
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Phương thức thanh toán chưa được hỗ trợ.");
+            // Hiển thị trang xác nhận
+            request.setAttribute("orderID", orderID);
+            request.getRequestDispatcher("/WEB-INF/view/order/confirmation.jsp").forward(request, response);
 
-        } catch (NumberFormatException e) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Dữ liệu không hợp lệ.");
         } catch (Exception e) {
-            System.err.println("❌ PaymentProcessServlet error: " + e.getMessage());
             e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Lỗi xử lý thanh toán.");
+            request.setAttribute("error", "Đã xảy ra lỗi trong quá trình xử lý thanh toán.");
+            request.getRequestDispatcher("/WEB-INF/view/order/checkout.jsp").forward(request, response);
         }
     }
 

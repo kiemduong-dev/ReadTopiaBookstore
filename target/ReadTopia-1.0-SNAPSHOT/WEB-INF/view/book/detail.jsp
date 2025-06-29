@@ -24,10 +24,10 @@
             <form action="${pageContext.request.contextPath}/cart/add" method="post" class="mt-3 d-flex">
                 <input type="hidden" name="bookID" value="${book.bookID}" />
                 <input type="number" name="quantity" value="1" min="1" max="${book.bookQuantity}" class="form-control w-25 me-2" />
-                <button type="submit" class="btn btn-success me-2">🛒 Thêm vào giỏ</button>
-                <a href="${pageContext.request.contextPath}/checkout?bookID=${book.bookID}&quantity=1"
-                   class="btn btn-warning">⚡ Mua ngay</a>
+                <button type="submit" name="action" value="addToCart" class="btn btn-success me-2">🛒 Thêm vào giỏ</button>
+                <button type="submit" name="action" value="buyNow" class="btn btn-warning">⚡ Mua ngay</button>
             </form>
+
 
             <div class="mt-4">
                 <a href="${pageContext.request.contextPath}/customer/book/list" class="btn btn-outline-secondary">⬅ Quay lại danh sách</a>

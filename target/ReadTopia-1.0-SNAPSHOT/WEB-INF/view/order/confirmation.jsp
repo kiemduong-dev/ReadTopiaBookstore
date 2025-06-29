@@ -22,12 +22,7 @@
                         </p>
                     </div>
 
-                    <div class="alert alert-success border-0 mb-4">
-                        <div class="d-flex align-items-center justify-content-center">
-                            <i class="bi bi-envelope-check me-2"></i>
-                            <span>Chúng tôi đã gửi email xác nhận đến địa chỉ đăng ký của bạn.</span>
-                        </div>
-                    </div>
+                 
 
                     <div class="row g-3 justify-content-center">
                         <div class="col-md-6">

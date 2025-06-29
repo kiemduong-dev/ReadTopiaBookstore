@@ -23,40 +23,52 @@ public class OrderDAO {
 
     // Tạo đơn hàng mới
     public int createOrder(OrderDTO order) {
-        String sql = "INSERT INTO [Order] (proID, username, staffID, orderDate, orderAddress, orderStatus) "
-                + "VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO [Order] (proID, username, staffID, orderDate, orderAddress, orderStatus, totalAmount) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try ( Connection conn = DBContext.getConnection();  PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
-            // Set proID (có thể null)
+            // 1. proID (nullable)
             if (order.getProID() != null) {
                 ps.setInt(1, order.getProID());
             } else {
                 ps.setNull(1, java.sql.Types.INTEGER);
             }
 
+            // 2. username
             ps.setString(2, order.getUsername());
+
+            // 3. staffID (nullable)
             if (order.getStaffID() != null) {
                 ps.setInt(3, order.getStaffID());
             } else {
                 ps.setNull(3, java.sql.Types.INTEGER);
             }
 
+            // 4. orderDate (nullable) - sửa thành java.sql.Date cho đúng với SQL DATE
             if (order.getOrderDate() != null) {
-                ps.setTimestamp(4, new Timestamp(order.getOrderDate().getTime()));
+                ps.setDate(4, new java.sql.Date(order.getOrderDate().getTime())); // ✅ fix bug
             } else {
-                ps.setNull(4, java.sql.Types.TIMESTAMP);
+                ps.setNull(4, java.sql.Types.DATE);
             }
+
+            // 5. orderAddress
             ps.setString(5, order.getOrderAddress());
+
+            // 6. orderStatus
             ps.setInt(6, order.getOrderStatus());
 
+            // 7. totalAmount
+            ps.setDouble(7, order.getTotalAmount());
+
+            // Execute insert
             int affected = ps.executeUpdate();
 
             if (affected > 0) {
                 try ( ResultSet rs = ps.getGeneratedKeys()) {
                     if (rs.next()) {
                         int orderID = rs.getInt(1);
-                        System.out.println("✅ Created order: " + orderID);
+                        System.out.println("✅ Created order with ID: " + orderID);
                         return orderID;
                     }
                 }
@@ -320,6 +332,12 @@ public class OrderDAO {
         order.setOrderAddress(rs.getString("orderAddress"));
         order.setOrderStatus(rs.getInt("orderStatus"));
         order.setTotalAmount(rs.getDouble("totalAmount"));
+        double totalAmount = rs.getDouble("totalAmount");
+        if (rs.wasNull()) {
+            totalAmount = 0.0;
+        }
+        order.setTotalAmount(totalAmount);
+
         return order;
     }
 

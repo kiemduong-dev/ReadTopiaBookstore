@@ -28,6 +28,7 @@ controller\admin\AccountDeleteServlet.class
 dao\NotificationDAO.class
 controller\RegisterServlet.class
 controller\order\OrderDetailServlet.class
+controller\payment\PaymentOnlineServlet.class
 controller\book\FilterBookServlet.class
 dto\PromotionLogDTO.class
 controller\admin\StaffEditServlet.class
@@ -40,7 +41,6 @@ controller\ResetPasswordServlet.class
 dto\BookDTO.class
 dto\AccountDTO.class
 controller\book\BookListHomepageServlet.class
-controller\cart\CheckoutServlet.class
 controller\admin\DashboardServlet.class
 controller\book\EditBookServlet.class
 controller\category\CategoryListServlet.class
@@ -64,13 +64,12 @@ controller\category\CategoryEditServlet.class
 controller\notification\NotificationDetailServlet.class
 controller\cart\CartViewServlet.class
 controller\notification\NotificationListServlet.class
-controller\order\BuyNowServlet.class
 controller\book\BookListDashboardServlet.class
 controller\admin\StaffListServlet.class
 controller\supplier\SupplierAddServlet.class
 util\MailUtil$1.class
 controller\cart\CartDeleteServlet.class
-controller\payment\PaymentConfirmServlet.class
+controller\promotion\PromotionCustomerListServlet.class
 controller\promotion\PromotionListServlet.class
 controller\EditProfileServlet.class
 util\DBContext.class
@@ -85,10 +84,13 @@ controller\promotion\PromotionDeleteServlet.class
 controller\promotion\PromotionDetailServlet.class
 controller\cart\CartViewServlet$CartItemWithBook.class
 controller\admin\StaffDetailServlet.class
+controller\notification\NotificationUserListServlet.class
 controller\book\SortBookServlet.class
 dto\OrderDTO.class
+controller\order\CheckoutServlet$CartItemWithBook.class
 controller\ProfileServlet.class
 dto\BookSoldDTO.class
+controller\order\CheckoutServlet.class
 dao\BookDAO.class
 controller\order\OrderCustomerDetailServlet.class
 controller\admin\StaffDeleteServlet.class

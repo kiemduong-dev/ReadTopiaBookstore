@@ -116,7 +116,7 @@
                                 <a href="${pageContext.request.contextPath}/customer/book/list" class="btn btn-outline-secondary">
                                     <i class="bi bi-arrow-left me-1"></i>Tiếp tục mua sắm
                                 </a>
-                                <form id="checkoutForm" method="post" action="${pageContext.request.contextPath}/checkout">
+                                <form id="checkoutForm" method="get" action="${pageContext.request.contextPath}/order/checkout">
                                     <input type="hidden" name="ids" id="selectedCheckoutIds" />
                                     <button type="submit" class="btn btn-success btn-lg" id="checkoutBtn">
                                         <i class="bi bi-credit-card me-1"></i>Thanh toán

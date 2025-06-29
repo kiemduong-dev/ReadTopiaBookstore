@@ -10,7 +10,6 @@ import java.util.Date;
  *
  * @author NGUYEN THAI ANH
  */
-
 public class OrderDTO {
 
     private int orderID;
@@ -35,7 +34,6 @@ public class OrderDTO {
         this.orderAddress = orderAddress;
         this.orderStatus = orderStatus;
     }
-
 
     public int getOrderID() {
         return orderID;
@@ -92,18 +90,20 @@ public class OrderDTO {
     public void setOrderStatus(int orderStatus) {
         this.orderStatus = orderStatus;
     }
+
     public Integer getItemCount() {
-    return itemCount;
-}
+        return itemCount;
+    }
 
-public void setItemCount(Integer itemCount) {
-    this.itemCount = itemCount;
-}
-public Double getTotalAmount() {
-    return totalAmount;
-}
+    public void setItemCount(Integer itemCount) {
+        this.itemCount = itemCount;
+    }
 
-public void setTotalAmount(Double totalAmount) {
-    this.totalAmount = totalAmount;
-}
+    public Double getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(Double totalAmount) {
+        this.totalAmount = totalAmount;
+    }
 }

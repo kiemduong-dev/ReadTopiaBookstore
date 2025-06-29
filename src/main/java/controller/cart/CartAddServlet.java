@@ -6,10 +6,8 @@ import dto.BookDTO;
 import dto.CartDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.*;
+
 import java.io.IOException;
 
 @WebServlet("/cart/add")
@@ -30,6 +28,7 @@ public class CartAddServlet extends HttpServlet {
 
         String bookIdRaw = request.getParameter("bookID");
         String quantityRaw = request.getParameter("quantity");
+        String action = request.getParameter("action");
 
         int bookID, quantity = 1;
         try {
@@ -51,11 +50,29 @@ public class CartAddServlet extends HttpServlet {
 
         BookDAO bookDAO = new BookDAO();
         BookDTO book = bookDAO.getBookByID(bookID);
+
         if (book == null || book.getBookStatus() != 1 || book.getBookQuantity() <= 0) {
             response.sendRedirect("view?msg=book_not_available");
             return;
         }
 
+        // ➤ Nếu là Buy Now → chuyển hướng đến trang thanh toán trực tiếp (không thêm vào giỏ)
+        if ("buyNow".equals(action)) {
+            if (quantity > book.getBookQuantity()) {
+                response.sendRedirect(request.getContextPath() + "/customer/book/detail?id=" + bookID + "&error=outofstock");
+                return;
+            }
+
+            session.setAttribute("buyNowBook", book);
+            session.setAttribute("buyNowQuantity", quantity);
+            session.setAttribute("buyNowTotal", quantity * book.getBookPrice());
+
+            response.sendRedirect(request.getContextPath()
+                    + "/order/checkout?type=buynow&bookID=" + bookID + "&quantity=" + quantity);
+            return;
+        }
+
+        // ➤ Nếu là Add to Cart
         CartDAO cartDAO = new CartDAO();
         CartDTO existingItem = cartDAO.findByUsernameAndBookID(username, bookID);
 
@@ -79,11 +96,12 @@ public class CartAddServlet extends HttpServlet {
         }
 
         if (success) {
-            response.sendRedirect(request.getContextPath() + "/customer/book/detail?id=" + bookID + "&added=true");
+            response.sendRedirect(request.getContextPath()
+                    + "/customer/book/detail?id=" + bookID + "&added=true");
         } else {
-            response.sendRedirect(request.getContextPath() + "/customer/book/detail?id=" + bookID + "&added=false");
+            response.sendRedirect(request.getContextPath()
+                    + "/customer/book/detail?id=" + bookID + "&added=false");
         }
-
     }
 
     @Override

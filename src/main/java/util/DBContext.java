@@ -16,7 +16,7 @@ import java.sql.SQLException;
  */
 public class DBContext {
 
-    private static final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=ReadTopia;encrypt=true;trustServerCertificate=true";
+    private static final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=ReadTopia3;encrypt=true;trustServerCertificate=true";
     private static final String DB_USER = "sa"; // TODO: Thay thế nếu cần
     private static final String DB_PASSWORD = "123456"; // TODO: Thay thế nếu cần
 

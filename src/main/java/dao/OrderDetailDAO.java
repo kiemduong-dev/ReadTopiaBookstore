@@ -39,7 +39,7 @@ public class OrderDetailDAO {
         try ( Connection conn = DBContext.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, detail.getOrderID());
-            ps.setInt(2, detail.getBookID());
+            ps.setInt(2, detail.getBookID());   
             ps.setInt(3, detail.getQuantity());
             ps.setDouble(4, detail.getTotalPrice());
 

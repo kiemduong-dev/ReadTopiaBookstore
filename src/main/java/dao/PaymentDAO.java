@@ -9,6 +9,7 @@ import util.DBContext;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,40 +20,14 @@ import java.util.List;
  */
 public class PaymentDAO {
 
-    // Lưu thông tin thanh toán
-    public boolean savePayment(PaymentDTO payment) {
-        String sql = "INSERT INTO Payment (paymentId, orderId, amount, status) VALUES (?, ?, ?, ?)";
-        
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, payment.getPaymentId());
-            ps.setString(2, payment.getOrderId());
-            ps.setDouble(3, payment.getAmount());
-            ps.setString(4, payment.getStatus());
-
-            boolean result = ps.executeUpdate() > 0;
-            if (result) {
-                System.out.println("✅ Saved payment: " + payment.getPaymentId());
-            }
-            return result;
-
-        } catch (Exception e) {
-            System.err.println("❌ savePayment error: " + e.getMessage());
-            e.printStackTrace();
-        }
-        return false;
-    }
-
     // Lấy thông tin thanh toán theo ID
     public PaymentDTO getPaymentById(String paymentId) {
         String sql = "SELECT * FROM Payment WHERE paymentId = ?";
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try ( Connection conn = DBContext.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, paymentId);
-            
-            try (ResultSet rs = ps.executeQuery()) {
+
+            try ( ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return extractPaymentFromResultSet(rs);
                 }
@@ -69,12 +44,11 @@ public class PaymentDAO {
     public List<PaymentDTO> getPaymentsByOrderId(String orderId) {
         List<PaymentDTO> list = new ArrayList<>();
         String sql = "SELECT * FROM Payment WHERE orderId = ? ORDER BY paymentDate DESC";
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try ( Connection conn = DBContext.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, orderId);
-            
-            try (ResultSet rs = ps.executeQuery()) {
+
+            try ( ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     list.add(extractPaymentFromResultSet(rs));
                 }
@@ -90,8 +64,7 @@ public class PaymentDAO {
     // Cập nhật thông tin thanh toán
     public boolean updatePayment(PaymentDTO payment) {
         String sql = "UPDATE Payment SET status = ? WHERE paymentId = ?";
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try ( Connection conn = DBContext.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, payment.getStatus());
             ps.setString(2, payment.getPaymentId());
@@ -113,9 +86,7 @@ public class PaymentDAO {
     public List<PaymentDTO> getAllPayments() {
         List<PaymentDTO> list = new ArrayList<>();
         String sql = "SELECT * FROM Payment ORDER BY paymentDate DESC";
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try ( Connection conn = DBContext.getConnection();  PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 list.add(extractPaymentFromResultSet(rs));
@@ -136,5 +107,19 @@ public class PaymentDAO {
         payment.setAmount(rs.getDouble("amount"));
         payment.setStatus(rs.getString("status"));
         return payment;
+    }
+
+    public boolean insertPayment(PaymentDTO payment) throws Exception {
+        String sql = "INSERT INTO Payment (paymentId, orderId, amount, status, paymentMethod) VALUES (?, ?, ?, ?, ?)";
+        try ( Connection conn = DBContext.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, payment.getPaymentId());
+            ps.setString(2, payment.getOrderId());
+            ps.setDouble(3, payment.getAmount());
+            ps.setString(4, payment.getStatus());
+            ps.setString(5, payment.getPaymentMethod());
+
+            return ps.executeUpdate() > 0;
+        }
     }
 }

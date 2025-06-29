@@ -271,4 +271,32 @@ public class BookDAO {
         ps.setInt(13, book.getBookQuantity());
         ps.setInt(14, book.getBookStatus());
     }
+
+    public void decreaseBookQuantity(int bookId, int quantity) throws Exception {
+        String sql = "UPDATE Book SET bookQuantity = bookQuantity - ? WHERE bookID = ? AND bookQuantity >= ?";
+
+        try ( Connection conn = DBContext.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, quantity);
+            ps.setInt(2, bookId);
+            ps.setInt(3, quantity); // Đảm bảo không trừ về âm
+
+            int rows = ps.executeUpdate();
+            if (rows == 0) {
+                throw new Exception("Not enough stock for bookID = " + bookId);
+            }
+        }
+    }
+
+    public boolean updateBookQuantity(int bookId, int newQuantity) {
+        String sql = "UPDATE Book SET bookQuantity = ? WHERE bookID = ?";
+        try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, newQuantity);
+            ps.setInt(2, bookId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
