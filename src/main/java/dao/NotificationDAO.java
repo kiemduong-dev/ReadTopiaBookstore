@@ -30,37 +30,22 @@ public class NotificationDAO {
         }
     }
 
-// Lấy thông báo có phân trang
-    public List<NotificationDTO> getNotificationsWithPaging(int offset, int limit) throws SQLException {
+    public List<NotificationDTO> getAllNotifications() throws SQLException {
         List<NotificationDTO> list = new ArrayList<>();
-        String sql = "SELECT * FROM Notification ORDER BY notID DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
-        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, offset);
-            ps.setInt(2, limit);
-            try ( ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    NotificationDTO noti = new NotificationDTO();
-                    noti.setNotID(rs.getInt("notID"));
-                    noti.setStaffID(rs.getInt("staffID"));
-                    noti.setNotTitle(rs.getString("notTitle"));
-                    noti.setReceiver(rs.getInt("receiver"));
-                    noti.setNotDescription(rs.getString("notDescription"));
-                    noti.setNotStatus(rs.getInt("notStatus"));
-                    list.add(noti);
-                }
+        String sql = "SELECT * FROM Notification ORDER BY notID DESC";
+        try ( PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                NotificationDTO noti = new NotificationDTO();
+                noti.setNotID(rs.getInt("notID"));
+                noti.setStaffID(rs.getInt("staffID"));
+                noti.setNotTitle(rs.getString("notTitle"));
+                noti.setReceiver(rs.getInt("receiver"));
+                noti.setNotDescription(rs.getString("notDescription"));
+                noti.setNotStatus(rs.getInt("notStatus"));
+                list.add(noti);
             }
         }
         return list;
-    }
-
-    public int getTotalNotificationCount() throws SQLException {
-        String sql = "SELECT COUNT(*) FROM Notification";
-        try ( PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) {
-                return rs.getInt(1);
-            }
-        }
-        return 0;
     }
 
     public void deleteNotification(int id) throws SQLException {
@@ -111,4 +96,26 @@ public class NotificationDAO {
         }
         return null;
     }
+
+    public List<NotificationDTO> getNotificationsForRole(int role) throws SQLException {
+        List<NotificationDTO> list = new ArrayList<>();
+        String sql = "SELECT * FROM Notification WHERE receiver = ? OR receiver = 4 ORDER BY notID DESC";
+        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, role); // Đảm bảo role là 0,1,2,3 đúng như bạn định nghĩa
+            try ( ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    NotificationDTO noti = new NotificationDTO();
+                    noti.setNotID(rs.getInt("notID"));
+                    noti.setStaffID(rs.getInt("staffID"));
+                    noti.setNotTitle(rs.getString("notTitle"));
+                    noti.setReceiver(rs.getInt("receiver"));
+                    noti.setNotDescription(rs.getString("notDescription"));
+                    noti.setNotStatus(rs.getInt("notStatus"));
+                    list.add(noti);
+                }
+            }
+        }
+        return list;
+    }
+
 }

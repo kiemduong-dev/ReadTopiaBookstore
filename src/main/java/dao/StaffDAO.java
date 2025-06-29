@@ -249,4 +249,17 @@ public class StaffDAO {
         s.setCode(rs.getString("code"));
         return s;
     }
+
+    public int getStaffIDByUsername(String username) throws SQLException, ClassNotFoundException {
+        String sql = "SELECT staffID FROM Staff WHERE username = ?";
+        try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("staffID");
+            }
+            throw new SQLException("Username không tồn tại trong bảng Staff: " + username);
+        }
+    }
+
 }

@@ -35,7 +35,18 @@ public class PromotionAddServlet extends HttpServlet {
         try ( Connection conn = new DBContext().getConnection()) {
             PromotionDAO dao = new PromotionDAO(conn);
             PromotionLogDAO logDao = new PromotionLogDAO(conn);
+            StaffDAO staffDao = new StaffDAO(); // cần DAO này nếu lấy staffID theo username
 
+            // Lấy thông tin người đăng nhập
+            HttpSession session = request.getSession();
+            AccountDTO account = (AccountDTO) session.getAttribute("account");
+            String username = account.getUsername();
+            int role = account.getRole();
+
+            // Lấy staffID từ username
+            int staffID = staffDao.getStaffIDByUsername(username);
+
+            // Tạo Promotion mới
             PromotionDTO pro = new PromotionDTO();
             pro.setProName(request.getParameter("proName"));
             pro.setProCode(request.getParameter("proCode"));
@@ -45,13 +56,15 @@ public class PromotionAddServlet extends HttpServlet {
             pro.setQuantity(Integer.parseInt(request.getParameter("quantity")));
             pro.setProStatus(Integer.parseInt(request.getParameter("proStatus")));
 
-            pro.setCreatedBy(1);
-            pro.setApprovedBy(1);
+            pro.setCreatedBy(staffID);
+
+            // Nếu là Admin thì auto approve, còn lại để 0
+            pro.setApprovedBy(role == 0 ? staffID : 0);
 
             int newProID = dao.addPromotionReturnID(pro);
 
             if (newProID > 0) {
-                logDao.insertLog(newProID, 1, 1);
+                logDao.insertLog(newProID, staffID, 1); // Action 1 = create
             }
 
             response.sendRedirect("list");

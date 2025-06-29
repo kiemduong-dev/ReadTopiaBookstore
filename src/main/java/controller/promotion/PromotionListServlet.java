@@ -29,34 +29,19 @@ public class PromotionListServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String keyword = request.getParameter("search");
-        int page = 1;
-        int recordsPerPage = 5;
-
-        if (request.getParameter("page") != null) {
-            page = Integer.parseInt(request.getParameter("page"));
-        }
 
         try ( Connection conn = new DBContext().getConnection()) {
             PromotionDAO dao = new PromotionDAO(conn);
             List<PromotionDTO> list;
-            int totalRecords;
 
             if (keyword != null && !keyword.trim().isEmpty()) {
-                list = dao.searchPromotions(keyword); // (nếu bạn cần phân trang khi tìm, sẽ cần thêm logic khác)
-                totalRecords = list.size();
+                list = dao.searchPromotions(keyword);
             } else {
-                int offset = (page - 1) * recordsPerPage;
-                list = dao.getPromotionsWithPaging(offset, recordsPerPage);
-                totalRecords = dao.getTotalPromotionCount();
+                list = dao.getAllPromotions(); // bỏ phân trang
             }
 
-            int totalPages = (int) Math.ceil((double) totalRecords / recordsPerPage);
-
             request.setAttribute("promotionList", list);
-            request.setAttribute("currentPage", page);
-            request.setAttribute("totalPages", totalPages);
             request.setAttribute("search", keyword);
-
             request.getRequestDispatcher("/WEB-INF/view/admin/promotion/list.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();

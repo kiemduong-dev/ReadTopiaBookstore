@@ -32,20 +32,28 @@ public class PromotionDetailServlet extends HttpServlet {
             return;
         }
 
-        try ( Connection conn = new DBContext().getConnection()) {
+        try {
             int proID = Integer.parseInt(proIDParam);
-            PromotionDAO dao = new PromotionDAO(conn);
-            PromotionDTO promotion = dao.getPromotionByID(proID);
 
-            if (promotion != null) {
+            try ( Connection conn = new DBContext().getConnection()) {
+                PromotionDAO dao = new PromotionDAO(conn);
+                PromotionDTO promotion = dao.getPromotionWithRoles(proID);
+
+                if (promotion == null) {
+                    request.setAttribute("error", "Promotion not found.");
+                    request.getRequestDispatcher("/WEB-INF/view/admin/promotion/detail.jsp").forward(request, response);
+                    return;
+                }
+
                 request.setAttribute("promotion", promotion);
                 request.getRequestDispatcher("/WEB-INF/view/admin/promotion/detail.jsp").forward(request, response);
-            } else {
-                response.sendRedirect("list");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            response.sendError(500, "Error loading promotion detail");
+
+        } catch (NumberFormatException e) {
+            request.setAttribute("error", "Invalid promotion ID.");
+            request.getRequestDispatcher("/WEB-INF/view/admin/promotion/detail.jsp").forward(request, response);
+        } catch (Exception ex) {
+            throw new ServletException("Error retrieving promotion detail", ex);
         }
     }
 

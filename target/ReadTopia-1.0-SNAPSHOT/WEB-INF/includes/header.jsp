@@ -19,9 +19,7 @@
         <!-- Action icons -->
         <div class="header-actions">
             <div class="header-icons">
-                <button class="header-icon" title="Promotions" onclick="showPromotions()">
-                    <i class="fas fa-bell"></i>
-                </button>
+                <jsp:include page="/WEB-INF/view/customer/notification/notification-widget.jsp"/>
                 <button class="header-icon" title="Statistics">
                     <i class="fas fa-chart-line"></i>
                 </button>

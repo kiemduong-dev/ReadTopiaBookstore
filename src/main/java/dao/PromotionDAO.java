@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import util.DBContext;
 
 /**
  *
@@ -29,42 +30,30 @@ public class PromotionDAO {
     }
 
     // Lấy danh sách promotion theo trang
-    public List<PromotionDTO> getPromotionsWithPaging(int offset, int limit) throws SQLException {
+    public List<PromotionDTO> getAllPromotions() throws SQLException {
         List<PromotionDTO> list = new ArrayList<>();
-        String sql = "SELECT * FROM Promotion ORDER BY proID DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        String sql = "SELECT * FROM Promotion ORDER BY proID DESC"; // Không dùng OFFSET/FETCH
 
-        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, offset);
-            ps.setInt(2, limit);
-            try ( ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    PromotionDTO p = new PromotionDTO(
-                            rs.getInt("proID"),
-                            rs.getString("proName"),
-                            rs.getString("proCode"),
-                            rs.getDouble("discount"),
-                            rs.getDate("startDate"),
-                            rs.getDate("endDate"),
-                            rs.getInt("quantity"),
-                            rs.getInt("proStatus"),
-                            rs.getInt("createdBy"),
-                            rs.getInt("approvedBy")
-                    );
-                    list.add(p);
-                }
-            }
-        }
-        return list;
-    }
-
-    public int getTotalPromotionCount() throws SQLException {
-        String sql = "SELECT COUNT(*) FROM Promotion";
         try ( PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) {
-                return rs.getInt(1);
+
+            while (rs.next()) {
+                PromotionDTO p = new PromotionDTO(
+                        rs.getInt("proID"),
+                        rs.getString("proName"),
+                        rs.getString("proCode"),
+                        rs.getDouble("discount"),
+                        rs.getDate("startDate"),
+                        rs.getDate("endDate"),
+                        rs.getInt("quantity"),
+                        rs.getInt("proStatus"),
+                        rs.getInt("createdBy"),
+                        rs.getInt("approvedBy")
+                );
+                list.add(p);
             }
         }
-        return 0;
+
+        return list;
     }
 
     // Search promotions by name or code
@@ -189,4 +178,59 @@ public class PromotionDAO {
         }
         return null;
     }
+
+    public PromotionDTO getValidPromotionByCode(String code) throws Exception {
+        String sql = "SELECT * FROM Promotion WHERE proCode = ? AND proStatus = 1 AND GETDATE() BETWEEN startDate AND endDate AND quantity > 0";
+        try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, code);
+            try ( ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    PromotionDTO promo = new PromotionDTO();
+                    promo.setProID(rs.getInt("proID"));
+                    promo.setProCode(rs.getString("proCode"));
+                    promo.setDiscount(rs.getInt("discount"));
+                    // bạn có thể thêm các field khác nếu cần
+                    return promo;
+                }
+            }
+        }
+        return null;
+    }
+
+    public PromotionDTO getPromotionWithRoles(int proID) throws SQLException {
+        String sql = "SELECT p.*, "
+                + "a1.role AS creatorRole, a2.role AS approverRole "
+                + "FROM Promotion p "
+                + "LEFT JOIN Staff s1 ON p.createdBy = s1.staffID "
+                + "LEFT JOIN Staff s2 ON p.approvedBy = s2.staffID "
+                + "LEFT JOIN Account a1 ON s1.username = a1.username "
+                + "LEFT JOIN Account a2 ON s2.username = a2.username "
+                + "WHERE p.proID = ?";
+
+        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, proID);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                PromotionDTO dto = new PromotionDTO(
+                        rs.getInt("proID"),
+                        rs.getString("proName"),
+                        rs.getString("proCode"),
+                        rs.getDouble("discount"),
+                        rs.getDate("startDate"),
+                        rs.getDate("endDate"),
+                        rs.getInt("quantity"),
+                        rs.getInt("proStatus"),
+                        rs.getInt("createdBy"),
+                        rs.getInt("approvedBy")
+                );
+
+                dto.setCreatorRole(rs.getInt("creatorRole"));
+                dto.setApproverRole(rs.getInt("approverRole"));
+                return dto;
+            }
+        }
+        return null;
+    }
+
 }

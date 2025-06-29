@@ -122,4 +122,23 @@ public class PromotionDTO {
         this.approvedBy = approvedBy;
     }
 
+    private int creatorRole;
+    private int approverRole;
+
+    public int getCreatorRole() {
+        return creatorRole;
+    }
+
+    public void setCreatorRole(int creatorRole) {
+        this.creatorRole = creatorRole;
+    }
+
+    public int getApproverRole() {
+        return approverRole;
+    }
+
+    public void setApproverRole(int approverRole) {
+        this.approverRole = approverRole;
+    }
+
 }

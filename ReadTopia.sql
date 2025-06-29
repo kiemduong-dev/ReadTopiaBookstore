@@ -228,8 +228,7 @@
 		staff_id INT,
 		pro_action INT,
 		pro_log_date DATE,
-		CONSTRAINT PK_promotion_log PRIMARY KEY (pro_log_id),
-		CONSTRAINT FK_promotion_log_promotion FOREIGN KEY (pro_id) REFERENCES Promotion(proID),
+		CONSTRAINT PK_promotion_log PRIMARY KEY (pro_log_id),		
 		CONSTRAINT FK_promotion_log_staff FOREIGN KEY (staff_id) REFERENCES Staff(staffID)
 	)
 	GO
@@ -341,6 +340,24 @@ VALUES
 	('Mystery', 'Mystery and thriller books', 1),
 	('Technology', 'Books on technology and innovation', 1),
 	('Education', 'Educational books for students', 1);
+
+	--Insert Promotion and notification
+	INSERT INTO Notification (staffID, notTitle, receiver, notDescription, notStatus)
+    VALUES 
+    (1, N'New Promotion Announcement', 2, N'A new 20% discount program is now available for programming books.', 1),
+    (2, N'Profile Update Reminder', 3, N'Please update your personal information before June 30.', 0);
+
+    INSERT INTO Promotion (proName, proCode, discount, startDate, endDate, quantity, proStatus, createdBy, approvedBy)
+    VALUES
+    (N'Summer Sale 2025', 'SUMMER25', 20.0, '2025-06-15', '2025-07-15', 100, 1, 1, 2),
+    (N'Textbook Promotion', 'TEXTBOOK2025', 15.0, '2025-06-01', '2025-08-31', 200, 1, 1, 3);
+
+	INSERT INTO promotion_log (pro_id, staff_id, pro_action, pro_log_date)
+    VALUES
+    (1, 1, 1, '2025-06-15'), -- 1 = Created   
+    (2, 1, 1, '2025-06-10'); -- 1 = Created
+
+
 
 	-- Randomly assign categories to books
 	DECLARE @BookCount INT

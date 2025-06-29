@@ -8,7 +8,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <jsp:include page="/WEB-INF/includes/head-admin.jsp" />
 <jsp:include page="/WEB-INF/includes/sidebar-admin.jsp" />
-<jsp:include page="/WEB-INF/includes/head.jsp" />
 
 <div class="main-content">
     <div class="content-area">
@@ -19,34 +18,42 @@
 
         <div class="card">
             <h3 class="card-title">Promotion Information</h3>
+
             <div class="form-group">
                 <label class="form-label">Promotion ID:</label>
                 <p>${promotion.proID}</p>
             </div>
+
             <div class="form-group">
                 <label class="form-label">Name:</label>
                 <p>${promotion.proName}</p>
             </div>
+
             <div class="form-group">
                 <label class="form-label">Code:</label>
                 <p>${promotion.proCode}</p>
             </div>
+
             <div class="form-group">
                 <label class="form-label">Discount (%):</label>
                 <p>${promotion.discount}</p>
             </div>
+
             <div class="form-group">
                 <label class="form-label">Start Date:</label>
                 <p>${promotion.startDate}</p>
             </div>
+
             <div class="form-group">
                 <label class="form-label">End Date:</label>
                 <p>${promotion.endDate}</p>
             </div>
+
             <div class="form-group">
                 <label class="form-label">Quantity:</label>
                 <p>${promotion.quantity}</p>
             </div>
+
             <div class="form-group">
                 <label class="form-label">Status:</label>
                 <p>
@@ -60,14 +67,26 @@
                     </c:choose>
                 </p>
             </div>
-            <c:choose>
-                <c:when test="${promotion.creatorRole == 0}">Created by: Admin</c:when>
-                <c:otherwise>Created by: Seller Staff</c:otherwise>
-            </c:choose>
-            <c:choose>
-                <c:when test="${promotion.approverRole == 0}">Created by: Admin</c:when>
-                <c:otherwise>Created by: Seller Staff</c:otherwise>
-            </c:choose>
+
+            <div class="form-group">
+                <label class="form-label">Created by:</label>
+                <p>
+                    <c:choose>
+                        <c:when test="${promotion.creatorRole == 0}">Admin</c:when>
+                        <c:otherwise>Seller Staff</c:otherwise>
+                    </c:choose>
+                </p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Approved by:</label>
+                <p>
+                    <c:choose>
+                        <c:when test="${promotion.approverRole == 0}">Admin</c:when>
+                        <c:otherwise>Seller Staff</c:otherwise>
+                    </c:choose>
+                </p>
+            </div>
 
             <div class="btn-group">
                 <a href="${pageContext.request.contextPath}/admin/promotion/list" class="btn btn-secondary">

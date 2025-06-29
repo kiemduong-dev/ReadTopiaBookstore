@@ -23,36 +23,23 @@ import java.util.List;
 @WebServlet(name = "NotificationListServlet", urlPatterns = {"/admin/notification/list"})
 public class NotificationListServlet extends HttpServlet {
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try ( Connection conn = new DBContext().getConnection()) {
+        try ( Connection conn = DBContext.getConnection()) {
             NotificationDAO dao = new NotificationDAO(conn);
 
             String search = request.getParameter("search");
-            int page = 1;
-            int recordsPerPage = 5;
-
-            if (request.getParameter("page") != null) {
-                page = Integer.parseInt(request.getParameter("page"));
-            }
 
             List<NotificationDTO> notifications;
-            int totalRecords;
 
             if (search != null && !search.trim().isEmpty()) {
-                notifications = dao.searchByTitle(search.trim()); // nếu cần phân trang search, cần thêm dao method khác
-                totalRecords = notifications.size();
+                notifications = dao.searchByTitle(search.trim());
             } else {
-                int offset = (page - 1) * recordsPerPage;
-                notifications = dao.getNotificationsWithPaging(offset, recordsPerPage);
-                totalRecords = dao.getTotalNotificationCount();
+                notifications = dao.getAllNotifications(); 
             }
 
-            int totalPages = (int) Math.ceil((double) totalRecords / recordsPerPage);
-
             request.setAttribute("notifications", notifications);
-            request.setAttribute("currentPage", page);
-            request.setAttribute("totalPages", totalPages);
             request.setAttribute("search", search);
 
             request.getRequestDispatcher("/WEB-INF/view/admin/notification/list.jsp").forward(request, response);
