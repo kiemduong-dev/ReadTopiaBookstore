@@ -5,34 +5,23 @@ import dto.AccountDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
+import util.ValidationUtil;
 
 import java.io.IOException;
 
 /**
- * ChangePasswordServlet
+ * ChangePasswordServlet – Allows authenticated users to change password. GET:
+ * Display form. POST: Validate and update password.
  *
- * This servlet handles the logic for authenticated users to change their
- * password. - GET request shows the password change form. - POST request
- * processes the password update.
- *
- * URL: /change-password
- *
- * Author: CE181518 Dương An Kiếm
+ * URL Mapping: /change-password Author: CE181518 Dương An Kiếm
  */
 @WebServlet(name = "ChangePasswordServlet", urlPatterns = {"/change-password"})
 public class ChangePasswordServlet extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
+
     /**
-     * Handles both GET and POST requests for password change.
-     *
-     * Flow: 1. Validates session and login status. 2. GET → shows change
-     * password form. 3. POST → validates inputs, compares old password, updates
-     * if valid.
-     *
-     * @param request the HttpServletRequest object
-     * @param response the HttpServletResponse object
-     * @throws ServletException if a servlet error occurs
-     * @throws IOException if an I/O error occurs
+     * Handle GET and POST requests for changing password
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -41,55 +30,53 @@ public class ChangePasswordServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
 
         HttpSession session = request.getSession(false);
-        AccountDTO acc = (session != null) ? (AccountDTO) session.getAttribute("account") : null;
+        AccountDTO account = (session != null) ? (AccountDTO) session.getAttribute("account") : null;
 
-        if (acc == null) {
-            response.sendRedirect("login");
+        // Step 1: Must be logged in
+        if (account == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
 
-        // Handle GET: Show change password form
+        // Step 2: GET → Show form
         if ("GET".equalsIgnoreCase(request.getMethod())) {
             request.getRequestDispatcher("/WEB-INF/view/account/changePassword.jsp").forward(request, response);
             return;
         }
 
-        // Handle POST: Process password change
+        // Step 3: POST → Handle password change
         String oldPassword = request.getParameter("oldPassword");
         String newPassword = request.getParameter("newPassword");
         String confirmPassword = request.getParameter("confirmPassword");
 
-        // Input validation
+        // Step 4: Validate fields
         if (oldPassword == null || newPassword == null || confirmPassword == null
-                || oldPassword.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()) {
+                || oldPassword.trim().isEmpty() || newPassword.trim().isEmpty() || confirmPassword.trim().isEmpty()) {
+
             request.setAttribute("error", "❌ All fields are required.");
-            request.getRequestDispatcher("/WEB-INF/view/account/changePassword.jsp").forward(request, response);
-            return;
-        }
-
-        if (!newPassword.equals(confirmPassword)) {
+        } else if (!newPassword.equals(confirmPassword)) {
             request.setAttribute("error", "❌ Confirm password does not match.");
-            request.getRequestDispatcher("/WEB-INF/view/account/changePassword.jsp").forward(request, response);
-            return;
-        }
-
-        // Business logic: verify old password and update
-        AccountDAO dao = new AccountDAO();
-        boolean updated = dao.updatePasswordByOld(acc.getUsername(), oldPassword, newPassword);
-
-        if (updated) {
-            acc.setPassword("********"); // Hide real password
-            session.setAttribute("account", acc);
-            request.setAttribute("success", "✅ Password changed successfully.");
+        } else if (!ValidationUtil.isValidPassword(newPassword)) {
+            request.setAttribute("error", "❌ Password must be at least 8 characters and include uppercase, lowercase, digit and special character.");
         } else {
-            request.setAttribute("error", "❌ Old password is incorrect.");
+            // Step 5: Business logic – update password if old password is valid
+            AccountDAO dao = new AccountDAO();
+            boolean updated = dao.updatePasswordByOld(account.getUsername(), oldPassword, newPassword);
+
+            if (updated) {
+                session.setAttribute("account", account); // Optional: you can mask password here
+                request.setAttribute("success", "✅ Password changed successfully.");
+            } else {
+                request.setAttribute("error", "❌ Old password is incorrect.");
+            }
         }
 
+        // Step 6: Return to change password form
         request.getRequestDispatcher("/WEB-INF/view/account/changePassword.jsp").forward(request, response);
     }
 
     /**
-     * Handles GET request.
+     * Handle GET request
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -98,7 +85,7 @@ public class ChangePasswordServlet extends HttpServlet {
     }
 
     /**
-     * Handles POST request.
+     * Handle POST request
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -107,12 +94,10 @@ public class ChangePasswordServlet extends HttpServlet {
     }
 
     /**
-     * Returns a short description of this servlet.
-     *
-     * @return servlet info
+     * @return Description
      */
     @Override
     public String getServletInfo() {
-        return "Handles password change request for authenticated users.";
+        return "Handles password change for authenticated users.";
     }
 }

@@ -228,7 +228,8 @@
 		staff_id INT,
 		pro_action INT,
 		pro_log_date DATE,
-		CONSTRAINT PK_promotion_log PRIMARY KEY (pro_log_id),		
+		CONSTRAINT PK_promotion_log PRIMARY KEY (pro_log_id),
+		CONSTRAINT FK_promotion_log_promotion FOREIGN KEY (pro_id) REFERENCES Promotion(proID),
 		CONSTRAINT FK_promotion_log_staff FOREIGN KEY (staff_id) REFERENCES Staff(staffID)
 	)
 	GO
@@ -240,20 +241,20 @@
 -- Insert admin accounts
 INSERT INTO Account(username, [password], firstName, lastName, dob, email, [address], phone, sex, [role], accStatus)
 VALUES
-('admin1', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', 'Administrator 1', 'AdminLast1', GETDATE(), 'duongankiem.dev@gmail.com', 'FPT University, Can Tho Campus', '0343634608', 1, 0, 1),
-('admin2', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', 'Administrator 2', 'AdminLast2', GETDATE(), 'DuyQHCE180889@fpt.edu.vn', 'FPT University, Can Tho Campus', '0343634609', 0, 0, 1),
-('admin3', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', 'Administrator 3', 'AdminLast3', GETDATE(), 'AnhNTCE181048@fpt.edu.vn', 'FPT University, Can Tho Campus', '0343634610', 1, 0, 1),
-('admin4', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', 'Administrator 4', 'AdminLast4', GETDATE(), 'AnhNTCE181953@gmail.com', 'FPT University, Can Tho Campus', '0343634611', 0, 0, 1),
-('admin5', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', 'Administrator 5', 'AdminLast5', GETDATE(), 'BaoVCCE182018@fpt.edu.vn', 'FPT University, Can Tho Campus', '0343634612', 1, 0, 1),
-('admin6', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', 'Administrator 6', 'AdminLast6', GETDATE(), 'ReadTopia@gmail.com', 'FPT University, Can Tho Campus', '0343634613', 0, 0, 1),
-('admin7', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', 'Administrator 7', 'AdminLast7', GETDATE(), 'ReadTopia@gmail.com', 'FPT University, Can Tho Campus', '0343634614', 1, 0, 1),
-('admin8', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', 'Administrator 8', 'AdminLast8', GETDATE(), 'ReadTopia@gmail.com', 'FPT University, Can Tho Campus', '0343634615', 0, 0, 1),
-('YenQNPCE181445', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', N'Yến', N'Quang Nhật Phi', '1998-04-16', 'YenQNPCE181445@fpt.edu.vn', N'1 Võ Văn Ngân, Thủ Đức, TP. Hồ Chí Minh', '0377777778', 1, 0, 1),
-('ThienNHNCE180035', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', N'Thiện', N'Nguyễn Huỳnh Nhất', '1996-06-11', 'ThienNHNCE180035@fpt.edu.vn', N'600 Nguyễn Văn Cừ, Q.1, TP. Hồ Chí Minh', '0387654321', 0, 0, 1),
-('HanNNCE180049', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', N'Hân', N'Nguyễn Ngọc', '1998-01-25', 'HanNNCE180049@fpt.edu.vn', N'Đại học FPT, Quận Cái Răng, TP. Cần Thơ', '0967123456', 1, 0, 1),
-('ThoHPCE181027', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', N'Thọ', N'Huỳnh Phúc', '1996-05-10', 'ThoHPCE181027@fpt.edu.vn', N'Khu Công nghệ cao, Quận 9, TP. Hồ Chí Minh', '0909123456', 0, 0, 1),
-('ThuanPVHCE181377', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', N'Thuận', N'Phan Văn Hoà', '1999-06-08', 'ThuanPVHCE181377@fpt.edu.vn', N'Trung tâm CNTT, Đà Nẵng', '0912345678', 0, 0, 1),
-('ToanLTCE190713', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', N'Toàn', N'La Thiện', '1992-11-24', 'toanlt.ce190713@gmail.com', N'Hòa Lạc, Thạch Thất, Hà Nội', '0377777777', 0, 0, 1);
+('admin1', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', 'Administrator 1', 'AdminLast1', GETDATE(), 'duongankiem.dev@gmail.com', 'FPT University, Can Tho Campus', '0343634608', 1, 0, 1),
+('admin2', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', 'Administrator 2', 'AdminLast2', GETDATE(), 'DuyQHCE180889@fpt.edu.vn', 'FPT University, Can Tho Campus', '0343634609', 0, 0, 1),
+('admin3', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', 'Administrator 3', 'AdminLast3', GETDATE(), 'AnhNTCE181048@fpt.edu.vn', 'FPT University, Can Tho Campus', '0343634610', 1, 0, 1),
+('admin4', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', 'Administrator 4', 'AdminLast4', GETDATE(), 'AnhNTCE181953@gmail.com', 'FPT University, Can Tho Campus', '0343634611', 0, 0, 1),
+('admin5', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', 'Administrator 5', 'AdminLast5', GETDATE(), 'BaoVCCE182018@fpt.edu.vn', 'FPT University, Can Tho Campus', '0343634612', 1, 0, 1),
+('admin6', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', 'Administrator 6', 'AdminLast6', GETDATE(), 'ReadTopia@gmail.com', 'FPT University, Can Tho Campus', '0343634613', 0, 0, 1),
+('admin7', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', 'Administrator 7', 'AdminLast7', GETDATE(), 'ReadTopia@gmail.com', 'FPT University, Can Tho Campus', '0343634614', 1, 0, 1),
+('admin8', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', 'Administrator 8', 'AdminLast8', GETDATE(), 'ReadTopia@gmail.com', 'FPT University, Can Tho Campus', '0343634615', 0, 0, 1),
+('YenQNPCE181445', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Yến', N'Quang Nhật Phi', '1998-04-16', 'YenQNPCE181445@fpt.edu.vn', N'1 Võ Văn Ngân, Thủ Đức, TP. Hồ Chí Minh', '0377777778', 1, 0, 1),
+('ThienNHNCE180035', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Thiện', N'Nguyễn Huỳnh Nhất', '1996-06-11', 'ThienNHNCE180035@fpt.edu.vn', N'600 Nguyễn Văn Cừ, Q.1, TP. Hồ Chí Minh', '0387654321', 0, 0, 1),
+('HanNNCE180049', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Hân', N'Nguyễn Ngọc', '1998-01-25', 'HanNNCE180049@fpt.edu.vn', N'Đại học FPT, Quận Cái Răng, TP. Cần Thơ', '0967123456', 1, 0, 1),
+('ThoHPCE181027', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Thọ', N'Huỳnh Phúc', '1996-05-10', 'ThoHPCE181027@fpt.edu.vn', N'Khu Công nghệ cao, Quận 9, TP. Hồ Chí Minh', '0909123456', 0, 0, 1),
+('ThuanPVHCE181377', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Thuận', N'Phan Văn Hoà', '1999-06-08', 'ThuanPVHCE181377@fpt.edu.vn', N'Trung tâm CNTT, Đà Nẵng', '0912345678', 0, 0, 1),
+('ToanLTCE190713', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Toàn', N'La Thiện', '1992-11-24', 'toanlt.ce190713@gmail.com', N'Hòa Lạc, Thạch Thất, Hà Nội', '0377777777', 0, 0, 1);
 
 
 -- ==================== INSERT STAFF ====================
@@ -266,28 +267,28 @@ VALUES
 	-- Insert customer accounts
 INSERT INTO Account (username, [password], firstName, lastName, dob, email, [address], phone, sex, [role], accStatus)
 VALUES
-('PhatNTCE171269', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', N'Phát', N'Nguyễn Tấn', '2004-01-23', 'PhatNTCE171269@fpt.edu.vn', N'1 Võ Văn Ngân, Thủ Đức, TP. Hồ Chí Minh', '0976696064', 0, 1, 1),
-('LongNHCE171974', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', N'Long', N'Nguyễn Hoàng', '2004-08-01', 'LongNHCE171974@fpt.edu.vn', N'600 Nguyễn Văn Cừ, Q.1, TP. Hồ Chí Minh', '0987543172', 0, 1, 1),
-('AnNCHCE180413', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', N'An', N'Nguyễn Cao Hoài', '2004-06-10', 'AnNCHCE180413@fpt.edu.vn', N'Đại học FPT, Quận Cái Răng, TP. Cần Thơ', '0924256985', 1, 1, 1),
-('NghiLTTCE182357', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', N'Nghi', N'Lý Trần Tường', '2004-02-09', 'NghiLTTCE182357@fpt.edu.vn', N'Khu Công nghệ cao, Quận 9, TP. Hồ Chí Minh', '0909550321', 1, 1, 1),
-('NguyenHTCE190356', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', N'Nguyễn', N'Huỳnh Trọng', '2004-10-12', 'nguyenht.ce190356@gmail.com', N'Trung tâm CNTT, Đà Nẵng', '0964663064', 0, 1, 1),
-('KhangTDCE181439', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', N'Khang', N'Trần Dũy', '2004-11-16', 'KhangTDCE181439@fpt.edu.vn', N'Hòa Lạc, Thạch Thất, Hà Nội', '0955589643', 1, 1, 1),
-('KhangTNCE180189', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', N'Khang', N'Trần Nhất', '2004-09-21', 'KhangTNCE180189@fpt.edu.vn', N'1 Võ Văn Ngân, Thủ Đức, TP. Hồ Chí Minh', '0950092514', 1, 1, 1),
-('MinhLKBCE180860', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', N'Minh', N'Lê Khắc Bảo', '2004-09-08', 'MinhLKBCE180860@fpt.edu.vn', N'600 Nguyễn Văn Cừ, Q.1, TP. Hồ Chí Minh', '0972784975', 0, 1, 1),
-('MinhNCCE181128', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', N'Minh', N'Nguyễn Công', '2004-09-02', 'MinhNCCE181128@fpt.edu.vn', N'Đại học FPT, Quận Cái Răng, TP. Cần Thơ', '0937611814', 0, 1, 1),
-('PhuongDVHCE181438', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', N'Phương', N'Đào Văn Hà', '2004-07-18', 'PhuongDVHCE181438@fpt.edu.vn', N'Khu Công nghệ cao, Quận 9, TP. Hồ Chí Minh', '0947956273', 1, 1, 1),
-('KhangLNHCE191583', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', N'Khang', N'Lê Nguyễn Hoàng', '2004-08-19', 'KhangLNH.CE191583@gmail.com', N'Trung tâm CNTT, Đà Nẵng', '0998929410', 1, 1, 1),
-('TanhNTCE182341', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', N'Tánh', N'Nguyễn Thiện', '2004-08-13', 'TanhNTCE182341@fpt.edu.vn', N'Hòa Lạc, Thạch Thất, Hà Nội', '0910374672', 0, 1, 1),
-('TranVTHCE180112', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', N'Trân', N'Võ Thị Huế', '2004-02-28', 'TranVTHCE180112@fpt.edu.vn', N'1 Võ Văn Ngân, Thủ Đức, TP. Hồ Chí Minh', '0938562437', 1, 1, 1),
-('ThangNDCE180608', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', N'Thắng', N'Nguyễn Đức', '2004-09-18', 'ThangNDCE180608@fpt.edu.vn', N'600 Nguyễn Văn Cừ, Q.1, TP. Hồ Chí Minh', '0904350319', 0, 1, 1),
-('HuyBTCE180610', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', N'Huy', N'Bùi Tuấn', '2004-10-04', 'HuyBTCE180610@fpt.edu.vn', N'Đại học FPT, Quận Cái Răng, TP. Cần Thơ', '0929178751', 0, 1, 1),
-('HungNTCE180765', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', N'Hưng', N'Nguyễn Tín', '2004-10-08', 'HungNTCE180765@fpt.edu.vn', N'Khu Công nghệ cao, Quận 9, TP. Hồ Chí Minh', '0939647052', 0, 1, 1),
-('ThangDQCE182036', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', N'Thắng', N'Diệp Quốc', '2004-12-16', 'ThangDQCE182036@fpt.edu.vn', N'Trung tâm CNTT, Đà Nẵng', '0953634068', 0, 1, 1),
-('DatVTCE180184', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', N'Đạt', N'Võ Tiến', '2004-06-11', 'DatVTCE180184@fpt.edu.vn', N'Hòa Lạc, Thạch Thất, Hà Nội', '0968839206', 0, 1, 1),
-('HungPTCE180074', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', N'Hưng', N'Phạm Tấn', '2004-06-22', 'HungPTCE180074@fpt.edu.vn', N'1 Võ Văn Ngân, Thủ Đức, TP. Hồ Chí Minh', '0929331004', 0, 1, 1),
-('DiemLTCE180621', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', N'Diễm', N'Lương Thị', '2004-03-16', 'DiemLTCE180621@fpt.edu.vn', N'600 Nguyễn Văn Cừ, Q.1, TP. Hồ Chí Minh', '0980828479', 1, 1, 1),
-('LinhLTTCE181262', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', N'Linh', N'Lê Thị Trúc', '2004-02-03', 'LinhLTTCE181262@fpt.edu.vn', N'Đại học FPT, Quận Cái Răng, TP. Cần Thơ', '0912196241', 1, 1, 1),
-('DucGTCE182376', '$2a$10$lVJbfkuTptencFw.FBKAueCuPskC2mpFgUmn5nNiSN43UtU9hg2YO', N'Đức', N'Giang Tú', '2004-07-10', 'DucGTCE182376@fpt.edu.vn', N'Khu Công nghệ cao, Quận 9, TP. Hồ Chí Minh', '0962372983', 0, 1, 1);
+('PhatNTCE171269', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Phát', N'Nguyễn Tấn', '2004-01-23', 'PhatNTCE171269@fpt.edu.vn', N'1 Võ Văn Ngân, Thủ Đức, TP. Hồ Chí Minh', '0976696064', 0, 1, 1),
+('LongNHCE171974', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Long', N'Nguyễn Hoàng', '2004-08-01', 'LongNHCE171974@fpt.edu.vn', N'600 Nguyễn Văn Cừ, Q.1, TP. Hồ Chí Minh', '0987543172', 0, 1, 1),
+('AnNCHCE180413', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'An', N'Nguyễn Cao Hoài', '2004-06-10', 'AnNCHCE180413@fpt.edu.vn', N'Đại học FPT, Quận Cái Răng, TP. Cần Thơ', '0924256985', 1, 1, 1),
+('NghiLTTCE182357', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Nghi', N'Lý Trần Tường', '2004-02-09', 'NghiLTTCE182357@fpt.edu.vn', N'Khu Công nghệ cao, Quận 9, TP. Hồ Chí Minh', '0909550321', 1, 1, 1),
+('NguyenHTCE190356', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Nguyễn', N'Huỳnh Trọng', '2004-10-12', 'nguyenht.ce190356@gmail.com', N'Trung tâm CNTT, Đà Nẵng', '0964663064', 0, 1, 1),
+('KhangTDCE181439', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Khang', N'Trần Dũy', '2004-11-16', 'KhangTDCE181439@fpt.edu.vn', N'Hòa Lạc, Thạch Thất, Hà Nội', '0955589643', 1, 1, 1),
+('KhangTNCE180189', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Khang', N'Trần Nhất', '2004-09-21', 'KhangTNCE180189@fpt.edu.vn', N'1 Võ Văn Ngân, Thủ Đức, TP. Hồ Chí Minh', '0950092514', 1, 1, 1),
+('MinhLKBCE180860', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Minh', N'Lê Khắc Bảo', '2004-09-08', 'MinhLKBCE180860@fpt.edu.vn', N'600 Nguyễn Văn Cừ, Q.1, TP. Hồ Chí Minh', '0972784975', 0, 1, 1),
+('MinhNCCE181128', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Minh', N'Nguyễn Công', '2004-09-02', 'MinhNCCE181128@fpt.edu.vn', N'Đại học FPT, Quận Cái Răng, TP. Cần Thơ', '0937611814', 0, 1, 1),
+('PhuongDVHCE181438', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Phương', N'Đào Văn Hà', '2004-07-18', 'PhuongDVHCE181438@fpt.edu.vn', N'Khu Công nghệ cao, Quận 9, TP. Hồ Chí Minh', '0947956273', 1, 1, 1),
+('KhangLNHCE191583', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Khang', N'Lê Nguyễn Hoàng', '2004-08-19', 'KhangLNH.CE191583@gmail.com', N'Trung tâm CNTT, Đà Nẵng', '0998929410', 1, 1, 1),
+('TanhNTCE182341', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Tánh', N'Nguyễn Thiện', '2004-08-13', 'TanhNTCE182341@fpt.edu.vn', N'Hòa Lạc, Thạch Thất, Hà Nội', '0910374672', 0, 1, 1),
+('TranVTHCE180112', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Trân', N'Võ Thị Huế', '2004-02-28', 'TranVTHCE180112@fpt.edu.vn', N'1 Võ Văn Ngân, Thủ Đức, TP. Hồ Chí Minh', '0938562437', 1, 1, 1),
+('ThangNDCE180608', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Thắng', N'Nguyễn Đức', '2004-09-18', 'ThangNDCE180608@fpt.edu.vn', N'600 Nguyễn Văn Cừ, Q.1, TP. Hồ Chí Minh', '0904350319', 0, 1, 1),
+('HuyBTCE180610', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Huy', N'Bùi Tuấn', '2004-10-04', 'HuyBTCE180610@fpt.edu.vn', N'Đại học FPT, Quận Cái Răng, TP. Cần Thơ', '0929178751', 0, 1, 1),
+('HungNTCE180765', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Hưng', N'Nguyễn Tín', '2004-10-08', 'HungNTCE180765@fpt.edu.vn', N'Khu Công nghệ cao, Quận 9, TP. Hồ Chí Minh', '0939647052', 0, 1, 1),
+('ThangDQCE182036', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Thắng', N'Diệp Quốc', '2004-12-16', 'ThangDQCE182036@fpt.edu.vn', N'Trung tâm CNTT, Đà Nẵng', '0953634068', 0, 1, 1),
+('DatVTCE180184', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Đạt', N'Võ Tiến', '2004-06-11', 'DatVTCE180184@fpt.edu.vn', N'Hòa Lạc, Thạch Thất, Hà Nội', '0968839206', 0, 1, 1),
+('HungPTCE180074', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Hưng', N'Phạm Tấn', '2004-06-22', 'HungPTCE180074@fpt.edu.vn', N'1 Võ Văn Ngân, Thủ Đức, TP. Hồ Chí Minh', '0929331004', 0, 1, 1),
+('DiemLTCE180621', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Diễm', N'Lương Thị', '2004-03-16', 'DiemLTCE180621@fpt.edu.vn', N'600 Nguyễn Văn Cừ, Q.1, TP. Hồ Chí Minh', '0980828479', 1, 1, 1),
+('LinhLTTCE181262', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Linh', N'Lê Thị Trúc', '2004-02-03', 'LinhLTTCE181262@fpt.edu.vn', N'Đại học FPT, Quận Cái Răng, TP. Cần Thơ', '0912196241', 1, 1, 1),
+('DucGTCE182376', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Đức', N'Giang Tú', '2004-07-10', 'DucGTCE182376@fpt.edu.vn', N'Khu Công nghệ cao, Quận 9, TP. Hồ Chí Minh', '0962372983', 0, 1, 1);
 
 
 
@@ -340,24 +341,6 @@ VALUES
 	('Mystery', 'Mystery and thriller books', 1),
 	('Technology', 'Books on technology and innovation', 1),
 	('Education', 'Educational books for students', 1);
-
-	--Insert Promotion and notification
-	INSERT INTO Notification (staffID, notTitle, receiver, notDescription, notStatus)
-    VALUES 
-    (1, N'New Promotion Announcement', 2, N'A new 20% discount program is now available for programming books.', 1),
-    (2, N'Profile Update Reminder', 3, N'Please update your personal information before June 30.', 0);
-
-    INSERT INTO Promotion (proName, proCode, discount, startDate, endDate, quantity, proStatus, createdBy, approvedBy)
-    VALUES
-    (N'Summer Sale 2025', 'SUMMER25', 20.0, '2025-06-15', '2025-07-15', 100, 1, 1, 2),
-    (N'Textbook Promotion', 'TEXTBOOK2025', 15.0, '2025-06-01', '2025-08-31', 200, 1, 1, 3);
-
-	INSERT INTO promotion_log (pro_id, staff_id, pro_action, pro_log_date)
-    VALUES
-    (1, 1, 1, '2025-06-15'), -- 1 = Created   
-    (2, 1, 1, '2025-06-10'); -- 1 = Created
-
-
 
 	-- Randomly assign categories to books
 	DECLARE @BookCount INT

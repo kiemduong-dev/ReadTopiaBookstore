@@ -1,4 +1,4 @@
-    package controller;
+package controller;
 
 import dao.AccountDAO;
 import jakarta.servlet.ServletException;
@@ -8,14 +8,10 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 
 /**
- * VerifyOTPResetServlet
+ * VerifyOTPResetServlet – Handles OTP verification during forgot password flow.
+ * If OTP is valid, user is redirected to the password reset form.
  *
- * Handles the OTP verification during the forgot password process. Ensures
- * session validity, OTP correctness, and transitions to password reset view.
- *
- * URL mapping: /verify-otp-reset
- *
- * Author: CE181518 Dương An Kiếm
+ * URL mapping: /verify-otp-reset Author: CE181518 Dương An Kiếm
  */
 @WebServlet(name = "VerifyOTPResetServlet", urlPatterns = {"/verify-otp-reset"})
 public class VerifyOTPResetServlet extends HttpServlet {
@@ -23,17 +19,22 @@ public class VerifyOTPResetServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Handles HTTP POST request to verify the OTP code submitted by user. If
-     * valid, redirects to reset password form.
+     * Handles POST request to validate the OTP and redirect to password reset
+     * page
+     *
+     * @param request HttpServletRequest object
+     * @param response HttpServletResponse object
+     * @throws ServletException in case of servlet error
+     * @throws IOException in case of I/O error
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
-        HttpSession session = request.getSession(false); // Do not create a new session if not exists
+        HttpSession session = request.getSession(false); // Do not create new session
 
-        // Validate session and necessary attributes
+        // Step 1: Check session validity
         if (session == null
                 || session.getAttribute("otp") == null
                 || session.getAttribute("resetUser") == null
@@ -43,35 +44,35 @@ public class VerifyOTPResetServlet extends HttpServlet {
             return;
         }
 
+        // Step 2: Retrieve OTP & user input
         String enteredOtp = request.getParameter("otp");
         String sessionOtp = (String) session.getAttribute("otp");
         String username = (String) session.getAttribute("resetUser");
 
-        // Validate OTP from form input
-        if (enteredOtp == null || !enteredOtp.equals(sessionOtp)) {
-            request.setAttribute("error", "Invalid OTP. Please try again.");
+        // Step 3: Validate OTP format and match
+        if (enteredOtp == null || !enteredOtp.matches("\\d{6}") || !enteredOtp.equals(sessionOtp)) {
+            request.setAttribute("error", "Invalid OTP. Please enter the correct 6-digit code.");
             request.getRequestDispatcher("/WEB-INF/view/account/verify-otp-reset.jsp").forward(request, response);
             return;
         }
 
-        // Secure validation: check OTP in database
+        // Step 4: Check OTP with database (extra security)
         AccountDAO dao = new AccountDAO();
         if (!dao.verifyOTP(username, enteredOtp)) {
-            request.setAttribute("error", "OTP mismatch or expired. Please request again.");
+            request.setAttribute("error", "OTP mismatch or expired. Please request a new one.");
             request.getRequestDispatcher("/WEB-INF/view/account/verify-otp-reset.jsp").forward(request, response);
             return;
         }
 
-        // ✅ Mark session as verified and ensure resetUser is still set
+        // Step 5: Valid OTP → allow password reset
         session.setAttribute("verifiedReset", true);
-        session.setAttribute("resetUser", username); // 🟢 ĐẢM BẢO KHÔNG BỊ NULL SAU KHI XÁC THỰC
 
-        // Forward to reset password page
+        // Forward to password reset page
         request.getRequestDispatcher("/WEB-INF/view/account/resetPassword.jsp").forward(request, response);
     }
 
     /**
-     * Prevent direct access via GET method.
+     * Deny direct GET access to OTP verification
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

@@ -9,14 +9,12 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 
 /**
- * VerifyOTPRegisterServlet
- *
- * Handles OTP verification during the registration process. On successful OTP
- * match, the pending account is saved to the database.
+ * VerifyOTPRegisterServlet – Handles OTP verification during registration. If
+ * OTP is valid, the pending account is stored in the database.
  *
  * URL mapping: /verify-otp-register
  *
- * Author: CE181518 Dương An Kiếm
+ * @author CE181518 Dương An
  */
 @WebServlet(name = "VerifyOTPRegisterServlet", urlPatterns = {"/verify-otp-register"})
 public class VerifyOTPRegisterServlet extends HttpServlet {
@@ -24,13 +22,17 @@ public class VerifyOTPRegisterServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Handles POST request for verifying OTP during registration. If
-     * successful, creates the new account and forwards to login page.
+     * Handles OTP validation during user registration.
      *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * Flow: 1. Validate session and required attributes 2. Compare user input
+     * OTP with session OTP 3. If match → persist account to DB 4. If success →
+     * clear session and redirect to login 5. If fail → return error to verify
+     * page
+     *
+     * @param request HttpServletRequest
+     * @param response HttpServletResponse
+     * @throws ServletException if servlet error occurs
+     * @throws IOException if I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -39,7 +41,7 @@ public class VerifyOTPRegisterServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         HttpSession session = request.getSession(false); // Do not create new session
 
-        // Validate session and expected attributes
+        // Step 1: Validate session and OTP purpose
         if (session == null
                 || session.getAttribute("otp") == null
                 || session.getAttribute("pendingAccount") == null
@@ -50,35 +52,39 @@ public class VerifyOTPRegisterServlet extends HttpServlet {
             return;
         }
 
+        // Step 2: Get and compare OTP
         String enteredOtp = request.getParameter("otp");
-        String sessionOtp = (String) session.getAttribute("otp");
+        String expectedOtp = (String) session.getAttribute("otp");
 
-        if (enteredOtp == null || !enteredOtp.equals(sessionOtp)) {
+        if (enteredOtp == null || !enteredOtp.equals(expectedOtp)) {
             request.setAttribute("error", "Invalid OTP. Please try again.");
             request.getRequestDispatcher("/WEB-INF/view/account/verify-otp-register.jsp").forward(request, response);
             return;
         }
 
+        // Step 3: Persist account to DB
         try {
             AccountDTO pendingAccount = (AccountDTO) session.getAttribute("pendingAccount");
             AccountDAO dao = new AccountDAO();
-            boolean added = dao.addAccount(pendingAccount);
 
-            if (added) {
+            boolean success = dao.addAccount(pendingAccount);
+
+            if (success) {
+                // Step 4: Clear session-related OTP
                 session.removeAttribute("otp");
                 session.removeAttribute("otpPurpose");
                 session.removeAttribute("pendingAccount");
 
-                request.setAttribute("success", "Registration successful! You can now log in.");
+                request.setAttribute("success", "✅ Registration successful. You can now log in.");
                 request.getRequestDispatcher("/WEB-INF/view/account/login.jsp").forward(request, response);
             } else {
-                request.setAttribute("error", "Failed to create account. Please try again.");
+                request.setAttribute("error", "❌ Failed to create account. Please try again.");
                 request.getRequestDispatcher("/WEB-INF/view/account/verify-otp-register.jsp").forward(request, response);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("error", "Server error: " + e.getMessage());
+            request.setAttribute("error", "🚨 Server error: " + e.getMessage());
             request.getRequestDispatcher("/WEB-INF/view/account/verify-otp-register.jsp").forward(request, response);
         }
     }

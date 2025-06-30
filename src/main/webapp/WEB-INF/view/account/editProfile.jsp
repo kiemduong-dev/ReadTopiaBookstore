@@ -9,64 +9,88 @@
 
         <div class="main-content">
             <div class="form-container"
-                 style="max-width: 500px; margin: 50px auto; background: #fff;
-                 border-radius: 15px; padding: 30px;
-                 box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                 style="max-width: 600px; margin: 40px auto; background: #fff;
+                 border-radius: 12px; padding: 30px;
+                 box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
 
-                <!-- Logo -->
-                <div class="logo-section text-center mb-3">
-                    <div class="logo-bear"></div>
-                    <div class="logo-text">READTOPIA</div>
-                </div>
+                <h2 class="text-center mb-4">✏️ Edit Profile</h2>
 
-                <!-- Title -->
-                <h2 class="text-center mb-3">🔐 Reset Password</h2>
-
-                <!-- Error message -->
                 <c:if test="${not empty error}">
                     <div class="alert alert-danger text-center" role="alert">
                         <i class="fas fa-exclamation-circle"></i> ${error}
                     </div>
                 </c:if>
 
-                <!-- Success message -->
                 <c:if test="${not empty success}">
                     <div class="alert alert-success text-center" role="alert">
                         <i class="fas fa-check-circle"></i> ${success}
                     </div>
                 </c:if>
 
-                <!-- Password Reset Form -->
-                <form action="${pageContext.request.contextPath}/reset-password" method="post">
+                <form action="${pageContext.request.contextPath}/edit-profile" method="post">
+                    <!-- Username (readonly) -->
                     <div class="form-group mb-3">
-                        <label for="newPassword" class="form-label">New Password:</label>
-                        <input type="password"
-                               id="newPassword"
-                               name="newPassword"
-                               class="form-control"
-                               required
-                               minlength="6"
-                               placeholder="At least 6 characters" />
+                        <label class="form-label">Username</label>
+                        <input type="text" class="form-control" value="${user.username}" readonly />
                     </div>
 
+                    <!-- First Name & Last Name -->
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label class="form-label">* First Name</label>
+                            <input type="text" name="firstName" class="form-control" value="${user.firstName}" required />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="form-label">* Last Name</label>
+                            <input type="text" name="lastName" class="form-control" value="${user.lastName}" required />
+                        </div>
+                    </div>
+
+                    <!-- Email & Phone -->
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label class="form-label">* Email</label>
+                            <input type="email" name="email" class="form-control" value="${user.email}" required />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="form-label">* Phone</label>
+                            <input type="text" name="phone" class="form-control" value="${user.phone}" required />
+                        </div>
+                    </div>
+
+                    <!-- Address -->
+                    <div class="form-group mb-3">
+                        <label class="form-label">* Address</label>
+                        <textarea name="address" class="form-control" rows="3" required>${user.address}</textarea>
+                    </div>
+
+                    <!-- Date of Birth -->
+                    <div class="form-group mb-3">
+                        <label class="form-label">* Date of Birth</label>
+                        <input type="date" name="dob" class="form-control" value="${user.dob}" required />
+                    </div>
+
+                    <!-- Gender -->
                     <div class="form-group mb-4">
-                        <label for="confirmPassword" class="form-label">Confirm Password:</label>
-                        <input type="password"
-                               id="confirmPassword"
-                               name="confirmPassword"
-                               class="form-control"
-                               required
-                               minlength="6"
-                               placeholder="Re-enter new password" />
-                    </div>
+                        <label class="form-label">* Gender</label>
+                        <div class="radio-group d-flex">
+                            <div class="form-check me-4">
+                                <input type="radio" id="male" name="sex" value="male" class="form-check-input"
+                                       <c:if test="${user.sex == 1}">checked</c:if> />
+                                       <label for="male" class="form-check-label">Male</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="radio" id="female" name="sex" value="female" class="form-check-input"
+                                    <c:if test="${user.sex == 0}">checked</c:if> />
+                                    <label for="female" class="form-check-label">Female</label>
+                                </div>
+                            </div>
+                        </div>
 
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">
-                            ✅ Change Password
-                        </button>
-                        <a href="${pageContext.request.contextPath}/login" class="btn btn-secondary">
-                            🔙 Back to Login
-                        </a>
+                        <!-- Submit -->
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-primary">💾 Save Changes</button>
+                            <a href="${pageContext.request.contextPath}/profile" class="btn btn-secondary">↩ Cancel</a>
                     </div>
                 </form>
             </div>

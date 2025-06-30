@@ -1,5 +1,6 @@
 package controller;
 
+import dto.AccountDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -7,12 +8,10 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 
 /**
- * LogoutServlet
+ * LogoutServlet – Handles user logout by invalidating the session and
+ * redirecting to homepage. URL Mapping: /logout
  *
- * This servlet handles user logout by invalidating the session and redirecting
- * the user to the homepage.
- *
- * URL Mapping: /logout
+ * @author CE181518
  */
 @WebServlet(name = "LogoutServlet", urlPatterns = {"/logout"})
 public class LogoutServlet extends HttpServlet {
@@ -20,32 +19,36 @@ public class LogoutServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Handles logout request by invalidating the current session (if it exists)
-     * and redirecting the user to the homepage.
+     * Common logout process (both GET & POST): 1. Invalidate session if exists
+     * 2. Redirect to homepage
      *
-     * @param request HttpServletRequest object
-     * @param response HttpServletResponse object
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @param request HttpServletRequest
+     * @param response HttpServletResponse
+     * @throws ServletException if servlet error occurs
+     * @throws IOException if I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        HttpSession session = request.getSession(false); // Do not create new session
+        // Step 1: Get existing session (do not create new)
+        HttpSession session = request.getSession(false);
         if (session != null) {
-            session.invalidate(); // Invalidate the current session
+            AccountDTO user = (AccountDTO) session.getAttribute("account");
+
+            // Optional: Logging
+            if (user != null) {
+                System.out.println("🔒 User logged out: " + user.getUsername());
+            }
+
+            session.invalidate(); // Step 2: Invalidate session
         }
 
-        response.sendRedirect(request.getContextPath() + "/customer/book/list"); // Redirect to homepage
+        // Step 3: Redirect to home page
+        response.sendRedirect(request.getContextPath() + "/home");
     }
 
     /**
-     * Handles GET request to log out the user.
-     *
-     * @param request HttpServletRequest
-     * @param response HttpServletResponse
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * Handle GET logout
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -54,12 +57,7 @@ public class LogoutServlet extends HttpServlet {
     }
 
     /**
-     * Handles POST request to log out the user.
-     *
-     * @param request HttpServletRequest
-     * @param response HttpServletResponse
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * Handle POST logout
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -68,12 +66,10 @@ public class LogoutServlet extends HttpServlet {
     }
 
     /**
-     * Returns a short description of this servlet.
-     *
-     * @return A brief description of the servlet's functionality
+     * @return Servlet description
      */
     @Override
     public String getServletInfo() {
-        return "Handles user logout by invalidating the session and redirecting to the homepage.";
+        return "Handles user logout by clearing session and redirecting to homepage.";
     }
 }

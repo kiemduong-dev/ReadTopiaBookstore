@@ -6,16 +6,16 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import util.MailUtil;
+import util.ValidationUtil;
 
 import java.io.IOException;
 import java.sql.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Random;
 
 /**
- * RegisterServlet
- *
- * Handles user registration and OTP verification via email.
- *
+ * RegisterServlet – Handles user registration and OTP verification via email.
  * URL mapping: /register
  *
  * @author CE181518
@@ -26,21 +26,16 @@ public class RegisterServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Generates a 6-digit OTP string.
+     * Generate 6-digit OTP
      *
-     * @return the OTP code as a string
+     * @return String OTP
      */
     private String generateOTP() {
         return String.valueOf(100000 + new Random().nextInt(900000));
     }
 
     /**
-     * Handles GET request: Displays the registration form.
-     *
-     * @param request the HttpServletRequest object
-     * @param response the HttpServletResponse object
-     * @throws ServletException
-     * @throws IOException
+     * Handle GET – Show register form
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -49,13 +44,7 @@ public class RegisterServlet extends HttpServlet {
     }
 
     /**
-     * Handles POST request: Validates form, sends OTP, stores temporary account
-     * in session.
-     *
-     * @param request the HttpServletRequest object
-     * @param response the HttpServletResponse object
-     * @throws ServletException
-     * @throws IOException
+     * Handle POST – Validate fields, send OTP, store temp account
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -76,36 +65,43 @@ public class RegisterServlet extends HttpServlet {
         String gender = request.getParameter("sex");
 
         try {
-            // Validate required fields
-            if (username == null || password == null || confirmPassword == null || email == null
-                    || firstName == null || lastName == null || dobRaw == null) {
-                request.setAttribute("error", "Please fill in all required fields.");
-                request.getRequestDispatcher("/WEB-INF/view/account/register.jsp").forward(request, response);
-                return;
-            }
-
-            // Confirm password match
-            if (!password.equals(confirmPassword)) {
+            // Validate input
+            if (!ValidationUtil.isValidUsername(username)) {
+                request.setAttribute("error", "Invalid username.");
+            } else if (!ValidationUtil.isValidPassword(password)) {
+                request.setAttribute("error", "Password must be 8+ characters, including uppercase, lowercase, digit and symbol.");
+            } else if (!ValidationUtil.isConfirmPasswordMatch(password, confirmPassword)) {
                 request.setAttribute("error", "Passwords do not match.");
+            } else if (!ValidationUtil.isValidName(firstName)) {
+                request.setAttribute("error", "Invalid first name.");
+            } else if (!ValidationUtil.isValidName(lastName)) {
+                request.setAttribute("error", "Invalid last name.");
+            } else if (!ValidationUtil.isValidEmail(email)) {
+                request.setAttribute("error", "Invalid email address.");
+            } else if (!ValidationUtil.isValidPhone(phone)) {
+                request.setAttribute("error", "Phone must be 10 digits and start with 03, 05, 07, 08, or 09.");
+            } else if (!ValidationUtil.isValidAddress(address)) {
+                request.setAttribute("error", "Address is required.");
+            } else if (!ValidationUtil.isValidGender(gender)) {
+                request.setAttribute("error", "Please select gender.");
+            } else if (!ValidationUtil.isValidDob(dobRaw)) {
+                request.setAttribute("error", "Invalid date of birth or under 13 years old.");
+            }
+
+            if (request.getAttribute("error") != null) {
                 request.getRequestDispatcher("/WEB-INF/view/account/register.jsp").forward(request, response);
                 return;
             }
 
-            // Parse date of birth
-            Date dob;
-            try {
-                dob = Date.valueOf(dobRaw);
-            } catch (IllegalArgumentException e) {
-                request.setAttribute("error", "Invalid date format.");
-                request.getRequestDispatcher("/WEB-INF/view/account/register.jsp").forward(request, response);
-                return;
-            }
-
-            int sex = "male".equalsIgnoreCase(gender) ? 1 : 0;
+            // Convert values
+            int sex = gender.equalsIgnoreCase("male") ? 1 : 0;
+            Date dob = Date.valueOf(
+                    LocalDate.parse(dobRaw, DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+            );
 
             AccountDAO dao = new AccountDAO();
 
-            // Check if username or email already exists
+            // Check username/email uniqueness
             if (dao.getAccountByUsername(username) != null || dao.findByEmail(email) != null) {
                 request.setAttribute("error", "Username or email already exists.");
                 request.getRequestDispatcher("/WEB-INF/view/account/register.jsp").forward(request, response);
@@ -115,20 +111,19 @@ public class RegisterServlet extends HttpServlet {
             // Create pending account
             AccountDTO pendingAccount = new AccountDTO(
                     username, password, firstName, lastName,
-                    dob, email, phone,
-                    1, address, sex, 1, null
+                    dob, email, phone, 1, address, sex, 1, null
             );
 
-            // Generate OTP and send via email
+            // Send OTP
             String otp = generateOTP();
             MailUtil.sendOtp(email, otp);
 
-            // Store data in session for verification
+            // Save to session
             session.setAttribute("otp", otp);
             session.setAttribute("otpPurpose", "register");
             session.setAttribute("pendingAccount", pendingAccount);
 
-            // Redirect to OTP verification
+            // Go to OTP page
             request.getRequestDispatcher("/WEB-INF/view/account/verify-otp-register.jsp").forward(request, response);
 
         } catch (Exception e) {

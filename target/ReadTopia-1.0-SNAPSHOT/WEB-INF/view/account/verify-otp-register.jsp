@@ -23,10 +23,10 @@
                 <h2 class="text-center mb-3">🔐 Verify Registration OTP</h2>
 
                 <!-- Mô tả -->
-                <p class="text-center mb-4">
+                <p class="text-center mb-3">
                     A verification code has been sent to:
                     <strong><c:out value="${sessionScope.pendingAccount.email}" /></strong><br />
-                    Please enter the 6-digit OTP code below to complete your registration.
+                    Please enter the 6-digit code below to complete your registration.
                 </p>
 
                 <!-- Thông báo lỗi -->
@@ -37,31 +37,36 @@
                 </c:if>
 
                 <!-- Form nhập OTP -->
-                <form action="${pageContext.request.contextPath}/verify-otp-register" method="post">
-                    <div class="form-group mb-3">
+                <form action="${pageContext.request.contextPath}/verify-otp-register" method="post" autocomplete="off">
+                    <div class="form-group mb-4">
                         <label for="otp" class="form-label">OTP Code *</label>
                         <input type="text"
                                id="otp"
                                name="otp"
-                               class="form-control"
+                               class="form-control text-center"
                                required
                                maxlength="6"
                                pattern="[0-9]{6}"
-                               placeholder="Enter 6-digit code" />
+                               inputmode="numeric"
+                               placeholder="Enter 6-digit code"
+                               autofocus />
                     </div>
 
-                    <div class="d-grid">
+                    <div class="d-grid mb-3">
                         <button type="submit" class="btn btn-primary w-100">
                             ✅ Confirm & Register
                         </button>
                     </div>
                 </form>
 
-                <!-- Gợi ý quay lại -->
-                <div class="text-center mt-4">
-                    <a href="${pageContext.request.contextPath}/register" class="link">
+                <!-- Quay lại hoặc resend -->
+                <div class="text-center">
+                    <a href="${pageContext.request.contextPath}/register" class="link d-block mb-2">
                         🔁 Re-enter registration information
                     </a>
+                    <span class="text-muted" style="font-size: 0.9rem;">
+                        Didn’t receive the code? Check spam or re-register.
+                    </span>
                 </div>
             </div>
         </div>

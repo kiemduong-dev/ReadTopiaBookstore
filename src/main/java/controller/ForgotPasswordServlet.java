@@ -6,31 +6,34 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import util.MailUtil;
+import util.ValidationUtil;
 
 import java.io.IOException;
 import java.util.Random;
 
 /**
- * ForgotPasswordServlet
+ * ForgotPasswordServlet – Handles "Forgot Password" flow by: 1. Verifying
+ * username & email 2. Generating OTP and sending email 3. Saving OTP for later
+ * verification
  *
- * Handles the "Forgot Password" functionality by verifying the user's email,
- * generating an OTP, sending it to the email, and saving the OTP for later
- * verification.
+ * URL mapping: /forgot-password Author: CE181518 Dương An Kiếm
  */
 @WebServlet(name = "ForgotPasswordServlet", urlPatterns = {"/forgot-password"})
 public class ForgotPasswordServlet extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
+
     /**
-     * Generates a 6-digit random OTP.
+     * Generate 6-digit OTP
      *
-     * @return String representation of a 6-digit OTP
+     * @return String OTP
      */
     private String generateOTP() {
         return String.valueOf(100000 + new Random().nextInt(900000));
     }
 
     /**
-     * Displays the forgot password form.
+     * Display forgot password form
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -39,7 +42,7 @@ public class ForgotPasswordServlet extends HttpServlet {
     }
 
     /**
-     * Handles form submission to initiate OTP generation and email sending.
+     * Handle form submission: validate input, verify account, send OTP
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -48,38 +51,48 @@ public class ForgotPasswordServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         HttpSession session = request.getSession();
 
+        String username = request.getParameter("username");
         String email = request.getParameter("email");
 
-        if (email == null || email.trim().isEmpty()) {
-            request.setAttribute("error", "Please enter your email.");
+        // Step 1: Input validation
+        if (username == null || username.trim().isEmpty()
+                || email == null || email.trim().isEmpty()) {
+            request.setAttribute("error", "Please enter both username and email.");
+            request.getRequestDispatcher("/WEB-INF/view/account/forgotPassword.jsp").forward(request, response);
+            return;
+        }
+
+        if (!ValidationUtil.isValidUsername(username) || !ValidationUtil.isValidEmail(email)) {
+            request.setAttribute("error", "Invalid username or email format.");
             request.getRequestDispatcher("/WEB-INF/view/account/forgotPassword.jsp").forward(request, response);
             return;
         }
 
         try {
             AccountDAO dao = new AccountDAO();
-            AccountDTO account = dao.findByEmail(email.trim());
+            AccountDTO account = dao.getAccountByUsername(username.trim());
 
-            if (account == null) {
-                request.setAttribute("error", "Email not found in the system.");
+            // Step 2: Account existence + email match
+            if (account == null || !account.getEmail().equalsIgnoreCase(email.trim())) {
+                request.setAttribute("error", "Username and email do not match any account.");
                 request.getRequestDispatcher("/WEB-INF/view/account/forgotPassword.jsp").forward(request, response);
                 return;
             }
 
-            // Generate and send OTP
+            // Step 3: Generate & send OTP
             String otp = generateOTP();
-            MailUtil.sendOtp(email, otp);
+            MailUtil.sendOtp(email.trim(), otp);
 
-            // Save OTP to database for verification
-            dao.saveOTPForReset(account.getUsername(), otp);
+            // Step 4: Save OTP in database
+            dao.saveOTPForReset(username.trim(), otp);
 
-            // Save relevant session attributes
+            // Step 5: Save session info
             session.setAttribute("otp", otp);
             session.setAttribute("otpPurpose", "reset");
-            session.setAttribute("resetUser", account.getUsername());
-            session.setAttribute("resetEmail", email);
+            session.setAttribute("resetUser", username.trim());
+            session.setAttribute("resetEmail", email.trim());
 
-            // Forward to OTP verification page
+            // Step 6: Forward to OTP verification page
             request.getRequestDispatcher("/WEB-INF/view/account/verify-otp-reset.jsp").forward(request, response);
 
         } catch (Exception e) {

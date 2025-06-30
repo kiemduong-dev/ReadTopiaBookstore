@@ -12,11 +12,11 @@ import java.sql.Date;
 /**
  * AccountAddServlet
  *
- * Handles the functionality for an admin to add a new user account.
- * Supports GET to display the add form and POST to handle form submission.
- * 
+ * Handles the functionality for an admin to add a new user account. Supports
+ * GET to display the add form and POST to handle form submission.
+ *
  * URL mapping: /admin/account/add
- * 
+ *
  * Author: CE181518 Dương An Kiếm
  */
 @WebServlet(name = "AccountAddServlet", urlPatterns = {"/admin/account/add"})
@@ -27,10 +27,10 @@ public class AccountAddServlet extends HttpServlet {
     /**
      * Handles GET request to display the account creation form.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -41,10 +41,10 @@ public class AccountAddServlet extends HttpServlet {
     /**
      * Handles POST request to process submitted form and create account.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -66,8 +66,8 @@ public class AccountAddServlet extends HttpServlet {
 
             Date dob = (dobRaw != null && !dobRaw.isEmpty()) ? Date.valueOf(dobRaw) : null;
 
-            // Default password is "1" (hashed in DAO)
-            String rawPassword = "1";
+            // Default password is "Mk@123456" (hashed in DAO)
+            String rawPassword = "Mk@123456";
 
             AccountDTO acc = new AccountDTO(
                     username, rawPassword, firstName, lastName, dob,

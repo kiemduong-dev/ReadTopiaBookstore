@@ -8,15 +8,10 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 
 /**
- * ProfileServlet
+ * ProfileServlet – Displays the profile page of the authenticated user.
+ * Redirects to login page if no valid session exists.
  *
- * This servlet handles requests to display the profile page of the currently
- * authenticated user. If the user is not logged in, the servlet redirects them
- * to the login page.
- *
- * URL mapping: /profile
- *
- * Author: CE181518 Dương An Kiếm
+ * URL mapping: /profile Author: CE181518 Dương An Kiếm
  */
 @WebServlet(name = "ProfileServlet", urlPatterns = {"/profile"})
 public class ProfileServlet extends HttpServlet {
@@ -24,42 +19,36 @@ public class ProfileServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Processes both GET and POST requests to show the user's profile page.
+     * Handles both GET and POST requests to show user profile.
      *
-     * Steps: 1. Get the current session without creating a new one. 2. Check if
-     * an authenticated account exists in the session. 3. If not authenticated,
-     * redirect to login page. 4. If authenticated, attach user data to the
-     * request scope. 5. Forward to profile.jsp for rendering.
+     * Flow: 1. Get existing session without creating a new one. 2. Check if
+     * session contains authenticated user. 3. If not logged in → redirect to
+     * login. 4. If logged in → forward to profile.jsp with user data.
      *
      * @param request HttpServletRequest object
      * @param response HttpServletResponse object
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an input or output error is detected
+     * @throws ServletException if servlet error occurs
+     * @throws IOException if I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         response.setContentType("text/html;charset=UTF-8");
 
-        HttpSession session = request.getSession(false); // Do not create if not exist
-        AccountDTO account = (session != null) ? (AccountDTO) session.getAttribute("account") : null;
+        HttpSession session = request.getSession(false); // Avoid creating new session
+        AccountDTO user = (session != null) ? (AccountDTO) session.getAttribute("account") : null;
 
-        if (account == null) {
-            response.sendRedirect("login");
+        if (user == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
 
-        request.setAttribute("user", account);
+        request.setAttribute("user", user);
         request.getRequestDispatcher("/WEB-INF/view/account/profile.jsp").forward(request, response);
     }
 
     /**
-     * Handles GET requests to load the profile page.
-     *
-     * @param request HttpServletRequest object
-     * @param response HttpServletResponse object
-     * @throws ServletException in case of servlet error
-     * @throws IOException in case of I/O error
+     * Handles GET request.
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -68,12 +57,7 @@ public class ProfileServlet extends HttpServlet {
     }
 
     /**
-     * Handles POST requests. Same behavior as GET to support form resubmission.
-     *
-     * @param request HttpServletRequest object
-     * @param response HttpServletResponse object
-     * @throws ServletException in case of servlet error
-     * @throws IOException in case of I/O error
+     * Handles POST request (same as GET – allows resubmission or refresh).
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -82,12 +66,10 @@ public class ProfileServlet extends HttpServlet {
     }
 
     /**
-     * Returns a short description of the servlet.
-     *
-     * @return String - servlet information summary
+     * @return Brief description of servlet.
      */
     @Override
     public String getServletInfo() {
-        return "Displays profile information of the currently authenticated user.";
+        return "Displays authenticated user's profile page.";
     }
 }

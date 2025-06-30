@@ -83,6 +83,7 @@ controller\payment\PaymentProcessServlet.class
 controller\promotion\PromotionDeleteServlet.class
 controller\promotion\PromotionDetailServlet.class
 controller\cart\CartViewServlet$CartItemWithBook.class
+util\ValidationUtil.class
 controller\admin\StaffDetailServlet.class
 controller\notification\NotificationUserListServlet.class
 controller\book\SortBookServlet.class
