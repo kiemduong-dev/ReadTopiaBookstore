@@ -20,12 +20,8 @@
         <div class="header-actions">
             <div class="header-icons">
 
+                              
                 <jsp:include page="/WEB-INF/view/customer/notification/notification-widget.jsp"/>
-                <button class="header-icon" title="Statistics">
-
-                <button class="header-icon" title="Thông báo" onclick="showPromotions()">
-                    <i class="fas fa-bell"></i>
-                </button>
                 <button class="header-icon" title="Bi?u ?? th?nng kê">
 
                     <i class="fas fa-chart-line"></i>

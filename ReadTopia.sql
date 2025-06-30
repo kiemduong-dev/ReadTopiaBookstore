@@ -229,7 +229,6 @@
 		pro_action INT,
 		pro_log_date DATE,
 		CONSTRAINT PK_promotion_log PRIMARY KEY (pro_log_id),
-		CONSTRAINT FK_promotion_log_promotion FOREIGN KEY (pro_id) REFERENCES Promotion(proID),
 		CONSTRAINT FK_promotion_log_staff FOREIGN KEY (staff_id) REFERENCES Staff(staffID)
 	)
 	GO
@@ -341,6 +340,21 @@ VALUES
 	('Mystery', 'Mystery and thriller books', 1),
 	('Technology', 'Books on technology and innovation', 1),
 	('Education', 'Educational books for students', 1);
+
+	--Insert Notification
+	INSERT INTO Notification (staffID, notTitle, receiver, notDescription, notStatus)
+VALUES 
+(1, 'Promotion Approved', 2, 'The promotion "Summer Sale 2025" has been approved successfully.', 1),
+(2, 'New Promotion Created', 3, 'A new promotion "Back to School" is now available in the system.', 0),
+(3, 'Promotion Expiring Soon', 1, 'The "Black Friday Deal" promotion will expire in 2 days.', 1);
+    --Insert Promotion
+INSERT INTO Promotion (proName, proCode, discount, startDate, endDate, quantity, proStatus, createdBy, approvedBy)
+VALUES 
+('Summer Sale 2025', 'SUMMER25', 20.0, '2025-07-01', '2025-07-15', 100, 1, 1, 2),
+('Back to School', 'SCHOOL10', 10.0, '2025-08-01', '2025-08-31', 200, 1, 2, 3),
+('Black Friday Deal', 'BLACK50', 50.0, '2025-11-25', '2025-11-30', 50, 0, 1, 3);
+
+
 
 	-- Randomly assign categories to books
 	DECLARE @BookCount INT

@@ -4,7 +4,6 @@
  */
 package dao;
 
-import util.DBContext;
 import dto.NotificationDTO;
 import java.sql.*;
 import java.util.ArrayList;
@@ -117,5 +116,4 @@ public class NotificationDAO {
         }
         return list;
     }
-
 }

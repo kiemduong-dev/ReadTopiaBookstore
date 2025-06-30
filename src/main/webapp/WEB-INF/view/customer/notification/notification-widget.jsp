@@ -8,22 +8,21 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <!-- Notification Icon -->
-<button class="header-icon" title="Thông Báo" onclick="toggleNotificationDropdown()">
+<button class="header-icon" title="notification" onclick="toggleNotificationDropdown()">
     <i class="fas fa-bell"></i>
-    <span>Thông Báo</span>
 </button>
 
 <!-- Notification Dropdown -->
 <div class="notification-dropdown" id="notificationDropdown">
-    <div class="notification-title">Thông báo</div>
+    <div class="notification-title">Notifications</div>
 
     <c:choose>
         <c:when test="${empty sessionScope.account}">
             <div class="notification-content locked">
                 <i class="fas fa-lock fa-2x"></i>
-                <p>Vui lòng đăng nhập để xem thông báo</p>
-                <a href="${pageContext.request.contextPath}/login" class="btn btn-danger">Đăng nhập</a>
-                <a href="${pageContext.request.contextPath}/register" class="btn btn-outline-danger">Đăng ký</a>
+                <p>Please log in to view notifications</p>
+                <a href="${pageContext.request.contextPath}/login" class="btn btn-danger">Log In</a>
+                <a href="${pageContext.request.contextPath}/register" class="btn btn-outline-danger">Register</a>
             </div>
         </c:when>
         <c:otherwise>
@@ -35,7 +34,7 @@
                     </div>
                 </c:forEach>
                 <c:if test="${empty notifications}">
-                    <p>Không có thông báo nào.</p>
+                    <p>No notifications available.</p>
                 </c:if>
             </div>
         </c:otherwise>

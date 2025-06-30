@@ -36,7 +36,7 @@ public class NotificationListServlet extends HttpServlet {
             if (search != null && !search.trim().isEmpty()) {
                 notifications = dao.searchByTitle(search.trim());
             } else {
-                notifications = dao.getAllNotifications(); 
+                notifications = dao.getAllNotifications();
             }
 
             request.setAttribute("notifications", notifications);
