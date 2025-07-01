@@ -261,5 +261,15 @@ public class StaffDAO {
             throw new SQLException("Username không tồn tại trong bảng Staff: " + username);
         }
     }
+    
+    public List<StaffDTO> getAllStaff() {
+    List<StaffDTO> activeStaff = new ArrayList<>();
+    for (StaffDTO s : findAll()) {
+        if (s.getAccStatus() == 1 && s.getRole() == 0) {
+            activeStaff.add(s);
+        }
+    }
+    return activeStaff;
+}
 
 }

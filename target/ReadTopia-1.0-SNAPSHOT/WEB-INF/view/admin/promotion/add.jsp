@@ -55,14 +55,7 @@
                             <label for="quantity" class="form-label">Quantity</label>
                             <input type="number" class="form-input" name="quantity" id="quantity" required>
                         </div>
-
-                        <div class="form-group">
-                            <label for="proStatus" class="form-label">Status</label>
-                            <select class="form-select" name="proStatus" id="proStatus">
-                                <option value="1" selected>Active</option>
-                                <option value="0">Inactive</option>
-                            </select>
-                        </div>
+                   
                     </div>
 
                     <div class="btn-group">

@@ -5,6 +5,8 @@
 package dao;
 
 import dto.NotificationDTO;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -115,5 +117,6 @@ public class NotificationDAO {
             }
         }
         return list;
-    }
+    } 
+
 }

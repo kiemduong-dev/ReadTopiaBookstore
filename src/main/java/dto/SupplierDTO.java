@@ -1,36 +1,36 @@
 package dto;
 
 public class SupplierDTO {
-
-    private int id;
+    private int supID;
     private String supName;
-    private String password;
-    private String email;
-    private String phone;
-    private String address;
-    private boolean status;
-    private String image;
+    private String supEmail;
+    private String supPhone;
+    private String supAddress;
+    private String supPassword;
+    private String supImage;
+    private int supStatus;
 
-    public SupplierDTO() {
+    public SupplierDTO() {}
+
+    public SupplierDTO(int supID, String supName, String supEmail, String supPhone,
+                       String supAddress, String supPassword, String supImage, int supStatus) {
+        this.supID = supID;
+        this.supName = supName;
+        this.supEmail = supEmail;
+        this.supPhone = supPhone;
+        this.supAddress = supAddress;
+        this.supPassword = supPassword;
+        this.supImage = supImage;
+        this.supStatus = supStatus;
+    }
+        
+
+    public int getSupID() {
+        return supID;
     }
 
-    public SupplierDTO(int id, String name, String password, String email, String phone, String address, boolean status, String image) {
-        this.id = id;
-        this.supName = name;
-        this.password = password;
-        this.email = email;
-        this.phone = phone;
-        this.address = address;
-        this.status = status;
-        this.image = image;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+    public void setSupID(int supID) {
+        this.supID = supID;
     }
 
     public String getSupName() {
@@ -41,54 +41,54 @@ public class SupplierDTO {
         this.supName = supName;
     }
 
-   
-
-    public String getPassword() {
-        return password;
+    public String getSupEmail() {
+        return supEmail;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setSupEmail(String supEmail) {
+        this.supEmail = supEmail;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getSupPhone() {
+        return supPhone;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setSupPhone(String supPhone) {
+        this.supPhone = supPhone;
     }
 
-    public String getAddress() {
-        return address;
+    public String getSupAddress() {
+        return supAddress;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setSupAddress(String supAddress) {
+        this.supAddress = supAddress;
     }
 
-    public boolean isStatus() {
-        return status;
+    public String getSupPassword() {
+        return supPassword;
     }
 
-    public void setStatus(boolean status) {
-        this.status = status;
+    public void setSupPassword(String supPassword) {
+        this.supPassword = supPassword;
     }
 
-    public String getImage() {
-        return image;
+    public String getSupImage() {
+        return supImage;
     }
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setSupImage(String supImage) {
+        this.supImage = supImage;
     }
 
-    public String getEmail() {
-        return email;
+    public int getSupStatus() {
+        return supStatus;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setSupStatus(int supStatus) {
+        this.supStatus = supStatus;
     }
 
+    
 }
+

@@ -199,38 +199,56 @@ public class PromotionDAO {
     }
 
     public PromotionDTO getPromotionWithRoles(int proID) throws SQLException {
-        String sql = "SELECT p.*, "
-                + "a1.role AS creatorRole, a2.role AS approverRole "
+        String sql
+                = "SELECT p.*, "
+                + "       ac1.role AS creatorRole, "
+                + "       ac2.role AS approverRole "
                 + "FROM Promotion p "
                 + "LEFT JOIN Staff s1 ON p.createdBy = s1.staffID "
+                + "LEFT JOIN Account ac1 ON s1.username = ac1.username "
                 + "LEFT JOIN Staff s2 ON p.approvedBy = s2.staffID "
-                + "LEFT JOIN Account a1 ON s1.username = a1.username "
-                + "LEFT JOIN Account a2 ON s2.username = a2.username "
+                + "LEFT JOIN Account ac2 ON s2.username = ac2.username "
                 + "WHERE p.proID = ?";
 
         try ( PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, proID);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                PromotionDTO dto = new PromotionDTO(
-                        rs.getInt("proID"),
-                        rs.getString("proName"),
-                        rs.getString("proCode"),
-                        rs.getDouble("discount"),
-                        rs.getDate("startDate"),
-                        rs.getDate("endDate"),
-                        rs.getInt("quantity"),
-                        rs.getInt("proStatus"),
-                        rs.getInt("createdBy"),
-                        rs.getInt("approvedBy")
-                );
 
-                dto.setCreatorRole(rs.getInt("creatorRole"));
-                dto.setApproverRole(rs.getInt("approverRole"));
-                return dto;
+            try ( ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    PromotionDTO pro = new PromotionDTO();
+                    pro.setProID(rs.getInt("proID"));
+                    pro.setProName(rs.getString("proName"));
+                    pro.setProCode(rs.getString("proCode"));
+                    pro.setDiscount(rs.getDouble("discount"));
+                    pro.setStartDate(rs.getDate("startDate"));
+                    pro.setEndDate(rs.getDate("endDate"));
+                    pro.setQuantity(rs.getInt("quantity"));
+                    pro.setProStatus(rs.getInt("proStatus"));
+                    pro.setCreatedBy(rs.getInt("createdBy"));
+                    pro.setApprovedBy(rs.getInt("approvedBy"));
+
+                    pro.setCreatorRole(rs.getInt("creatorRole"));
+                    pro.setApproverRole(rs.getInt("approverRole"));
+                    System.out.println("promotion createdBy = " + pro.getCreatedBy());
+                    System.out.println("promotion creatorRole = " + pro.getCreatorRole());
+
+                    return pro;
+                }
             }
         }
+
         return null;
     }
+    
+    public void updatePromotionStatus(int proID, int status, int approvedBy) throws SQLException {
+    String sql = "UPDATE Promotion SET proStatus = ?, approvedBy = ? WHERE proID = ?";
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, status);
+        ps.setInt(2, approvedBy);
+        ps.setInt(3, proID);
+        ps.executeUpdate();
+    }
+}
+
 
 }
