@@ -57,7 +57,7 @@
             Category Management
         </a> 
 
-        <a href="${pageContext.request.contextPath}/admin/inventory/list" class="menu-item">
+        <a href="${pageContext.request.contextPath}/admin/stock/list" class="menu-item">
             <i class="fas fa-warehouse"></i>
             Inventory Management
         </a>

@@ -1,4 +1,4 @@
-package controller.supplier;
+package controller.Supplier;
 
 import dao.SupplierDAO;
 import dto.SupplierDTO;
@@ -10,12 +10,18 @@ import java.util.List;
 
 @WebServlet("/admin/supplier/list")
 public class SupplierListServlet extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        // Không cần phân trang, lấy tất cả nhà cung cấp
         SupplierDAO dao = new SupplierDAO();
-        List<SupplierDTO> suppliers = dao.getAllSuppliers();
+        List<SupplierDTO> suppliers = dao.getAllSuppliers(); // Lấy tất cả nhà cung cấp mà không phân trang
+
+        // Cung cấp dữ liệu cho JSP
         request.setAttribute("suppliers", suppliers);
+
         request.getRequestDispatcher("/WEB-INF/view/admin/supplier/list.jsp").forward(request, response);
     }
 }

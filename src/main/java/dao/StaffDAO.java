@@ -254,13 +254,22 @@ public class StaffDAO {
         String sql = "SELECT staffID FROM Staff WHERE username = ?";
         try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, username);
-            try ( ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt("staffID");
-                }
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("staffID");
             }
+            throw new SQLException("Username không tồn tại trong bảng Staff: " + username);
         }
-        return -1;
     }
+    
+    public List<StaffDTO> getAllStaff() {
+    List<StaffDTO> activeStaff = new ArrayList<>();
+    for (StaffDTO s : findAll()) {
+        if (s.getAccStatus() == 1 && s.getRole() == 0) {
+            activeStaff.add(s);
+        }
+    }
+    return activeStaff;
+}
 
 }
