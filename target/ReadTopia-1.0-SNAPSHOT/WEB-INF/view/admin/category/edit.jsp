@@ -6,7 +6,7 @@
 
 <div class="main-content">
     <div class="content-area">
-        <h2 class="page-title">Edit Category: <c:out value="${category.categoryName}" /></h2>
+        <h2 class="page-title">✏️ Edit Category: <c:out value="${category.categoryName}" /></h2>
 
         <!-- Hiển thị lỗi nếu có -->
         <c:if test="${not empty errorMessage}">
@@ -26,9 +26,25 @@
                 <textarea name="description" rows="4" required class="form-input">${category.categoryDescription}</textarea>
             </div>
 
+            <div class="form-group">
+                <label class="form-label">Parent Category:</label>
+                <select name="parentID" class="form-select">
+                    <option value="">-- None (Top-level) --</option>
+                    <c:forEach var="cat" items="${parentList}">
+                        <option value="${cat.categoryID}" <c:if test="${cat.categoryID == category.parentID}">selected</c:if>>
+                            ${cat.categoryName}
+                        </option>
+                    </c:forEach>
+                </select>
+            </div>
+
             <div class="btn-group">
-                <button type="submit" class="btn btn-primary">Update Category</button>
-                <a href="${pageContext.request.contextPath}/admin/category/list" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Update Category
+                </button>
+                <a href="${pageContext.request.contextPath}/admin/category/list" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
             </div>
         </form>
     </div>

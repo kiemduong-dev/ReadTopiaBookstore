@@ -619,4 +619,22 @@ VALUES
 	-- Gọi stored procedure sau khi chèn sách
 	EXEC UpdateRandomISBN;
 
+	ALTER TABLE Category ADD parentID INT NULL;
+SELECT * FROM Category;
+INSERT INTO Category(catName, catDescription, catStatus, parentID)
+VALUES 
+('Java', 'Learn Java programming', 1, 14),
+('Python', 'Master Python', 1, 14),
+('Marketing', 'Learn marketing strategies', 1, 15),
+('Finance', 'Understand financial systems', 1, 15);
+
+SELECT 
+    c.catID,
+    c.catName,
+    c.catDescription,
+    c.parentID,
+    p.catName AS parentName
+FROM Category c
+LEFT JOIN Category p ON c.parentID = p.catID;	
+
 

@@ -11,25 +11,35 @@ import java.util.List;
 
 /**
  * CategoryDAO - Data Access Object for Category entities. Handles CRUD
- * operations and database interaction related to categories.
+ * operations and parent-child relationship.
  *
  * Author: Vuong Chi Bao_CE182018
  */
 public class CategoryDAO {
 
     /**
-     * Retrieves all active categories.
-     *
-     * @return List of active CategoryDTO objects
+     * Retrieves all active categories including parent name.
      */
     public List<CategoryDTO> getAllCategories() {
         List<CategoryDTO> list = new ArrayList<>();
-        String sql = "SELECT * FROM Category WHERE catStatus = 1";
+        String sql = "SELECT c.catID, c.catName, c.catDescription, c.parentID, p.catName AS parentName "
+                   + "FROM Category c "
+                   + "LEFT JOIN Category p ON c.parentID = p.catID "
+                   + "WHERE c.catStatus = 1";
 
-        try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = new DBContext().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                list.add(extractCategory(rs));
+                CategoryDTO category = new CategoryDTO(
+                        rs.getInt("catID"),
+                        rs.getString("catName"),
+                        rs.getString("catDescription"),
+                        rs.getInt("parentID"),
+                        rs.getString("parentName")
+                );
+                list.add(category);
             }
 
         } catch (Exception e) {
@@ -40,21 +50,28 @@ public class CategoryDAO {
     }
 
     /**
-     * Retrieves a category by its ID.
-     *
-     * @param id category ID
-     * @return CategoryDTO object or null if not found
+     * Retrieves a category by ID.
      */
     public CategoryDTO getCategoryById(int id) {
-        String sql = "SELECT * FROM Category WHERE catID = ?";
+        String sql = "SELECT c.catID, c.catName, c.catDescription, c.parentID, p.catName AS parentName "
+                   + "FROM Category c "
+                   + "LEFT JOIN Category p ON c.parentID = p.catID "
+                   + "WHERE c.catID = ?";
 
-        try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = new DBContext().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                return extractCategory(rs);
+                return new CategoryDTO(
+                        rs.getInt("catID"),
+                        rs.getString("catName"),
+                        rs.getString("catDescription"),
+                        rs.getInt("parentID"),
+                        rs.getString("parentName")
+                );
             }
 
         } catch (Exception e) {
@@ -65,18 +82,23 @@ public class CategoryDAO {
     }
 
     /**
-     * Adds a new category with active status.
-     *
-     * @param category the category to add
-     * @return true if successful, false otherwise
+     * Adds a new category.
      */
     public boolean addCategory(CategoryDTO category) {
-        String sql = "INSERT INTO Category (catName, catDescription, catStatus) VALUES (?, ?, 1)";
+        String sql = "INSERT INTO Category (catName, catDescription, catStatus, parentID) VALUES (?, ?, 1, ?)";
 
-        try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = new DBContext().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, category.getCategoryName());
             ps.setString(2, category.getCategoryDescription());
+
+            // If no parent, set NULL
+            if (category.getParentID() == 0) {
+                ps.setNull(3, java.sql.Types.INTEGER);
+            } else {
+                ps.setInt(3, category.getParentID());
+            }
 
             return ps.executeUpdate() > 0;
 
@@ -89,18 +111,23 @@ public class CategoryDAO {
 
     /**
      * Updates an existing category.
-     *
-     * @param category category with updated information
-     * @return true if successful, false otherwise
      */
     public boolean updateCategory(CategoryDTO category) {
-        String sql = "UPDATE Category SET catName = ?, catDescription = ? WHERE catID = ?";
+        String sql = "UPDATE Category SET catName = ?, catDescription = ?, parentID = ? WHERE catID = ?";
 
-        try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = new DBContext().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, category.getCategoryName());
             ps.setString(2, category.getCategoryDescription());
-            ps.setInt(3, category.getCategoryID());
+
+            if (category.getParentID() == 0) {
+                ps.setNull(3, java.sql.Types.INTEGER);
+            } else {
+                ps.setInt(3, category.getParentID());
+            }
+
+            ps.setInt(4, category.getCategoryID());
 
             return ps.executeUpdate() > 0;
 
@@ -112,15 +139,13 @@ public class CategoryDAO {
     }
 
     /**
-     * Soft deletes a category by setting catStatus = 0.
-     *
-     * @param id category ID
-     * @return true if successful, false otherwise
+     * Soft deletes a category.
      */
     public boolean deleteCategory(int id) {
         String sql = "UPDATE Category SET catStatus = 0 WHERE catID = ?";
 
-        try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = new DBContext().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
@@ -133,17 +158,17 @@ public class CategoryDAO {
     }
 
     /**
-     * Searches categories by name or description. Only returns active
-     * categories.
-     *
-     * @param keyword search keyword
-     * @return list of matched CategoryDTOs
+     * Searches categories by keyword (name or description).
      */
     public List<CategoryDTO> searchCategories(String keyword) {
         List<CategoryDTO> list = new ArrayList<>();
-        String sql = "SELECT * FROM Category WHERE catStatus = 1 AND (catName LIKE ? OR catDescription LIKE ?)";
+        String sql = "SELECT c.catID, c.catName, c.catDescription, c.parentID, p.catName AS parentName "
+                   + "FROM Category c "
+                   + "LEFT JOIN Category p ON c.parentID = p.catID "
+                   + "WHERE c.catStatus = 1 AND (c.catName LIKE ? OR c.catDescription LIKE ?)";
 
-        try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = new DBContext().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
             String pattern = "%" + keyword + "%";
             ps.setString(1, pattern);
@@ -151,7 +176,13 @@ public class CategoryDAO {
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                list.add(extractCategory(rs));
+                list.add(new CategoryDTO(
+                        rs.getInt("catID"),
+                        rs.getString("catName"),
+                        rs.getString("catDescription"),
+                        rs.getInt("parentID"),
+                        rs.getString("parentName")
+                ));
             }
 
         } catch (Exception e) {
@@ -162,21 +193,18 @@ public class CategoryDAO {
     }
 
     /**
-     * Checks if a category with the given name already exists
-     * (case-insensitive).
-     *
-     * @param name the category name to check
-     * @return true if name exists, false otherwise
+     * Checks if category name exists.
      */
     public boolean isCategoryNameExists(String name) {
         String sql = "SELECT 1 FROM Category WHERE LOWER(catName) = LOWER(?) AND catStatus = 1";
 
-        try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = new DBContext().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, name);
             ResultSet rs = ps.executeQuery();
 
-            return rs.next(); // Nếu có dòng nào trả về thì đã tồn tại
+            return rs.next();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -186,27 +214,42 @@ public class CategoryDAO {
     }
 
     /**
-     * (Optional) Retrieves categories that are linked with books. To be
-     * implemented if needed.
+     * Retrieves all active categories excluding the one with given ID. Used for
+     * editing (to prevent a category being its own parent).
      *
-     * @return list of categories used by books
+     * @param excludeID category ID to exclude
+     * @return list of CategoryDTO excluding the specified ID
      */
-    public List<CategoryDTO> getAllCategoriesWithBooks() {
-        throw new UnsupportedOperationException("Not implemented yet.");
+    public List<CategoryDTO> getAllCategoriesExcluding(int excludeID) {
+        List<CategoryDTO> list = new ArrayList<>();
+        String sql = "SELECT c.catID, c.catName, c.catDescription, c.parentID, p.catName AS parentName "
+                   + "FROM Category c "
+                   + "LEFT JOIN Category p ON c.parentID = p.catID "
+                   + "WHERE c.catStatus = 1 AND c.catID <> ?";
+
+        try (Connection conn = new DBContext().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, excludeID);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                list.add(new CategoryDTO(
+                        rs.getInt("catID"),
+                        rs.getString("catName"),
+                        rs.getString("catDescription"),
+                        rs.getInt("parentID"),
+                        rs.getString("parentName")
+                ));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
     }
 
-    /**
-     * Utility method to extract a CategoryDTO from a ResultSet.
-     *
-     * @param rs the result set
-     * @return CategoryDTO
-     * @throws Exception
-     */
-    private CategoryDTO extractCategory(ResultSet rs) throws Exception {
-        return new CategoryDTO(
-                rs.getInt("catID"),
-                rs.getString("catName"),
-                rs.getString("catDescription")
-        );
-    }
+ 
+
 }

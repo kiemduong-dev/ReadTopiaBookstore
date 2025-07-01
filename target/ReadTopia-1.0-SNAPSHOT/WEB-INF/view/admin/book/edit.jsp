@@ -1,76 +1,102 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Edit Book - Admin Dashboard</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
-</head>
-<body>
-<div class="container mt-5">
-    <h2 class="mb-4">✏️ Edit Book</h2>
+<jsp:include page="/WEB-INF/includes/head-admin.jsp" />
+<jsp:include page="/WEB-INF/includes/sidebar-admin.jsp" />
 
-    <c:if test="${not empty error}">
-        <div class="alert alert-danger">${error}</div>
-    </c:if>
+<div class="main-content">
+    <div class="content-area">
+        <div class="form-container bg-white shadow p-5 rounded mx-auto" style="max-width: 800px; margin-top: 50px;">
+            <h2 class="fw-bold text-center mb-4">✏️ Edit Book</h2>
 
-    <form method="post" action="${pageContext.request.contextPath}/admin/book/edit">
-        <input type="hidden" name="id" value="${book.bookID}">
+            <c:if test="${not empty error}">
+                <div class="alert alert-danger"><c:out value="${error}" /></div>
+            </c:if>
 
-        <div class="row">
-            <div class="col-md-6">
-                <label>Title:</label>
-                <input type="text" name="title" class="form-control" value="${book.bookTitle}" required>
+            <form method="post" action="${pageContext.request.contextPath}/admin/book/edit">
+                <input type="hidden" name="id" value="${book.bookID}"/>
 
-                <label class="mt-2">Author:</label>
-                <input type="text" name="author" class="form-control" value="${book.author}">
+                <div class="form-group">
+                    <label class="form-label">Title</label>
+                    <input type="text" name="title" value="${book.bookTitle}" class="form-input" required />
+                </div>
 
-                <label class="mt-2">Translator:</label>
-                <input type="text" name="translator" class="form-control" value="${book.translator}">
+                <div class="form-group">
+                    <label class="form-label">Author</label>
+                    <input type="text" name="author" value="${book.author}" class="form-input" />
+                </div>
 
-                <label class="mt-2">Publisher:</label>
-                <input type="text" name="publisher" class="form-control" value="${book.publisher}">
+                <div class="form-group">
+                    <label class="form-label">Translator</label>
+                    <input type="text" name="translator" value="${book.translator}" class="form-input" />
+                </div>
 
-                <label class="mt-2">Publication Year:</label>
-                <input type="number" name="year" class="form-control" value="${book.publicationYear}">
+                <div class="form-group">
+                    <label class="form-label">Publisher</label>
+                    <input type="text" name="publisher" value="${book.publisher}" class="form-input" />
+                </div>
 
-                <label class="mt-2">ISBN:</label>
-                <input type="text" name="isbn" class="form-control" value="${book.isbn}">
+                <div class="form-group">
+                    <label class="form-label">Publication Year</label>
+                    <input type="number" name="year" value="${book.publicationYear}" class="form-input" />
+                </div>
 
-                <label class="mt-2">Image URL:</label>
-                <input type="text" name="image" class="form-control" value="${book.image}">
-            </div>
+                <div class="form-group">
+                    <label class="form-label">ISBN</label>
+                    <input type="text" name="isbn" value="${book.isbn}" class="form-input" />
+                </div>
 
-            <div class="col-md-6">
-                <label>Description:</label>
-                <textarea name="description" class="form-control" rows="5">${book.bookDescription}</textarea>
+                <div class="form-group">
+                    <label class="form-label">Image URL</label>
+                    <input type="text" name="image" value="${book.image}" class="form-input" />
+                </div>
 
-                <label class="mt-2">Hardcover (1 = Yes, 0 = No):</label>
-                <input type="number" name="hardcover" class="form-control" value="${book.hardcover}">
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea name="description" class="form-textarea" rows="4">${book.bookDescription}</textarea>
+                </div>
 
-                <label class="mt-2">Dimension:</label>
-                <input type="text" name="dimension" class="form-control" value="${book.dimension}">
+                <div class="form-group">
+                    <label class="form-label">Hardcover</label>
+                    <select name="hardcover" class="form-select">
+                        <option value="1" <c:if test="${book.hardcover == 1}">selected</c:if>>Yes</option>
+                        <option value="0" <c:if test="${book.hardcover == 0}">selected</c:if>>No</option>
+                        </select>
+                    </div>
 
-                <label class="mt-2">Weight (grams):</label>
-                <input type="number" step="0.01" name="weight" class="form-control" value="${book.weight}">
+                    <div class="form-group">
+                        <label class="form-label">Dimension</label>
+                        <input type="text" name="dimension" value="${book.dimension}" class="form-input" />
+                </div>
 
-                <label class="mt-2">Price (VND):</label>
-                <input type="number" step="0.01" name="price" class="form-control" value="${book.bookPrice}">
+                <div class="form-group">
+                    <label class="form-label">Weight (grams)</label>
+                    <input type="number" step="0.01" name="weight" value="${book.weight}" class="form-input" />
+                </div>
 
-                <label class="mt-2">Quantity:</label>
-                <input type="number" name="quantity" class="form-control" value="${book.bookQuantity}">
+                <div class="form-group">
+                    <label class="form-label">Price (VND)</label>
+                    <input type="number" step="0.01" name="price" value="${book.bookPrice}" class="form-input" />
+                </div>
 
-                <label class="mt-2">Status (1 = Active, 0 = Inactive):</label>
-                <input type="number" name="status" class="form-control" value="${book.bookStatus}">
-            </div>
+                <div class="form-group">
+                    <label class="form-label">Quantity</label>
+                    <input type="number" name="quantity" value="${book.bookQuantity}" class="form-input" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select name="status" class="form-select">
+                        <option value="1" <c:if test="${book.bookStatus == 1}">selected</c:if>>Active</option>
+                        <option value="0" <c:if test="${book.bookStatus == 0}">selected</c:if>>Inactive</option>
+                        </select>
+                    </div>
+
+                    <div class="btn-group mt-4">
+                        <button type="submit" class="btn btn-success">💾 Update Book</button>
+                        <a href="${pageContext.request.contextPath}/admin/book/list" class="btn btn-secondary">⬅ Back to List</a>
+                </div>
+            </form>
         </div>
-
-        <div class="mt-4">
-            <button class="btn btn-success" type="submit">💾 Update Book</button>
-            <a href="${pageContext.request.contextPath}/admin/book/list" class="btn btn-secondary">⬅ Back to List</a>
-        </div>
-    </form>
+    </div>
 </div>
-</body>
-</html>

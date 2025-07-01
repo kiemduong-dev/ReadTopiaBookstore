@@ -19,6 +19,16 @@
                 <textarea name="categoryDescription" class="form-input" rows="4" placeholder="Enter category description" required></textarea>
             </div>
 
+            <div class="form-group">
+                <label class="form-label">Parent Category:</label>
+                <select name="parentID" class="form-select">
+                    <option value="">-- None (Top-level) --</option>
+                    <c:forEach var="cat" items="${parentList}">
+                        <option value="${cat.categoryID}">${cat.categoryName}</option>
+                    </c:forEach>
+                </select>
+            </div>
+
             <div class="btn-group">
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-save"></i> Save

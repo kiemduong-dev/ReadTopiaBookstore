@@ -12,23 +12,32 @@ public class CategoryDTO {
     private String categoryName;
     private String categoryDescription;
 
-    /**
-     * Default constructor
-     */
+    private Integer parentID;      // Cho phép null
+    private String parentName;     // Tên của danh mục cha (chỉ để hiển thị)
+
+    // --- Constructors ---
     public CategoryDTO() {
     }
 
-    /**
-     * Full constructor
-     *
-     * @param categoryID the category ID
-     * @param categoryName the name of the category
-     * @param categoryDescription the description of the category
-     */
     public CategoryDTO(int categoryID, String categoryName, String categoryDescription) {
         this.categoryID = categoryID;
         this.categoryName = categoryName;
         this.categoryDescription = categoryDescription;
+    }
+
+    public CategoryDTO(int categoryID, String categoryName, String categoryDescription, Integer parentID) {
+        this.categoryID = categoryID;
+        this.categoryName = categoryName;
+        this.categoryDescription = categoryDescription;
+        this.parentID = parentID;
+    }
+
+    public CategoryDTO(int categoryID, String categoryName, String categoryDescription, Integer parentID, String parentName) {
+        this.categoryID = categoryID;
+        this.categoryName = categoryName;
+        this.categoryDescription = categoryDescription;
+        this.parentID = parentID;
+        this.parentName = parentName;
     }
 
     // --- Getters and Setters ---
@@ -56,12 +65,30 @@ public class CategoryDTO {
         this.categoryDescription = categoryDescription;
     }
 
+    public Integer getParentID() {
+        return parentID;
+    }
+
+    public void setParentID(Integer parentID) {
+        this.parentID = parentID;
+    }
+
+    public String getParentName() {
+        return parentName;
+    }
+
+    public void setParentName(String parentName) {
+        this.parentName = parentName;
+    }
+
     @Override
     public String toString() {
         return "CategoryDTO{"
                 + "categoryID=" + categoryID
                 + ", categoryName='" + categoryName + '\''
                 + ", categoryDescription='" + categoryDescription + '\''
+                + ", parentID=" + parentID
+                + ", parentName='" + parentName + '\''
                 + '}';
     }
 }

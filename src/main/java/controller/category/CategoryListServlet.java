@@ -22,6 +22,8 @@ import java.util.List;
 @WebServlet("/admin/category/list")
 public class CategoryListServlet extends HttpServlet {
 
+    private final CategoryDAO dao = new CategoryDAO();
+
     /**
      * Handles GET requests to list all categories or filter them by keyword.
      *
@@ -34,20 +36,20 @@ public class CategoryListServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        // Get keyword from request
         String keyword = request.getParameter("keyword");
-        CategoryDAO dao = new CategoryDAO();
         List<CategoryDTO> categoryList;
 
-        // Search if keyword provided, else get all
+        // Decide to search or list all
         if (keyword != null && !keyword.trim().isEmpty()) {
             categoryList = dao.searchCategories(keyword.trim());
         } else {
             categoryList = dao.getAllCategories();
         }
 
-        // Set attributes for JSP rendering
+        // Pass data to JSP
         request.setAttribute("categoryList", categoryList);
-        request.setAttribute("keyword", keyword); // retain search input
+        request.setAttribute("keyword", keyword); // retain input
 
         request.getRequestDispatcher("/WEB-INF/view/admin/category/list.jsp").forward(request, response);
     }
