@@ -37,7 +37,7 @@ public class PromotionListServlet extends HttpServlet {
             if (keyword != null && !keyword.trim().isEmpty()) {
                 list = dao.searchPromotions(keyword);
             } else {
-                list = dao.getAllPromotions(); // bỏ phân trang
+                list = dao.getAllPromotions();
             }
 
             request.setAttribute("promotionList", list);

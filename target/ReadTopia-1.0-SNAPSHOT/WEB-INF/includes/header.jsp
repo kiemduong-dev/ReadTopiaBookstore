@@ -19,7 +19,6 @@
         <!-- Các hành ??ng -->
         <div class="header-actions">
             <div class="header-icons">
-
                               
                 <jsp:include page="/WEB-INF/view/customer/notification/notification-widget.jsp"/>
                 <button class="header-icon" title="Bi?u ?? th?nng kê">

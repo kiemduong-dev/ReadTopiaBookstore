@@ -35,18 +35,15 @@ public class PromotionAddServlet extends HttpServlet {
         try ( Connection conn = new DBContext().getConnection()) {
             PromotionDAO dao = new PromotionDAO(conn);
             PromotionLogDAO logDao = new PromotionLogDAO(conn);
-            StaffDAO staffDao = new StaffDAO(); // cần DAO này nếu lấy staffID theo username
+            StaffDAO staffDao = new StaffDAO();
 
-            // Lấy thông tin người đăng nhập
             HttpSession session = request.getSession();
             AccountDTO account = (AccountDTO) session.getAttribute("account");
             String username = account.getUsername();
             int role = account.getRole();
 
-            // Lấy staffID từ username
             int staffID = staffDao.getStaffIDByUsername(username);
 
-            // Tạo Promotion mới
             PromotionDTO pro = new PromotionDTO();
             pro.setProName(request.getParameter("proName"));
             pro.setProCode(request.getParameter("proCode"));
@@ -54,18 +51,26 @@ public class PromotionAddServlet extends HttpServlet {
             pro.setStartDate(Date.valueOf(request.getParameter("startDate")));
             pro.setEndDate(Date.valueOf(request.getParameter("endDate")));
             pro.setQuantity(Integer.parseInt(request.getParameter("quantity")));
-            pro.setProStatus(Integer.parseInt(request.getParameter("proStatus")));
+
+            // Nếu là admin (role == 0) thì duyệt luôn
+            if (role == 0) {
+                pro.setProStatus(1); // active
+                pro.setApprovedBy(staffID);
+            } else {
+                pro.setProStatus(0); // inactive, chờ duyệt
+                pro.setApprovedBy(0);
+            }
 
             pro.setCreatedBy(staffID);
-
-            // Nếu là Admin thì auto approve, còn lại để 0
-            pro.setApprovedBy(role == 0 ? staffID : 0);
 
             int newProID = dao.addPromotionReturnID(pro);
 
             if (newProID > 0) {
                 logDao.insertLog(newProID, staffID, 1); // Action 1 = create
             }
+            System.out.println("Current username: " + username);
+            System.out.println("Current staffID: " + staffID);
+            System.out.println("Current role: " + role);
 
             response.sendRedirect("list");
 

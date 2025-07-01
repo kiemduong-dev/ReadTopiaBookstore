@@ -48,7 +48,17 @@
                             <td>${p.proID}</td>
                             <td>${p.proName}</td>
                             <td>${p.proCode}</td>
-                            <td>${p.discount}%</td>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${p.discount % 1 == 0}">
+                                        ${p.discount.intValue()}%
+                                    </c:when>
+                                    <c:otherwise>
+                                        ${p.discount}%
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+
                             <td>${p.startDate}</td>
                             <td>${p.endDate}</td>
                             <td>${p.quantity}</td>
@@ -72,7 +82,22 @@
                                         title="Delete">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
+
+                                <!-- Chỉ admin mới thấy nút này, và chỉ khi promotion chưa duyệt -->
+                                <c:if test="${sessionScope.role == 0 && p.proStatus == 0}">
+                                    <form method="post" action="${pageContext.request.contextPath}/admin/promotion/approve?proID=${p.proID}" style="display:inline">
+                                        <button type="submit" class="btn btn-primary btn-sm" title="Approve">
+                                            Approve
+                                        </button>
+                                    </form>
+                                    <form method="post" action="${pageContext.request.contextPath}/admin/promotion/decline?proID=${p.proID}" style="display:inline">
+                                        <button type="submit" class="btn btn-danger btn-sm" title="Decline">
+                                            Decline
+                                        </button>
+                                    </form>
+                                </c:if>
                             </td>
+
                         </tr>
                     </c:forEach>
                 </tbody>

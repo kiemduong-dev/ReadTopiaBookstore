@@ -10,6 +10,7 @@ import java.sql.Date;
  */
 public class AccountDTO {
 
+    private int staffID;
     private String username;
     private String password;
     private String firstName;
@@ -266,6 +267,14 @@ public class AccountDTO {
      */
     public boolean isActive() {
         return this.accStatus == 1;
+    }
+
+    public int getStaffID() {
+        return staffID;
+    }
+
+    public void setStaffID(int staffID) {
+        this.staffID = staffID;
     }
 
     /**

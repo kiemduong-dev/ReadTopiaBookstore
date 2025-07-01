@@ -12,6 +12,7 @@ controller\supplier\SupplierDeleteServlet.class
 controller\order\OrderEditServlet.class
 dto\SupplierDTO.class
 util\MailUtil.class
+controller\promotion\PromotionDeclineServlet.class
 controller\category\CategoryDeleteServlet.class
 controller\VerifyOTPResetServlet.class
 controller\HomePageServlet.class
@@ -21,6 +22,7 @@ dto\StaffDTO.class
 dao\StaffDAO.class
 controller\order\OrderSearchServlet.class
 dto\PaymentDTO.class
+controller\promotion\PromotionApproveServlet.class
 controller\supplier\SupplierListServlet.class
 controller\admin\StaffAddServlet.class
 controller\LogoutServlet.class
