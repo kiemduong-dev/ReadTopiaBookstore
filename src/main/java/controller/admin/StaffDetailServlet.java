@@ -8,30 +8,12 @@ import jakarta.servlet.http.*;
 
 import java.io.IOException;
 
-/**
- * StaffDetailServlet
- *
- * Handles the display of staff detail information for administrators. Retrieves
- * staff information based on the provided staffID.
- *
- * URL mapping: /admin/staff/detail Method supported: GET, POST
- *
- * @author CE181518 Dương An Kiếm
- */
 @WebServlet(name = "StaffDetailServlet", urlPatterns = {"/admin/staff/detail"})
 public class StaffDetailServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     private final StaffDAO staffDAO = new StaffDAO();
 
-    /**
-     * Handles GET requests for viewing staff detail.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -42,7 +24,7 @@ public class StaffDetailServlet extends HttpServlet {
         String idParam = request.getParameter("staffID");
 
         if (idParam == null || idParam.trim().isEmpty()) {
-            request.getSession().setAttribute("message", "Staff ID is missing.");
+            request.getSession().setAttribute("message", "Staff ID is required.");
             response.sendRedirect("list");
             return;
         }
@@ -51,11 +33,11 @@ public class StaffDetailServlet extends HttpServlet {
             int staffID = Integer.parseInt(idParam.trim());
             StaffDTO staff = staffDAO.getStaffByID(staffID);
 
-            if (staff != null) {
+            if (staff != null && (staff.getRole() == 2 || staff.getRole() == 3)) {
                 request.setAttribute("staff", staff);
                 request.getRequestDispatcher("/WEB-INF/view/admin/staff/detail.jsp").forward(request, response);
             } else {
-                request.getSession().setAttribute("message", "Staff not found.");
+                request.getSession().setAttribute("message", "Staff not found or invalid role.");
                 response.sendRedirect("list");
             }
 
@@ -69,27 +51,14 @@ public class StaffDetailServlet extends HttpServlet {
         }
     }
 
-    /**
-     * Handles POST request (delegates to doGet).
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         doGet(request, response);
     }
 
-    /**
-     * Returns servlet description.
-     *
-     * @return brief description of this servlet
-     */
     @Override
     public String getServletInfo() {
-        return "Displays detailed information of a staff member based on staffID.";
+        return "Displays detailed information of a seller or warehouse staff member based on staffID.";
     }
 }

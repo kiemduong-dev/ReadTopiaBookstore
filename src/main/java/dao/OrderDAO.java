@@ -357,4 +357,8 @@ public class OrderDAO {
         return total;
     }
 
+    public boolean updateStatusAndRestoreStock(int orderID, int newStatus) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
 }

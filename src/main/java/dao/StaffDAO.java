@@ -23,9 +23,23 @@ public class StaffDAO {
      */
     public List<StaffDTO> findAll() {
         List<StaffDTO> list = new ArrayList<>();
-        String sql = "SELECT s.staffID, a.* FROM Staff s JOIN Account a ON s.username = a.username";
+        String sql = "SELECT s.staffID, a.* FROM Staff s JOIN Account a ON s.username = a.username "
+                + "WHERE a.accStatus = 1 AND (a.role = 1 OR a.role = 2 OR a.role = 3)";
         try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                list.add(extractStaff(rs));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 
+    public List<StaffDTO> findAllActiveStaffSellerWarehouse() {
+        List<StaffDTO> list = new ArrayList<>();
+        String sql = "SELECT s.staffID, a.* FROM Staff s JOIN Account a ON s.username = a.username "
+                + "WHERE a.accStatus = 1 AND (a.role = 1 OR a.role = 2 OR a.role = 3)";
+        try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 list.add(extractStaff(rs));
             }
@@ -36,23 +50,22 @@ public class StaffDAO {
     }
 
     /**
-     * Search staff by keyword in username, first name, or last name (case
-     * insensitive).
+     * Search seller staff or warehouse staff by keyword (username, first name,
+     * last name). Only includes role 2 and 3 with accStatus = 1.
      *
-     * @param keyword the keyword to search for.
-     * @return list of matching staff records.
+     * @param keyword the keyword to search for
+     * @return list of matched staff records
      */
     public List<StaffDTO> searchStaffs(String keyword) {
         List<StaffDTO> list = new ArrayList<>();
         String sql = "SELECT s.staffID, a.* FROM Staff s JOIN Account a ON s.username = a.username "
-                + "WHERE LOWER(a.username) LIKE ? OR LOWER(a.firstName) LIKE ? OR LOWER(a.lastName) LIKE ?";
+                + "WHERE a.accStatus = 1 AND (a.role = 2 OR a.role = 3) "
+                + "AND (LOWER(a.username) LIKE ? OR LOWER(a.firstName) LIKE ? OR LOWER(a.lastName) LIKE ?)";
         try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
-
             String kw = "%" + keyword.toLowerCase() + "%";
-            ps.setString(1, kw);
-            ps.setString(2, kw);
-            ps.setString(3, kw);
-
+            for (int i = 1; i <= 3; i++) {
+                ps.setString(i, kw);
+            }
             try ( ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     list.add(extractStaff(rs));
@@ -261,15 +274,45 @@ public class StaffDAO {
             throw new SQLException("Username không tồn tại trong bảng Staff: " + username);
         }
     }
-    
-    public List<StaffDTO> getAllStaff() {
-    List<StaffDTO> activeStaff = new ArrayList<>();
-    for (StaffDTO s : findAll()) {
-        if (s.getAccStatus() == 1 && s.getRole() == 0) {
-            activeStaff.add(s);
+
+    public StaffDTO findByUsername(String username) {
+        String sql = "SELECT s.staffID, a.* FROM Staff s JOIN Account a ON s.username = a.username WHERE a.username = ?";
+        try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, username);
+            try ( ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return extractStaff(rs);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return null;
     }
-    return activeStaff;
-}
+
+    public StaffDTO findByEmail(String email) {
+        String sql = "SELECT s.staffID, a.* FROM Staff s JOIN Account a ON s.username = a.username WHERE a.email = ?";
+        try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, email);
+            try ( ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return extractStaff(rs);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<StaffDTO> getAllStaff() {
+        List<StaffDTO> activeStaff = new ArrayList<>();
+        for (StaffDTO s : findAll()) {
+            if (s.getAccStatus() == 1 && (s.getRole() == 2 || s.getRole() == 3)) {
+                activeStaff.add(s);
+            }
+        }
+        return activeStaff;
+    }
 
 }

@@ -91,6 +91,41 @@ public class AccountDAO {
     }
 
     /**
+     * Find account by username
+     *
+     * @param username // Username of the account
+     * @return AccountDTO object if found, null otherwise
+     * @throws Exception // If database error occurs
+     */
+    public AccountDTO findByUsername(String username) throws Exception {
+        AccountDTO account = null;
+        String sql = "SELECT username, password, firstName, lastName, dob, email, phone, role, address, sex, accStatus, otp "
+                + "FROM AccountDTO WHERE username = ?";
+        try ( Connection conn = DBContext.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, username);
+            try ( ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    account = new AccountDTO(
+                            rs.getString("username"),
+                            rs.getString("password"),
+                            rs.getString("firstName"),
+                            rs.getString("lastName"),
+                            rs.getDate("dob"),
+                            rs.getString("email"),
+                            rs.getString("phone"),
+                            rs.getInt("role"),
+                            rs.getString("address"),
+                            rs.getInt("sex"),
+                            rs.getInt("accStatus"),
+                            rs.getString("otp")
+                    );
+                }
+            }
+        }
+        return account;
+    }
+
+    /**
      * Gets account by username.
      *
      * @param username the username to search
@@ -265,9 +300,9 @@ public class AccountDAO {
      */
     public List<AccountDTO> searchAccounts(String keyword) {
         List<AccountDTO> list = new ArrayList<>();
-        String sql = "SELECT * FROM Account WHERE accStatus = 1 AND ("
+        String sql = "SELECT * FROM Account WHERE accStatus IN (0, 1) AND ("
                 + "LOWER(username) LIKE ? "
-                + "OR LOWER(firstName + ' ' + lastName) LIKE ? "
+                + "OR LOWER(CONCAT(firstName, ' ', lastName)) LIKE ? "
                 + "OR LOWER(email) LIKE ? "
                 + "OR phone LIKE ?)";
         try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {

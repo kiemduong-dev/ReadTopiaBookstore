@@ -6,77 +6,57 @@
 
 <div class="main-content">
     <div class="content-area">
-        <div class="form-container bg-white shadow p-5 rounded mx-auto" style="max-width: 600px; margin-top: 50px;">
-            <h2 class="fw-bold text-center mb-4">👁 View Account Detail</h2>
+        <h1>View Account Detail</h1>
 
-            <form>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Username</label>
-                        <input type="text" class="form-input" value="${account.username}" readonly />
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Date of Birth</label>
-                        <input type="date" class="form-input" value="${account.dob}" readonly />
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">First Name</label>
-                        <input type="text" class="form-input" value="${account.firstName}" readonly />
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Last Name</label>
-                        <input type="text" class="form-input" value="${account.lastName}" readonly />
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Email</label>
-                    <input type="email" class="form-input" value="${account.email}" readonly />
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Phone</label>
-                    <input type="text" class="form-input" value="${account.phone}" readonly />
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Role</label>
-                        <input type="text" class="form-input" readonly
-                               value="<c:choose>
-                                        <c:when test='${account.role == 0}'>Admin</c:when>
-                                        <c:when test='${account.role == 1}'>Customer</c:when>
-                                        <c:otherwise>Unknown</c:otherwise>
-                                      </c:choose>"/>
-                        <!-- Lưu ý: JSTL không hoạt động bên trong attribute value. Thay bằng cách khác bên dưới -->
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Sex</label>
-                        <div class="radio-group">
-                            <label class="radio-item">
-                                <input type="radio" name="sex" disabled
-                                    <c:if test="${account.sex == 0}">checked</c:if> /> Female
-                            </label>
-                            <label class="radio-item">
-                                <input type="radio" name="sex" disabled
-                                    <c:if test="${account.sex == 1}">checked</c:if> /> Male
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Address</label>
-                    <textarea class="form-input form-textarea" readonly>${account.address}</textarea>
-                </div>
-
-                <div class="btn-group">
-                    <a href="${pageContext.request.contextPath}/admin/account/list" class="btn btn-secondary">Back to List</a>
-                </div>
-            </form>
-        </div>
+        <form>
+            <div class="form-group">
+                <label>Username:</label>
+                <input type="text" value="${account.username}" readonly class="form-input" />
+            </div>
+            <div class="form-group">
+                <label>First Name:</label>
+                <input type="text" value="${account.firstName}" readonly class="form-input" />
+            </div>
+            <div class="form-group">
+                <label>Last Name:</label>
+                <input type="text" value="${account.lastName}" readonly class="form-input" />
+            </div>
+            <div class="form-group">
+                <label>Sex:</label>
+                <select class="form-select" disabled>
+                    <option value="1" ${account.sex == 1 ? 'selected' : ''}>Male</option>
+                    <option value="0" ${account.sex == 0 ? 'selected' : ''}>Female</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Role:</label>
+                <select class="form-select" disabled>
+                    <option value="0" ${account.role == 0 ? 'selected' : ''}>Admin</option>
+                    <option value="1" ${account.role == 1 ? 'selected' : ''}>Staff</option>
+                    <option value="2" ${account.role == 2 ? 'selected' : ''}>Seller Staff</option>
+                    <option value="3" ${account.role == 3 ? 'selected' : ''}>Warehouse Staff</option>
+                    <option value="4" ${account.role == 4 ? 'selected' : ''}>Customer</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Date of Birth:</label>
+                <input type="date" value="${account.dob}" readonly class="form-input" />
+            </div>
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" value="${account.email}" readonly class="form-input" />
+            </div>
+            <div class="form-group">
+                <label>Phone:</label>
+                <input type="text" value="${account.phone}" readonly class="form-input" />
+            </div>
+            <div class="form-group">
+                <label>Address:</label>
+                <input type="text" value="${account.address}" readonly class="form-input" />
+            </div>
+            <div class="btn-group">
+                <a href="${pageContext.request.contextPath}/admin/account/list" class="btn btn-secondary">Back to List</a>
+            </div>
+        </form>
     </div>
 </div>

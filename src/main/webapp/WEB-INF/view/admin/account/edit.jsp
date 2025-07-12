@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <jsp:include page="/WEB-INF/includes/head-admin.jsp" />
@@ -6,75 +6,62 @@
 
 <div class="main-content">
     <div class="content-area">
-        <div class="form-container bg-white shadow p-5 rounded mx-auto" style="max-width: 600px; margin-top: 50px;">
-            <h2 class="fw-bold text-center mb-4">✏️ Edit Account</h2>
+        <h1>Edit Account</h1>
 
-            <!-- Hiển thị lỗi nếu có -->
-            <c:if test="${not empty error}">
-                <div class="alert alert-danger"><c:out value="${error}" /></div>
-            </c:if>
+        <c:if test="${not empty error}">
+            <div class="alert alert-danger">${error}</div>
+        </c:if>
 
+        <div class="card">
             <form method="post" action="${pageContext.request.contextPath}/admin/account/edit">
                 <div class="form-group">
-                    <label class="form-label">Username</label>
-                    <input type="text" name="username" value="<c:out value='${account.username}' />" class="form-input" readonly />
+                    <label>Username:</label>
+                    <input type="text" name="username" value="${account.username}" readonly class="form-input" />
                 </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">First Name</label>
-                        <input type="text" name="firstName" value="<c:out value='${account.firstName}' />" class="form-input" required />
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Last Name</label>
-                        <input type="text" name="lastName" value="<c:out value='${account.lastName}' />" class="form-input" required />
-                    </div>
-                </div>
-
                 <div class="form-group">
-                    <label class="form-label">Email</label>
-                    <input type="email" name="email" value="<c:out value='${account.email}' />" class="form-input" required />
+                    <label>First Name:</label>
+                    <input type="text" name="firstName" value="${account.firstName}" required class="form-input" />
                 </div>
-
                 <div class="form-group">
-                    <label class="form-label">Phone</label>
-                    <input type="text" name="phone" value="<c:out value='${account.phone}' />" class="form-input" />
+                    <label>Last Name:</label>
+                    <input type="text" name="lastName" value="${account.lastName}" required class="form-input" />
                 </div>
-
                 <div class="form-group">
-                    <label class="form-label">Address</label>
-                    <textarea name="address" class="form-textarea"><c:out value="${account.address}" /></textarea>
+                    <label>Sex:</label>
+                    <select name="sex" class="form-select" required>
+                        <option value="1" ${account.sex == 1 ? 'selected' : ''}>Male</option>
+                        <option value="0" ${account.sex == 0 ? 'selected' : ''}>Female</option>
+                    </select>
                 </div>
-
                 <div class="form-group">
-                    <label class="form-label">Date of Birth</label>
-                    <input type="date" name="dob" class="form-input" value="<c:out value='${account.dob}' />" />
+                    <label>Role:</label>
+                    <select name="role" class="form-select" required>
+                        <option value="0" ${account.role == 0 ? 'selected' : ''}>Admin</option>
+                        <option value="1" ${account.role == 1 ? 'selected' : ''}>Staff</option>
+                        <option value="2" ${account.role == 2 ? 'selected' : ''}>Seller Staff</option>
+                        <option value="3" ${account.role == 3 ? 'selected' : ''}>Warehouse Staff</option>
+                        <option value="4" ${account.role == 4 ? 'selected' : ''}>Customer</option>
+                    </select>
                 </div>
-
                 <div class="form-group">
-                    <label class="form-label">Sex</label>
-                    <div class="radio-group">
-                        <label class="radio-item">
-                            <input type="radio" name="sex" value="1" <c:if test="${account.sex == 1}">checked</c:if> /> Male
-                            </label>
-                            <label class="radio-item">
-                                <input type="radio" name="sex" value="0" <c:if test="${account.sex == 0}">checked</c:if> /> Female
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Role</label>
-                        <select name="role" class="form-select">
-                            <option value="0" <c:if test="${account.role == 0}">selected</c:if>>Admin</option>
-                        <option value="1" <c:if test="${account.role == 1}">selected</c:if>>Customer</option>
-                        <option value="2" <c:if test="${account.role == 2}">selected</c:if>>Staff</option>
-                        </select>
-                    </div>
-
-                    <div class="btn-group">
-                        <button type="submit" class="btn btn-primary">Update Account</button>
-                        <a href="${pageContext.request.contextPath}/admin/account/list" class="btn btn-secondary">Cancel</a>
+                    <label>Date of Birth:</label>
+                    <input type="date" name="dob" value="${account.dob}" class="form-input" />
+                </div>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" name="email" value="${account.email}" required class="form-input" />
+                </div>
+                <div class="form-group">
+                    <label>Phone:</label>
+                    <input type="text" name="phone" value="${account.phone}" required class="form-input" />
+                </div>
+                <div class="form-group">
+                    <label>Address:</label>
+                    <input type="text" name="address" value="${account.address}" required class="form-input" />
+                </div>
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <a href="${pageContext.request.contextPath}/admin/account/list" class="btn btn-secondary">Cancel</a>
                 </div>
             </form>
         </div>

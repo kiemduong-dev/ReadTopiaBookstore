@@ -9,20 +9,22 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.sql.Date;
 
+
 /**
- * AccountAddServlet
+ * AccountAddServlet – Handles Add Account for Admin (only Admin and Seller
+ * Staff)
  *
- * Handles the functionality for an admin to add a new user account. Supports
- * GET to display the add form and POST to handle form submission.
- *
- * URL mapping: /admin/account/add
- *
- * Author: CE181518 Dương An Kiếm
+ * @author CE181518 Dương An Kiếm
+ */
+/**
+ * AccountAddServlet – Handles Add Account for Admin (only Admin and Staff roles
+ * allowed) Author: CE181518 Dương An Kiếm
  */
 @WebServlet(name = "AccountAddServlet", urlPatterns = {"/admin/account/add"})
 public class AccountAddServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
+    private final AccountDAO accountDAO = new AccountDAO();
 
     /**
      * Handles GET request to display the account creation form.
@@ -54,6 +56,14 @@ public class AccountAddServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
 
         try {
+            HttpSession session = request.getSession();
+            AccountDTO currentUser = (AccountDTO) session.getAttribute("account");
+
+            if (currentUser == null || currentUser.getRole() != 0) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
+
             String username = request.getParameter("username").trim();
             String firstName = request.getParameter("firstName").trim();
             String lastName = request.getParameter("lastName").trim();
@@ -64,24 +74,33 @@ public class AccountAddServlet extends HttpServlet {
             int role = Integer.parseInt(request.getParameter("role"));
             int sex = Integer.parseInt(request.getParameter("sex"));
 
+            if (role != 0 && role != 1) {
+                request.setAttribute("error", "Only Admin and Staff roles are allowed for Add Account.");
+                request.getRequestDispatcher("/WEB-INF/view/admin/account/add.jsp").forward(request, response);
+                return;
+            }
+
+            if (accountDAO.findByUsername(username) != null) {
+                request.setAttribute("error", "Username already exists.");
+                request.getRequestDispatcher("/WEB-INF/view/admin/account/add.jsp").forward(request, response);
+                return;
+            }
+
             Date dob = (dobRaw != null && !dobRaw.isEmpty()) ? Date.valueOf(dobRaw) : null;
+            String defaultPassword = "Mk@123456";
 
-            // Default password is "Mk@123456" (hashed in DAO)
-            String rawPassword = "Mk@123456";
-
-            AccountDTO acc = new AccountDTO(
-                    username, rawPassword, firstName, lastName, dob,
-                    email, phone, role, address, sex, 1, null // accStatus = 1 (active)
+            AccountDTO account = new AccountDTO(
+                    username, defaultPassword, firstName, lastName, dob,
+                    email, phone, role, address, sex, 1, null
             );
 
-            AccountDAO dao = new AccountDAO();
-            boolean added = dao.addAccount(acc);
+            boolean success = accountDAO.addAccount(account);
 
-            if (added) {
+            if (success) {
                 response.sendRedirect("list");
             } else {
-                request.setAttribute("error", "Failed to add account. Username or email may already exist.");
-                request.setAttribute("account", acc);
+                request.setAttribute("error", "Failed to add account. Please try again.");
+                request.setAttribute("account", account);
                 request.getRequestDispatcher("/WEB-INF/view/admin/account/add.jsp").forward(request, response);
             }
 
@@ -90,15 +109,5 @@ public class AccountAddServlet extends HttpServlet {
             request.setAttribute("error", "Invalid input. Please check the form.");
             request.getRequestDispatcher("/WEB-INF/view/admin/account/add.jsp").forward(request, response);
         }
-    }
-
-    /**
-     * Returns servlet description.
-     *
-     * @return a brief description of this servlet
-     */
-    @Override
-    public String getServletInfo() {
-        return "Admin adds a new user account.";
     }
 }

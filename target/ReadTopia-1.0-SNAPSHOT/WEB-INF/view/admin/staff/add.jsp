@@ -22,8 +22,8 @@
                     <input type="text" id="username" name="username" required class="form-input" value="${staff.username}" />
                 </div>
                 <div class="form-group">
-                    <label for="dob" class="form-label">Date of Birth</label>
-                    <input type="date" id="dob" name="dob" class="form-input" value="${staff.dob}" />
+                    <label for="password" class="form-label">* Password</label>
+                    <input type="password" id="password" name="password" required class="form-input" />
                 </div>
             </div>
 
@@ -40,18 +40,12 @@
 
             <div class="form-row">
                 <div class="form-group">
-                    <label for="email" class="form-label">* Email</label>
-                    <input type="email" id="email" name="email" required class="form-input" value="${staff.email}" />
+                    <label for="dob" class="form-label">Date of Birth</label>
+                    <input type="date" id="dob" name="dob" class="form-input" value="${staff.dob}" />
                 </div>
                 <div class="form-group">
-                    <label for="role" class="form-label">Role</label>
-                    <select id="role" name="role" class="form-select">
-                        <option value="">Please select role</option>
-                        <option value="0" ${staff.role == 0 ? 'selected' : ''}>Admin</option>
-                        <option value="1" ${staff.role == 1 ? 'selected' : ''}>Staff</option>
-                        <option value="2" ${staff.role == 2 ? 'selected' : ''}>Seller Staff</option>
-                        <option value="3" ${staff.role == 3 ? 'selected' : ''}>Warehouse Staff</option>
-                    </select>
+                    <label for="email" class="form-label">* Email</label>
+                    <input type="email" id="email" name="email" required class="form-input" value="${staff.email}" />
                 </div>
             </div>
 
@@ -75,9 +69,19 @@
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="address" class="form-label">Address</label>
-                <textarea id="address" name="address" rows="3" class="form-textarea">${staff.address}</textarea>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="role" class="form-label">Role</label>
+                    <select id="role" name="role" class="form-select" required>
+                        <option value="">Please select role</option>
+                        <option value="2" ${staff.role == 2 ? 'selected' : ''}>Seller Staff</option>
+                        <option value="3" ${staff.role == 3 ? 'selected' : ''}>Warehouse Staff</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="address" class="form-label">Address</label>
+                    <textarea id="address" name="address" rows="3" class="form-textarea">${staff.address}</textarea>
+                </div>
             </div>
 
             <div class="btn-group">
