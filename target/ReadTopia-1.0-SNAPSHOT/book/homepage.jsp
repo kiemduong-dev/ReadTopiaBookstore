@@ -1,86 +1,103 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@page import="java.text.DecimalFormatSymbols"%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" import="java.text.DecimalFormat" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<jsp:include page="/WEB-INF/includes/head.jsp" />
+<jsp:include page="/WEB-INF/includes/header.jsp" />
 
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>ReadTopia - Trang chủ</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
-    </head>
-    <body>
-        <div class="container mt-4">
+<%
+    DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+    symbols.setGroupingSeparator(' ');
+    DecimalFormat formatter = new DecimalFormat("###,###,###", symbols);
+    request.setAttribute("formatter", formatter);
+    request.setAttribute("formatter", formatter);
+%>
 
-            <!-- Row chứa Sort, Filter, Search -->
-            <div class="row align-items-center mb-4">
-                <!-- Sort By -->
-                <div class="col-md-3 col-12 mb-2 mb-md-0">
-                    <form action="${pageContext.request.contextPath}/book/home" method="get" id="formSort">
-                        <input type="hidden" name="keyword" value="${keyword != null ? keyword : ''}" />
-                        <input type="hidden" name="catID" value="${selectedCatID != null ? selectedCatID : 0}" />
-                        <label for="sortBy" class="form-label fw-bold">Sort by:</label>
-                        <select name="sortBy" id="sortBy" class="form-select" onchange="document.getElementById('formSort').submit()">
-                            <option value="bookID" <c:if test="${sortBy == 'bookID'}">selected</c:if>>Default</option>
-                            <option value="price_asc" <c:if test="${sortBy == 'price_asc'}">selected</c:if>>Price: Low to High</option>
-                            <option value="price_desc" <c:if test="${sortBy == 'price_desc'}">selected</c:if>>Price: High to Low</option>
-                            <option value="title_asc" <c:if test="${sortBy == 'title_asc'}">selected</c:if>>Title: A-Z</option>
-                            <option value="title_desc" <c:if test="${sortBy == 'title_desc'}">selected</c:if>>Title: Z-A</option>
-                            </select>
-                        </form>
-                    </div>
-
-                    <!-- Filter (Category) -->
-                    <div class="col-md-3 col-12 mb-2 mb-md-0">
-                        <form action="${pageContext.request.contextPath}/book/home" method="get" id="formFilter">
-                        <input type="hidden" name="keyword" value="${keyword != null ? keyword : ''}" />
-                        <input type="hidden" name="sortBy" value="${sortBy != null ? sortBy : 'bookID'}" />
-                        <label for="catID" class="form-label fw-bold">Filter:</label>
-                        <select name="catID" id="catID" class="form-select" onchange="document.getElementById('formFilter').submit()">
-                            <option value="0" <c:if test="${selectedCatID == 0}">selected</c:if>>All</option>
-                            <c:forEach var="cat" items="${categoryList}">
-                                <option value="${cat.categoryID}" <c:if test="${selectedCatID == cat.categoryID}">selected</c:if>>
-                                    ${cat.categoryName}
-                                </option>
-                            </c:forEach>
-                        </select>
-                    </form>
-                </div>
-
-                <!-- Search -->
-                <div class="col-md-6 col-12">
-                    <form action="${pageContext.request.contextPath}/book/home" method="get" id="formSearch" class="d-flex">
-                        <input type="hidden" name="catID" value="${selectedCatID != null ? selectedCatID : 0}" />
-                        <input type="hidden" name="sortBy" value="${sortBy != null ? sortBy : 'bookID'}" />
-                        <input type="text" name="keyword" class="form-control me-2" placeholder="Search books with title or author..." value="${keyword != null ? keyword : ''}" />
-                        <button class="btn btn-primary" type="submit">🔍 Search</button>
-                    </form>
-                </div>
+<div class="container py-4">
+    <!-- Banner Carousel -->
+    <div id="promoCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <a href="${pageContext.request.contextPath}/customer/promotion/list">
+                    <img src="${pageContext.request.contextPath}/images/slide1.jpg" class="d-block w-100" alt="Summer Promotion">
+                </a>
             </div>
+            <div class="carousel-item">
+                <a href="${pageContext.request.contextPath}/customer/promotion/list">
+                    <img src="${pageContext.request.contextPath}/images/slide2.jpg" class="d-block w-100" alt="Special Offer">
+                </a>
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#promoCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#promoCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
+    </div>
 
-            <!-- Danh sách sách -->
-            <div class="row row-cols-1 row-cols-md-4 g-4">
-                <c:forEach var="book" items="${bookList}">
-                    <div class="col">
-                        <div class="card h-100 shadow" style="cursor:pointer;" onclick="location.href = '${pageContext.request.contextPath}/book/detail?id=${book.bookID}'">
-                            <img src="${book.image}" class="card-img-top" alt="${book.bookTitle}" style="height: 250px; object-fit: cover;">
-                            <div class="card-body">
-                                <h5 class="card-title">${book.bookTitle}</h5>
-                                <p class="card-text">👤 ${book.author}</p>
-                                <p class="card-text text-danger fw-bold">💰 ${book.bookPrice} VNĐ</p>
-                                <!-- nút xem đã bị bỏ -->
-                            </div>
+    <h2 class="mb-4">📚 All Books</h2>
+
+    <!-- Toolbar -->
+    <form class="row g-3 mb-4" method="get" action="${pageContext.request.contextPath}/customer/book/list">
+        <div class="col-md-3">
+            <input type="text" class="form-control" name="keyword" placeholder="Search by title or author" value="${param.keyword}"/>
+        </div>
+        <div class="col-md-3">
+            <select name="categoryID" class="form-select">
+                <option value="">-- Category --</option>
+                <c:forEach var="cat" items="${categoryList}">
+                    <option value="${cat.categoryID}" ${param.categoryID == cat.categoryID ? 'selected' : ''}>
+                        ${cat.categoryName}
+                    </option>
+                </c:forEach>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="sort" class="form-select">
+                <option value="">-- Sort --</option>
+                <option value="price_asc" ${param.sort == 'price_asc' ? 'selected' : ''}>Price: Low to High</option>
+                <option value="price_desc" ${param.sort == 'price_desc' ? 'selected' : ''}>Price: High to Low</option>
+                <option value="title_asc" ${param.sort == 'title_asc' ? 'selected' : ''}>Title A - Z</option>
+                <option value="title_desc" ${param.sort == 'title_desc' ? 'selected' : ''}>Title Z - A</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <button class="btn btn-primary w-100" type="submit">🔍 Search</button>
+        </div>
+    </form>
+
+    <!-- Book List -->
+    <div class="row row-cols-1 row-cols-md-4 g-4">
+        <c:forEach var="book" items="${bookList}">
+            <div class="col">
+                <a href="${pageContext.request.contextPath}/customer/book/detail?id=${book.bookID}" class="text-decoration-none text-dark">
+                    <div class="card h-100 shadow-sm book-card" style="transition: all 0.3s;">
+                        <div class="position-relative">
+                            <img src="${book.image}" class="card-img-top" alt="${book.bookTitle}"
+                                 onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
+                            <div class="hover-overlay position-absolute top-0 start-0 w-100 h-100" style="background: rgba(0, 0, 0, 0.15); opacity: 0; transition: opacity 0.3s;"></div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">${book.bookTitle}</h5>
+                            <p class="card-text text-muted">Author: ${book.author}</p>
+                            <p class="card-text text-danger fw-bold">
+                                <c:out value="${formatter.format(book.bookPrice)}"/> VND
+                            </p>
                         </div>
                     </div>
-                </c:forEach>
-
-                <c:if test="${empty bookList}">
-                    <div class="col-12">
-                        <div class="alert alert-warning">❌ No books available.</div>
-                    </div>
-                </c:if>
+                </a>
             </div>
+        </c:forEach>
+    </div>
+</div>
 
+<jsp:include page="/WEB-INF/includes/footer.jsp" />
 
-        </div>
-    </body>
-</html>
+<style>
+    .book-card:hover {
+        transform: scale(1.03);
+    }
+    .book-card:hover .hover-overlay {
+        opacity: 1;
+    }
+</style>

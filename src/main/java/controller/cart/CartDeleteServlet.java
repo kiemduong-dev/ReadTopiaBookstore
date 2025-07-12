@@ -40,7 +40,7 @@ public class CartDeleteServlet extends HttpServlet {
                 }
 
                 boolean deleted = cartDAO.deleteMultipleFromCart(cartIDs, username);
-                response.sendRedirect(request.getContextPath() + "/cart/view?msg=" + (deleted ? "multi_removed" : "multi_failed"));
+                response.sendRedirect(request.getContextPath() + "/cart/view?msg=" + (deleted ? "deleted" : "delete_failed"));
 
             } else {
                 // Delete one item
@@ -59,7 +59,7 @@ public class CartDeleteServlet extends HttpServlet {
                 }
 
                 boolean success = cartDAO.deleteFromCart(cartID, username);
-                response.sendRedirect(request.getContextPath() + "/cart/view?msg=" + (success ? "removed" : "delete_failed"));
+                response.sendRedirect(request.getContextPath() + "/cart/view?msg=" + (success ? "deleted" : "delete_failed"));
             }
 
         } catch (NumberFormatException e) {
@@ -68,7 +68,7 @@ public class CartDeleteServlet extends HttpServlet {
         } catch (Exception e) {
             System.err.println("❌ CartDeleteServlet error: " + e.getMessage());
             e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/cart/view?error=delete_failed");
+            response.sendRedirect(request.getContextPath() + "/cart/view?msg=delete_failed");
         }
     }
 

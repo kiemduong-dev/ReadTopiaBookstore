@@ -1,60 +1,78 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <jsp:include page="/WEB-INF/includes/head.jsp" />
 <jsp:include page="/WEB-INF/includes/header.jsp" />
 
 <div class="container py-5">
     <div class="card shadow-lg">
         <div class="card-header bg-info text-white text-center">
-            <h4><i class="bi bi-credit-card me-2"></i>Thông tin thanh toán</h4>
+            <h4><i class="bi bi-credit-card me-2"></i>Bank Transfer Payment</h4>
         </div>
         <div class="card-body">
             <div class="row">
-                <!-- Cột trái: QR -->
+                <!-- Left: QR Code -->
                 <div class="col-md-5 d-flex justify-content-center align-items-start">
                     <div class="qr-container text-center">
-                        <h5><i class="bi bi-qr-code me-2"></i>Quét mã QR để thanh toán</h5>
+                        <h5><i class="bi bi-qr-code me-2"></i>Scan QR to Pay</h5>
                         <img src="${pageContext.request.contextPath}/img/z6755080902176_6e54f4f14f5bf5ee3caaed1d5ed253a4.jpg"
-                             alt="QR Code thanh toán"
+                             alt="QR Code"
                              class="img-fluid rounded shadow"
                              style="max-width: 280px;" />
                     </div>
                 </div>
 
-                <!-- Cột phải: Thông tin -->
+                <!-- Right: Payment Info -->
                 <div class="col-md-7">
-                    <!-- Đơn hàng -->
+                    <!-- Order Summary -->
                     <div class="mb-3">
-                        <p><strong>Mã đơn hàng:</strong> DH${orderId}</p>
-                        <p><strong>Số tiền cần thanh toán:</strong>
+                        <p><strong>Order ID:</strong> Temporary</p>
+                        <p><strong>Amount to Pay:</strong>
                             <span class="text-danger fw-bold">
                                 <fmt:formatNumber value="${amount}" pattern="#,##0" /> VND
                             </span>
                         </p>
-                        <p><strong>Nội dung chuyển khoản:</strong>
+                        <p><strong>Transfer Note:</strong>
                             <span class="text-primary fw-bold">${transferCode}</span>
                         </p>
                     </div>
 
-                    <!-- Chuyển khoản -->
+                    <!-- Bank Details -->
                     <div class="border rounded p-3 mb-4 bg-light">
-                        <h6 class="mb-2"><i class="bi bi-bank me-2"></i>Chuyển khoản ngân hàng</h6>
-                        <p><strong>Ngân hàng:</strong> BIDV</p>
-                        <p><strong>Số tài khoản:</strong> 7850673111</p>
-                        <p><strong>Tên tài khoản:</strong> NGUYEN THAI ANH</p>
-                        <p><strong>Nội dung:</strong>
+                        <h6 class="mb-2"><i class="bi bi-bank me-2"></i>Bank Account Info</h6>
+                        <p><strong>Bank:</strong> BIDV</p>
+                        <p><strong>Account Number:</strong> 7850673111</p>
+                        <p><strong>Account Holder:</strong> NGUYEN THAI ANH</p>
+                        <p><strong>Transfer Note:</strong>
                             <span class="text-primary fw-bold">${transferCode}</span>
                         </p>
 
-                        <div class="mt-3 text-center">
-                            <a href="${pageContext.request.contextPath}/payment/confirm?paymentId=${payment.paymentId}"
-                               class="btn btn-success btn-lg">
-                                <i class="bi bi-check-circle me-1"></i>✅ Tôi đã chuyển khoản
-                            </a>
-                            <a href="${pageContext.request.contextPath}/customer/book/list"
-                               class="btn btn-outline-danger">❌ Hủy thanh toán</a>
-                        </div>
+                        <!-- ✅ Confirm Payment Form -->
+                        <form method="post" action="${pageContext.request.contextPath}/payment/confirm">
+                            <input type="hidden" name="amount" value="${amount}" />
+                            <input type="hidden" name="type" value="${type}" />
+                            <input type="hidden" name="bookId" value="${bookId}" />
+                            <input type="hidden" name="quantity" value="${quantity}" />
+                            <input type="hidden" name="orderAddress" value="${orderAddress}" />
+                            <input type="hidden" name="paymentMethod" value="${paymentMethod}" />
+                            <input type="hidden" name="transferCode" value="${transferCode}" />
+
+                            <!-- ✅ Send cart IDs if present -->
+                            <c:if test="${not empty selectedCartIDsString}">
+                                <c:forEach var="id" items="${fn:split(selectedCartIDsString, ',')}">
+                                    <input type="hidden" name="selectedCartIDs" value="${id}" />
+                                </c:forEach>
+                            </c:if>
+
+                            <div class="mt-3 text-center">
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="bi bi-check-circle me-1"></i>✅ I Have Transferred
+                                </button>
+                                <a href="${pageContext.request.contextPath}/customer/book/list"
+                                   class="btn btn-outline-danger">❌ Cancel Payment</a>
+                            </div>
+                        </form>
                     </div>
                 </div> 
             </div> 

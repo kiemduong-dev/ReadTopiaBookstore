@@ -11,15 +11,15 @@ package dto;
 public class PaymentDTO {
 
     private String paymentId;
-    private String orderId;
+    private int orderId;
     private double amount;
-    private String status;
+    private int status;
     private String paymentMethod;
 
     public PaymentDTO() {
     }
 
-    public PaymentDTO(String paymentId, String orderId, double amount, String status, String paymentMethod) {
+    public PaymentDTO(String paymentId, int orderId, double amount, int status, String paymentMethod) {
         this.paymentId = paymentId;
         this.orderId = orderId;
         this.amount = amount;
@@ -36,11 +36,11 @@ public class PaymentDTO {
         this.paymentId = paymentId;
     }
 
-    public String getOrderId() {
+    public int getOrderId() {
         return orderId;
     }
 
-    public void setOrderId(String orderId) {
+    public void setOrderId(int orderId) {
         this.orderId = orderId;
     }
 
@@ -52,11 +52,11 @@ public class PaymentDTO {
         this.amount = amount;
     }
 
-    public String getStatus() {
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 

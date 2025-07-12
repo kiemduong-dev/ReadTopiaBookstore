@@ -43,7 +43,7 @@ public class PaymentProcessServlet extends HttpServlet {
         String type = request.getParameter("type");
 
         if (paymentMethod == null || orderAddress == null || orderAddress.trim().isEmpty()) {
-            request.setAttribute("error", "Thiếu thông tin thanh toán.");
+            request.setAttribute("error", "Missing payment information.");
             request.getRequestDispatcher("/WEB-INF/view/order/checkout.jsp").forward(request, response);
             return;
         }
@@ -59,13 +59,13 @@ public class PaymentProcessServlet extends HttpServlet {
             double totalAmount = 0;
 
             if ("buynow".equals(type)) {
-                // Trường hợp "Buy Now"
+                // Case: "Buy Now"
                 int bookId = Integer.parseInt(request.getParameter("bookId"));
                 int quantity = Integer.parseInt(request.getParameter("quantity"));
 
                 BookDTO book = bookDAO.getBookByID(bookId);
                 if (book == null || quantity > book.getBookQuantity()) {
-                    request.setAttribute("error", "Sách không còn đủ số lượng.");
+                    request.setAttribute("error", "Not enough quantity available for this book.");
                     request.getRequestDispatcher("/WEB-INF/view/order/checkout.jsp").forward(request, response);
                     return;
                 }
@@ -78,7 +78,7 @@ public class PaymentProcessServlet extends HttpServlet {
                 totalAmount = quantity * book.getBookPrice();
 
             } else {
-                // Trường hợp thanh toán từ giỏ hàng
+                // Case: Checkout from cart
                 String[] selectedCartIdsStr = request.getParameterValues("selectedCartIDs");
 
                 if (selectedCartIdsStr != null && selectedCartIdsStr.length > 0) {
@@ -95,7 +95,7 @@ public class PaymentProcessServlet extends HttpServlet {
                         }
                     }
                 } else {
-                    // Không chọn → thanh toán toàn bộ giỏ
+                    // No selection → checkout entire cart
                     cartItems = cartDAO.getCartByUsername(username);
                     for (CartDTO cartItem : cartItems) {
                         BookDTO book = bookDAO.getBookByID(cartItem.getBookID());
@@ -106,28 +106,29 @@ public class PaymentProcessServlet extends HttpServlet {
                     }
                 }
 
-                // Nếu không chọn gì và giỏ rỗng
+                // Cart is empty
                 if (cartItems.isEmpty()) {
-                    request.setAttribute("error", "Không có sản phẩm nào để thanh toán.");
+                    request.setAttribute("error", "There are no items to checkout.");
                     request.getRequestDispatcher("/WEB-INF/view/order/checkout.jsp").forward(request, response);
                     return;
                 }
             }
 
-            // Tạo đơn hàng
+            // Create order
             OrderDTO order = new OrderDTO();
             order.setUsername(username);
             order.setOrderDate(new Timestamp(new Date().getTime()));
             order.setTotalAmount(totalAmount);
-            order.setOrderStatus(0); // Đang xử lý
+            int status = "CASH".equalsIgnoreCase(request.getParameter("paymentMethod")) ? 0 : 5;
+            order.setOrderStatus(status); // Set status: 2 = Delivered (for Cash), 0 = Processing
             order.setOrderAddress(orderAddress);
             int orderID = orderDAO.createOrder(order);
 
-            // Lưu chi tiết đơn hàng
+            // Save order details
             for (CartDTO cart : cartItems) {
                 BookDTO book = bookDAO.getBookByID(cart.getBookID());
                 if (book != null) {
-                    // 1. Tạo chi tiết đơn hàng
+                    // 1. Create order detail
                     OrderDetailDTO detail = new OrderDetailDTO();
                     detail.setOrderID(orderID);
                     detail.setBookID(book.getBookID());
@@ -135,25 +136,25 @@ public class PaymentProcessServlet extends HttpServlet {
                     detail.setTotalPrice(book.getBookPrice());
                     orderDetailDAO.addOrderDetail(detail);
 
-                    // 2. Trừ kho
+                    // 2. Update stock
                     int newQuantity = book.getBookQuantity() - cart.getQuantity();
                     if (newQuantity < 0) {
-                        newQuantity = 0; // đảm bảo không âm
+                        newQuantity = 0; // ensure stock is not negative
                     }
                     bookDAO.updateBookQuantity(book.getBookID(), newQuantity);
                 }
             }
 
-            // Xóa giỏ nếu không phải "Buy Now"
+            // Clear cart if not "Buy Now"
             cartDAO.deleteMultipleFromCart(selectedCartIDs, username);
 
-            // Hiển thị trang xác nhận
+            // Redirect to confirmation page
             request.setAttribute("orderID", orderID);
             request.getRequestDispatcher("/WEB-INF/view/order/confirmation.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("error", "Đã xảy ra lỗi trong quá trình xử lý thanh toán.");
+            request.setAttribute("error", "An error occurred during the payment process.");
             request.getRequestDispatcher("/WEB-INF/view/order/checkout.jsp").forward(request, response);
         }
     }

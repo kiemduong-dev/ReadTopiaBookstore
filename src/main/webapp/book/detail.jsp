@@ -1,55 +1,78 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" import="java.text.DecimalFormat, java.text.DecimalFormatSymbols" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<jsp:include page="/WEB-INF/includes/head.jsp" />
+<jsp:include page="/WEB-INF/includes/header.jsp" />
 
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Chi tiết sách - ReadTopia</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
-    </head>
-    <body>
-        <div class="container mt-5">
-            <h2 class="mb-4">📖 Chi tiết sách</h2>
+<%
+    DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+    symbols.setGroupingSeparator(' ');
+    DecimalFormat formatter = new DecimalFormat("###,###,###", symbols);
+    request.setAttribute("formatter", formatter);
+%>
 
-            <div class="row">
-                <div class="col-md-4 text-center">
-                    <img src="${book.image}" class="img-fluid rounded shadow-sm mb-3" alt="${book.bookTitle}">
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-5">
+            <img src="${book.image}" alt="${book.bookTitle}" class="img-fluid rounded shadow-sm"
+                 onerror="this.src='https://via.placeholder.com/300x400?text=No+Image'">
+        </div>
+        <div class="col-md-7">
+            <h2 class="mb-3">${book.bookTitle}</h2>
+            <p><strong>Author:</strong> ${book.author}</p>
+            <p><strong>Translator:</strong> ${book.translator}</p>
+            <p><strong>Publisher:</strong> ${book.publisher}</p>
+            <p><strong>Year:</strong> ${book.publicationYear}</p>
+            <p><strong>ISBN:</strong> ${book.isbn}</p>
+            <p><strong>Size:</strong> ${book.dimension}</p>
+            <p><strong>Weight:</strong> ${book.weight} g</p>
+            <p><strong>Description:</strong><br>${book.bookDescription}</p>
+            <p><strong>In Stock:</strong> ${book.bookQuantity}</p>
+            <p class="text-danger fs-4 fw-bold">Price: <c:out value="${formatter.format(book.bookPrice)}"/> VND</p>
 
-                    <!-- Add book to cart section -->
-                    <div class="border rounded p-3">
-                        <h5>Add book to cart</h5>
-                        <form action="${pageContext.request.contextPath}/cart/add" method="post" class="d-flex align-items-center gap-2">
-                            <input type="hidden" name="bookID" value="${book.bookID}" />
-                            <label for="quantity" class="mb-0">Quantity:</label>
-                            <input type="number" id="quantity" name="quantity" value="1" min="1" max="${book.bookQuantity}" class="form-control w-25" />
-                            <button type="submit" name="action" value="buyNow" class="btn btn-danger">Buy now</button>
-                            <button type="submit" name="action" value="addToCart" class="btn btn-outline-danger">Add to cart</button>
-                        </form>
+            <form action="${pageContext.request.contextPath}/cart/add" method="post" class="mt-3 d-flex">
+                <input type="hidden" name="bookID" value="${book.bookID}" />
+                <input type="number" name="quantity" value="1" min="1" max="${book.bookQuantity}" class="form-control w-25 me-2" />
+                <button type="submit" name="action" value="addToCart" class="btn btn-success me-2">🛒 Add to Cart</button>
+                <button type="submit" name="action" value="buyNow" class="btn btn-warning">⚡ Buy Now</button>
+            </form>
+
+            <div class="mt-4">
+                <a href="${pageContext.request.contextPath}/customer/book/list" class="btn btn-outline-secondary">⬅ Back to List</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%-- ✅ MODAL for Add to Cart Confirmation --%>
+<c:if test="${param.added == 'true'}">
+    <div class="modal fade show" id="addedModal" tabindex="-1" style="display: block; background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content p-3">
+                <div class="modal-header">
+                    <h5 class="modal-title">🎉 Added to Cart</h5>
+                </div>
+                <div class="modal-body d-flex">
+                    <img src="${book.image}" alt="${book.bookTitle}" class="me-3 rounded" style="width: 80px; height: 100px; object-fit: cover;"
+                         onerror="this.src='https://via.placeholder.com/80x100?text=No+Image'">
+                    <div>
+                        <p><strong>${book.bookTitle}</strong></p>
+                        <p class="text-muted">Author: ${book.author}</p>
+                        <p>Price: <span class="text-danger fw-bold"><c:out value="${formatter.format(book.bookPrice)}"/> VND</span></p>
+                        <p>Do you want to proceed to checkout now?</p>
                     </div>
                 </div>
-
-                <div class="col-md-8">
-                    <h3>${book.bookTitle}</h3>
-                    <p><strong>Tác giả:</strong> ${book.author}</p>
-                    <p><strong>Người dịch:</strong> ${book.translator}</p>
-                    <p><strong>Nhà xuất bản:</strong> ${book.publisher}</p>
-                    <p><strong>Năm xuất bản:</strong> ${book.publicationYear}</p>
-                    <p><strong>ISBN:</strong> ${book.isbn}</p>
-                    <p><strong>Bìa cứng:</strong> 
-                        <c:choose>
-                            <c:when test="${book.hardcover == 1}">Có</c:when>
-                            <c:otherwise>Không</c:otherwise>
-                        </c:choose>
-                    </p>
-                    <p><strong>Kích thước:</strong> ${book.dimension}</p>
-                    <p><strong>Trọng lượng:</strong> ${book.weight} gram</p>
-                    <p><strong>Giá:</strong> <span class="text-danger fw-bold">${book.bookPrice} VNĐ</span></p>
-                    <p><strong>Số lượng còn:</strong> ${book.bookQuantity}</p>
-                    <p><strong>Mô tả:</strong> ${book.bookDescription}</p>
-
-                    <a href="${pageContext.request.contextPath}/book/home" class="btn btn-secondary mt-3">⬅ Quay lại</a>
+                <div class="modal-footer">
+                    <a href="${pageContext.request.contextPath}/cart/view" class="btn btn-success">🛒 Go to Cart</a>
+                    <a href="${pageContext.request.contextPath}/customer/book/list" class="btn btn-secondary">No, Continue Shopping</a>
                 </div>
             </div>
         </div>
-    </body>
-</html>
+    </div>
+    <script>
+        setTimeout(() => {
+            document.getElementById("addedModal").style.display = 'none';
+        }, 10000);
+    </script>
+</c:if>
+
+<jsp:include page="/WEB-INF/includes/footer.jsp" />

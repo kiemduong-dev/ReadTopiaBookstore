@@ -10,6 +10,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,11 +22,13 @@ public class CheckoutServlet extends HttpServlet {
         private CartDTO cartItem;
         private BookDTO book;
         private double itemTotal;
+        private String formattedItemTotal;
 
-        public CartItemWithBook(CartDTO cartItem, BookDTO book) {
+        public CartItemWithBook(CartDTO cartItem, BookDTO book, DecimalFormat formatter) {
             this.cartItem = cartItem;
             this.book = book;
             this.itemTotal = cartItem.getQuantity() * book.getBookPrice();
+            this.formattedItemTotal = formatter.format(this.itemTotal);
         }
 
         public CartDTO getCartItem() {
@@ -37,6 +41,10 @@ public class CheckoutServlet extends HttpServlet {
 
         public double getItemTotal() {
             return itemTotal;
+        }
+
+        public String getFormattedItemTotal() {
+            return formattedItemTotal;
         }
     }
 
@@ -53,6 +61,11 @@ public class CheckoutServlet extends HttpServlet {
             return;
         }
 
+        // Setup decimal formatter
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setGroupingSeparator(' ');
+        DecimalFormat formatter = new DecimalFormat("#,###", symbols);
+
         String bookIdRaw = request.getParameter("bookID");
         String quantityRaw = request.getParameter("quantity");
         String idsRaw = request.getParameter("ids");
@@ -62,7 +75,7 @@ public class CheckoutServlet extends HttpServlet {
 
         try {
             if (bookIdRaw != null && quantityRaw != null) {
-                // ➤ Trường hợp Buy Now
+                // ➤ Buy Now case
                 int bookID = Integer.parseInt(bookIdRaw);
                 int quantity = Integer.parseInt(quantityRaw);
 
@@ -73,16 +86,18 @@ public class CheckoutServlet extends HttpServlet {
                 }
 
                 double total = quantity * book.getBookPrice();
+                String formattedUnitPrice = formatter.format(book.getBookPrice());
+                String formattedTotal = formatter.format(total);
 
                 request.setAttribute("type", "buynow");
                 request.setAttribute("bookId", bookID);
                 request.setAttribute("bookTitle", book.getBookTitle());
-                request.setAttribute("unitPrice", book.getBookPrice());
+                request.setAttribute("unitPrice", formattedUnitPrice);
                 request.setAttribute("quantity", quantity);
-                request.setAttribute("amount", total);
+                request.setAttribute("amount", formattedTotal);
 
             } else {
-                // ➤ Trường hợp từ giỏ hàng
+                // ➤ From Cart case
                 List<CartDTO> selectedItems;
 
                 if (idsRaw != null && !idsRaw.trim().isEmpty()) {
@@ -95,8 +110,7 @@ public class CheckoutServlet extends HttpServlet {
                             if (item != null && username.equals(item.getUsername())) {
                                 selectedItems.add(item);
                             }
-                        } catch (NumberFormatException ignored) {
-                        }
+                        } catch (NumberFormatException ignored) {}
                     }
                 } else {
                     selectedItems = cartDAO.getCartByUsername(username);
@@ -116,6 +130,8 @@ public class CheckoutServlet extends HttpServlet {
                     }
 
                     double total = item.getQuantity() * book.getBookPrice();
+                    String formattedUnitPrice = formatter.format(book.getBookPrice());
+                    String formattedTotal = formatter.format(total);
 
                     List<Integer> singleIdList = new ArrayList<>();
                     singleIdList.add(item.getCartID());
@@ -123,9 +139,10 @@ public class CheckoutServlet extends HttpServlet {
                     request.setAttribute("type", "single-cart");
                     request.setAttribute("bookTitle", book.getBookTitle());
                     request.setAttribute("quantity", item.getQuantity());
-                    request.setAttribute("unitPrice", book.getBookPrice());
-                    request.setAttribute("amount", total);
+                    request.setAttribute("unitPrice", formattedUnitPrice);
+                    request.setAttribute("amount", formattedTotal);
                     request.setAttribute("selectedItems", singleIdList);
+
                 } else {
                     List<CartItemWithBook> cartItemsWithBooks = new ArrayList<>();
                     List<Integer> ids = new ArrayList<>();
@@ -139,16 +156,18 @@ public class CheckoutServlet extends HttpServlet {
 
                         BookDTO book = bookDAO.getBookByID(item.getBookID());
                         if (book != null) {
-                            cartItemsWithBooks.add(new CartItemWithBook(item, book));
+                            cartItemsWithBooks.add(new CartItemWithBook(item, book, formatter));
                             total += item.getQuantity() * book.getBookPrice();
                             ids.add(item.getCartID());
                         }
                     }
 
+                    String formattedTotal = formatter.format(total);
+
                     request.setAttribute("type", "multi-cart");
                     request.setAttribute("cartItemsWithBooks", cartItemsWithBooks);
                     request.setAttribute("orderItems", cartItemsWithBooks.size());
-                    request.setAttribute("amount", total);
+                    request.setAttribute("amount", formattedTotal);
                     request.setAttribute("selectedItems", ids);
                 }
             }
@@ -166,6 +185,6 @@ public class CheckoutServlet extends HttpServlet {
 
     @Override
     public String getServletInfo() {
-        return "Handles Buy Now and Cart Checkout (1 or multiple items)";
+        return "Handles Buy Now and Cart Checkout (single or multiple items)";
     }
 }

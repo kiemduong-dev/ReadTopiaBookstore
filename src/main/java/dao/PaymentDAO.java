@@ -66,7 +66,7 @@ public class PaymentDAO {
         String sql = "UPDATE Payment SET status = ? WHERE paymentId = ?";
         try ( Connection conn = DBContext.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setString(1, payment.getStatus());
+            ps.setInt(1, payment.getStatus());
             ps.setString(2, payment.getPaymentId());
 
             boolean result = ps.executeUpdate() > 0;
@@ -103,9 +103,9 @@ public class PaymentDAO {
     private PaymentDTO extractPaymentFromResultSet(ResultSet rs) throws Exception {
         PaymentDTO payment = new PaymentDTO();
         payment.setPaymentId(rs.getString("paymentId"));
-        payment.setOrderId(rs.getString("orderId"));
+        payment.setOrderId(rs.getInt("orderId"));
         payment.setAmount(rs.getDouble("amount"));
-        payment.setStatus(rs.getString("status"));
+        payment.setStatus(rs.getInt("status"));
         return payment;
     }
 
@@ -114,9 +114,9 @@ public class PaymentDAO {
         try ( Connection conn = DBContext.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, payment.getPaymentId());
-            ps.setString(2, payment.getOrderId());
+            ps.setInt(2, payment.getOrderId());
             ps.setDouble(3, payment.getAmount());
-            ps.setString(4, payment.getStatus());
+            ps.setInt(4, payment.getStatus());
             ps.setString(5, payment.getPaymentMethod());
 
             return ps.executeUpdate() > 0;

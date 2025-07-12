@@ -1,84 +1,57 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="java.text.DecimalFormat, java.text.DecimalFormatSymbols" %>
 <%@ page import="dao.BookDAO, dto.BookDTO, dto.OrderDetailDTO, dto.OrderDTO" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <jsp:include page="/WEB-INF/includes/head-admin.jsp" />
 <jsp:include page="/WEB-INF/includes/sidebar-admin.jsp" />
 
+<%
+    DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+    symbols.setGroupingSeparator(' ');
+    DecimalFormat formatter = new DecimalFormat("###,###", symbols);
+    request.setAttribute("formatter", formatter);
+
+    BookDAO bookDAO = new BookDAO();
+    double totalAmount = 0;
+    OrderDTO currentOrder = (OrderDTO) request.getAttribute("order");
+%>
+
 <div class="main-content">
     <div class="content-area">
-        <%
-            BookDAO bookDAO = new BookDAO();
-            double totalAmount = 0;
-            OrderDTO currentOrder = (OrderDTO) request.getAttribute("order");
-        %>
-
         <div class="container-fluid py-4">
             <div class="row justify-content-center">
                 <div class="col-12 col-xl-10">
                     <div class="card shadow-lg border-0">
                         <div class="card-header bg-gradient-primary text-white">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h2 class="mb-1"><i class="bi bi-receipt me-2"></i>Chi tiết đơn hàng</h2>
-                                    <% if (currentOrder != null) {%>
-                                    <small class="opacity-75">Đơn hàng #<%= currentOrder.getOrderID()%> - 
-                                        <fmt:formatDate value="<%= currentOrder.getOrderDate()%>" pattern="dd/MM/yyyy HH:mm" />
-                                    </small>
-                                    <% } %>
-                                </div>
-                                <a href="${pageContext.request.contextPath}/order/management" 
-                                   class="btn btn-light btn-sm shadow-sm">
-                                    <i class="bi bi-arrow-left me-1"></i> Quay lại
-                                </a>
-                            </div>
+                            <h2 class="mb-0"><i class="bi bi-receipt me-2"></i>Order Details</h2>
                         </div>
 
-                        <% if (currentOrder != null) {%>
+                        <% if (currentOrder != null) { %>
                         <div class="card-body border-bottom bg-light">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <h3 class="text-dark fw-bold mb-2"><i class="bi bi-person me-1"></i>Thông tin khách hàng</h3>
-                                    <p class="mb-1 small"><strong class="small">Tên khách hàng:</strong> <span class="small"><%= currentOrder.getUsername()%></span></p>
-                                    <p class="mb-0 small"><strong class="small">Địa chỉ giao hàng:</strong> <span class="small"><%= currentOrder.getOrderAddress() != null ? currentOrder.getOrderAddress() : "Chưa cập nhật"%></span></p>
+                                    <h4 class="fw-bold">Customer Info</h4>
+                                    <p><strong>Username:</strong> <%= currentOrder.getUsername() %></p>
+                                    <p><strong>Shipping Address:</strong> <%= currentOrder.getOrderAddress() != null ? currentOrder.getOrderAddress() : "Not provided" %></p>
                                 </div>
                                 <div class="col-md-6">
-                                    <h3 class="text-dark fw-bold mb-2"><i class="bi bi-info-circle me-1"></i>Trạng thái đơn hàng</h3>
-                                    <p class="mb-1">
-                                        <strong class="small">Trạng thái:</strong>
-                                        <%
-                                            int status = currentOrder.getOrderStatus();
-                                            String statusClass = "";
-                                            String statusText = "";
-                                            switch (status) {
-                                                case 0:
-                                                    statusClass = "warning";
-                                                    statusText = "Đang xử lý";
-                                                    break;
-                                                case 1:
-                                                    statusClass = "info";
-                                                    statusText = "Đang giao hàng";
-                                                    break;
-                                                case 2:
-                                                    statusClass = "success";
-                                                    statusText = "Đã giao hàng";
-                                                    break;
-                                                case 3:
-                                                    statusClass = "danger";
-                                                    statusText = "Đã hủy";
-                                                    break;
-                                                case 4:
-                                                    statusClass = "secondary";
-                                                    statusText = "Đã trả hàng";
-                                                    break;
-                                                default:
-                                                    statusClass = "light text-dark";
-                                                    statusText = "Không xác định";
-                                            }
-                                        %>
-                                        <span class="badge bg-<%= statusClass%> fs-6"><%= statusText%></span>
-                                    </p>
-                                    <p class="mb-0 small"><strong class="small">Ngày đặt:</strong> <span class="small"><fmt:formatDate value="<%= currentOrder.getOrderDate()%>" pattern="dd/MM/yyyy HH:mm" /></span></p>
+                                    <h4 class="fw-bold">Order Info</h4>
+                                    <p><strong>Order Date:</strong> <%= new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(currentOrder.getOrderDate()) %></p>
+                                    <%
+                                        int status = currentOrder.getOrderStatus();
+                                        String statusClass = "";
+                                        String statusText = "";
+                                        switch (status) {
+                                            case 0: statusClass = "warning"; statusText = "Processing"; break;
+                                            case 1: statusClass = "info"; statusText = "Delivering"; break;
+                                            case 2: statusClass = "success"; statusText = "Delivered"; break;
+                                            case 3: statusClass = "danger"; statusText = "Cancelled"; break;
+                                            case 4: statusClass = "secondary"; statusText = "Returned"; break;
+                                            case 5: statusClass = "primary"; statusText = "Payment"; break;
+                                            default: statusClass = "light text-dark"; statusText = "Unknown"; break;
+                                        }
+                                    %>
+                                    <p><strong>Status:</strong> <span class="badge bg-<%= statusClass %>"><%= statusText %></span></p>
                                 </div>
                             </div>
                         </div>
@@ -90,77 +63,71 @@
                                     <thead class="table-dark">
                                         <tr>
                                             <th class="ps-4">#</th>
-                                            <th>Sản phẩm</th>
-                                            <th class="text-center">Số lượng</th>
-                                            <th class="text-end">Đơn giá</th>
-                                            <th class="text-end pe-4">Thành tiền</th>
+                                            <th>Product</th>
+                                            <th class="text-center">Quantity</th>
+                                            <th class="text-end">Unit Price</th>
+                                            <th class="text-end pe-4">Subtotal</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <c:forEach var="detail" items="${orderDetails}" varStatus="loop">
+                                        <c:forEach var="od" items="${orderDetails}" varStatus="loop">
                                             <%
-                                                OrderDetailDTO detail = (OrderDetailDTO) pageContext.getAttribute("detail");
-                                                BookDTO book = bookDAO.getBookByID(detail.getBookID());
-                                                totalAmount += detail.getTotalPrice();
+                                                OrderDetailDTO od = (OrderDetailDTO) pageContext.getAttribute("od");
+                                                BookDTO book = bookDAO.getBookByID(od.getBookID());
+                                                totalAmount += od.getTotalPrice();
                                             %>
-                                            <tr class="border-bottom">
-                                                <td class="ps-4 align-middle">
-                                                    <span class="badge bg-light text-dark rounded-pill">${loop.index + 1}</span>
-                                                </td>
+                                            <tr>
+                                                <td class="ps-4 align-middle">${loop.index + 1}</td>
                                                 <td class="py-3">
                                                     <div class="d-flex align-items-center">
-                                                        <% if (book != null) {%>
-                                                        <div class="position-relative me-3">
-                                                            <img src="<%= book.getImage()%>" alt="Book cover" 
-                                                                 class="rounded shadow-sm" width="60" height="80" 
-                                                                 onerror="this.src='https://via.placeholder.com/60x80?text=No+Image'">
-                                                        </div>
+                                                        <% if (book != null) { %>
+                                                        <img src="<%= book.getImage() %>" class="rounded shadow-sm me-3" width="60" height="80"
+                                                             onerror="this.src='https://via.placeholder.com/60x80?text=No+Image'">
                                                         <div>
-                                                            <div class="fw-bold text-primary mb-1"><%= book.getBookTitle()%></div>
-                                                            <small class="text-muted d-block">
-                                                                <i class="bi bi-person me-1"></i>Tác giả: <%= book.getAuthor()%>
-                                                            </small>
-                                                            <small class="text-muted">
-                                                                <i class="bi bi-hash me-1"></i>ID: ${detail.bookID}
-                                                            </small>
+                                                            <div class="fw-bold text-primary"><%= book.getBookTitle() %></div>
+                                                            <small class="text-muted">Author: <%= book.getAuthor() %></small><br>
+                                                            <small class="text-muted">ID: ${od.bookID}</small>
                                                         </div>
                                                         <% } else { %>
-                                                        <div class="d-flex align-items-center">
-                                                            <div class="bg-light rounded me-3 d-flex align-items-center justify-content-center" 
-                                                                 style="width: 60px; height: 80px;">
-                                                                <i class="bi bi-image text-muted"></i>
-                                                            </div>
-                                                            <div>
-                                                                <div class="fw-bold text-danger">Sản phẩm không tồn tại</div>
-                                                                <small class="text-muted">ID: ${detail.bookID}</small>
-                                                            </div>
-                                                        </div>
+                                                        <div class="text-danger">Product not found (ID: ${od.bookID})</div>
                                                         <% } %>
                                                     </div>
                                                 </td>
                                                 <td class="text-center align-middle">
-                                                    <span class="badge bg-primary rounded-pill fs-6">${detail.quantity}</span>
+                                                    <span class="badge bg-primary fs-6">${od.quantity}</span>
                                                 </td>
                                                 <td class="text-end align-middle">
-                                                    <% if (book != null) {%>
-                                                    <span class="text-muted">
-                                                        <fmt:formatNumber value="<%= book.getBookPrice()%>" type="number" pattern="#,##0" /> ₫
-                                                    </span>
+                                                    <% if (book != null) { %>
+                                                        <%= formatter.format(book.getBookPrice()) %> VND
                                                     <% } else { %>
-                                                    <span class="text-muted">N/A</span>
-                                                    <% }%>
+                                                        N/A
+                                                    <% } %>
                                                 </td>
                                                 <td class="text-end align-middle pe-4">
-                                                    <span class="fw-bold text-success fs-6">
-                                                        <fmt:formatNumber value="${detail.totalPrice}" type="number" pattern="#,##0" /> ₫
-                                                    </span>
+                                                    <strong class="text-success fs-6">
+                                                        <%= formatter.format(od.getTotalPrice()) %> VND
+                                                    </strong>
                                                 </td>
                                             </tr>
                                         </c:forEach>
+
+                                        <!-- Total row -->
+                                        <tr class="bg-light fw-bold">
+                                            <td colspan="4" class="text-end pe-4">Total Amount:</td>
+                                            <td class="text-end pe-4 text-success"><%= formatter.format(totalAmount) %> VND</td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
+
+                        <!-- ✅ Footer with Back Button placed correctly -->
+                        <div class="card-footer text-end">
+                            <a href="/ReadTopia/order/management" class="btn btn-secondary">
+                        ⬅ Back to Order Management
+                    </a>
+                        </div>
+
                     </div>
                 </div>
             </div>

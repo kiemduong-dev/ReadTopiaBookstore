@@ -1,8 +1,16 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@page import="java.text.DecimalFormatSymbols"%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" import="java.text.DecimalFormat" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
 <jsp:include page="/WEB-INF/includes/head.jsp" />
 <jsp:include page="/WEB-INF/includes/header.jsp" />
+
+<%
+    DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+    symbols.setGroupingSeparator(' ');
+    DecimalFormat formatter = new DecimalFormat("###,###,###", symbols);
+    request.setAttribute("formatter", formatter);
+    request.setAttribute("formatter", formatter);
+%>
 
 <div class="container py-4">
     <!-- Banner Carousel -->
@@ -10,12 +18,12 @@
         <div class="carousel-inner">
             <div class="carousel-item active">
                 <a href="${pageContext.request.contextPath}/customer/promotion/list">
-                    <img src="${pageContext.request.contextPath}/images/slide1.jpg" class="d-block w-100" alt="Khuyến mãi hè vui vẻ">
+                    <img src="${pageContext.request.contextPath}/images/slide1.jpg" class="d-block w-100" alt="Summer Promotion">
                 </a>
             </div>
             <div class="carousel-item">
                 <a href="${pageContext.request.contextPath}/customer/promotion/list">
-                    <img src="${pageContext.request.contextPath}/images/slide2.jpg" class="d-block w-100" alt="Ưu đãi đặc biệt">
+                    <img src="${pageContext.request.contextPath}/images/slide2.jpg" class="d-block w-100" alt="Special Offer">
                 </a>
             </div>
         </div>
@@ -27,17 +35,16 @@
         </button>
     </div>
 
-    <!-- Tiêu đề -->
-    <h2 class="mb-4">📚 Tất cả sách</h2>
+    <h2 class="mb-4">📚 All Books</h2>
 
-    <!-- Thanh tìm kiếm và lọc -->
+    <!-- Toolbar -->
     <form class="row g-3 mb-4" method="get" action="${pageContext.request.contextPath}/customer/book/list">
         <div class="col-md-3">
-            <input type="text" class="form-control" name="keyword" placeholder="Tìm theo tên hoặc tác giả" value="${param.keyword}" />
+            <input type="text" class="form-control" name="keyword" placeholder="Search by title or author" value="${param.keyword}"/>
         </div>
         <div class="col-md-3">
             <select name="categoryID" class="form-select">
-                <option value="">-- Danh mục --</option>
+                <option value="">-- Category --</option>
                 <c:forEach var="cat" items="${categoryList}">
                     <option value="${cat.categoryID}" ${param.categoryID == cat.categoryID ? 'selected' : ''}>
                         ${cat.categoryName}
@@ -47,35 +54,50 @@
         </div>
         <div class="col-md-3">
             <select name="sort" class="form-select">
-                <option value="">-- Sắp xếp --</option>
-                <option value="price_asc" ${param.sort == 'price_asc' ? 'selected' : ''}>Giá tăng dần</option>
-                <option value="price_desc" ${param.sort == 'price_desc' ? 'selected' : ''}>Giá giảm dần</option>
-                <option value="title_asc" ${param.sort == 'title_asc' ? 'selected' : ''}>Tên A - Z</option>
-                <option value="title_desc" ${param.sort == 'title_desc' ? 'selected' : ''}>Tên Z - A</option>
+                <option value="">-- Sort --</option>
+                <option value="price_asc" ${param.sort == 'price_asc' ? 'selected' : ''}>Price: Low to High</option>
+                <option value="price_desc" ${param.sort == 'price_desc' ? 'selected' : ''}>Price: High to Low</option>
+                <option value="title_asc" ${param.sort == 'title_asc' ? 'selected' : ''}>Title A - Z</option>
+                <option value="title_desc" ${param.sort == 'title_desc' ? 'selected' : ''}>Title Z - A</option>
             </select>
         </div>
         <div class="col-md-3">
-            <button class="btn btn-primary w-100" type="submit">🔍 Tìm kiếm</button>
+            <button class="btn btn-primary w-100" type="submit">🔍 Search</button>
         </div>
     </form>
 
-    <!-- Danh sách sách -->
+    <!-- Book List -->
     <div class="row row-cols-1 row-cols-md-4 g-4">
         <c:forEach var="book" items="${bookList}">
             <div class="col">
-                <div class="card h-100 shadow-sm book-card">
-                    <img src="${book.image}" class="card-img-top" alt="${book.bookTitle}"
-                         onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
-                    <div class="card-body">
-                        <h5 class="card-title">${book.bookTitle}</h5>
-                        <p class="card-text text-muted">Tác giả: ${book.author}</p>
-                        <p class="card-text text-danger fw-bold">${book.bookPrice} VNĐ</p>
-                        <a href="${pageContext.request.contextPath}/customer/book/detail?id=${book.bookID}" class="btn btn-primary btn-sm">Chi tiết</a>
+                <a href="${pageContext.request.contextPath}/customer/book/detail?id=${book.bookID}" class="text-decoration-none text-dark">
+                    <div class="card h-100 shadow-sm book-card" style="transition: all 0.3s;">
+                        <div class="position-relative">
+                            <img src="${book.image}" class="card-img-top" alt="${book.bookTitle}"
+                                 onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
+                            <div class="hover-overlay position-absolute top-0 start-0 w-100 h-100" style="background: rgba(0, 0, 0, 0.15); opacity: 0; transition: opacity 0.3s;"></div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">${book.bookTitle}</h5>
+                            <p class="card-text text-muted">Author: ${book.author}</p>
+                            <p class="card-text text-danger fw-bold">
+                                <c:out value="${formatter.format(book.bookPrice)}"/> VND
+                            </p>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
         </c:forEach>
     </div>
 </div>
 
 <jsp:include page="/WEB-INF/includes/footer.jsp" />
+
+<style>
+    .book-card:hover {
+        transform: scale(1.03);
+    }
+    .book-card:hover .hover-overlay {
+        opacity: 1;
+    }
+</style>

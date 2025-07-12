@@ -14,6 +14,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.Date;
+import java.sql.SQLException;
 
 /**
  *
@@ -47,7 +48,7 @@ public class OrderDAO {
 
             // 4. orderDate (nullable) - sửa thành java.sql.Date cho đúng với SQL DATE
             if (order.getOrderDate() != null) {
-                ps.setDate(4, new java.sql.Date(order.getOrderDate().getTime())); // ✅ fix bug
+                ps.setTimestamp(4, new java.sql.Timestamp(order.getOrderDate().getTime()));
             } else {
                 ps.setNull(4, java.sql.Types.DATE);
             }
@@ -358,7 +359,55 @@ public class OrderDAO {
     }
 
     public boolean updateStatusAndRestoreStock(int orderID, int newStatus) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        String updateOrderSQL = "UPDATE [Order] SET orderStatus = ? WHERE orderID = ?";
+        String selectDetailsSQL = "SELECT bookID, quantity FROM OrderDetail WHERE orderID = ?";
+        String updateStockSQL = "UPDATE Book SET bookQuantity = bookQuantity + ? WHERE bookID = ?";
+
+        try ( Connection conn = DBContext.getConnection()) {
+            conn.setAutoCommit(false); // Bắt đầu transaction
+
+            try (
+                     PreparedStatement updateOrderStmt = conn.prepareStatement(updateOrderSQL);  PreparedStatement selectDetailsStmt = conn.prepareStatement(selectDetailsSQL);  PreparedStatement updateStockStmt = conn.prepareStatement(updateStockSQL)) {
+                // 1. Update order status
+                updateOrderStmt.setInt(1, newStatus);
+                updateOrderStmt.setInt(2, orderID);
+                int updated = updateOrderStmt.executeUpdate();
+                if (updated == 0) {
+                    throw new SQLException("No order updated.");
+                }
+
+                // 2. Get order items
+                selectDetailsStmt.setInt(1, orderID);
+                ResultSet rs = selectDetailsStmt.executeQuery();
+
+                // 3. Restore stock for each item
+                while (rs.next()) {
+                    int bookID = rs.getInt("bookID");
+                    int quantity = rs.getInt("quantity");
+
+                    updateStockStmt.setInt(1, quantity);
+                    updateStockStmt.setInt(2, bookID);
+                    updateStockStmt.executeUpdate();
+                }
+
+                conn.commit(); // Thành công
+                System.out.println("✅ Order #" + orderID + " updated to status " + newStatus + " and stock restored.");
+                return true;
+
+            } catch (Exception ex) {
+                conn.rollback(); // Lỗi → rollback
+                System.err.println("❌ Error restoring stock: " + ex.getMessage());
+                ex.printStackTrace();
+            } finally {
+                conn.setAutoCommit(true);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 
 }
+

@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
@@ -7,9 +7,12 @@
 
 <div class="main-content">
     <div class="content-area">
-        <h1>Order Management</h1>
+        <!-- Tiêu đề -->
+        <div class="page-header">
+            <h1 class="page-title">📦 Order Management</h1>
+        </div>
 
-        <!-- Message -->
+        <!-- Thông báo -->
         <c:if test="${param.msg == 'success'}">
             <div class="alert alert-success alert-dismissible fade show">
                 ✅ Order status updated successfully!
@@ -23,82 +26,103 @@
             </div>
         </c:if>
 
-        <!-- Search Form -->
-        <form method="get" action="${pageContext.request.contextPath}/order/management" class="row g-3 mb-4">
-            <input type="hidden" name="action" value="search">
-            <div class="col-md-3">
-                <label class="form-label">Order ID</label>
-                <input type="number" name="orderID" class="form-control" value="${param.orderID}" placeholder="Enter Order ID" />
-            </div>
-            <div class="col-md-3">
-                <label class="form-label">Start Date</label>
-                <input type="date" name="startDate" class="form-control" value="${param.startDate}" />
-            </div>
-            <div class="col-md-3">
-                <label class="form-label">End Date</label>
-                <input type="date" name="endDate" class="form-control" value="${param.endDate}" />
-            </div>
-            <div class="col-md-3 d-flex align-items-end">
-                <button class="btn btn-primary me-2" type="submit">🔍 Search</button>
-                <a href="${pageContext.request.contextPath}/order/management" class="btn btn-outline-secondary">🔄 Reset</a>
-            </div>
-        </form>
+        <!-- Toolbar -->
+        <div class="toolbar mb-4">
+            <form action="${pageContext.request.contextPath}/order/management" method="get" class="row g-2 align-items-end flex-wrap">
+                <input type="hidden" name="action" value="search" />
 
-        <!-- Orders Table -->
+                <!-- Order ID -->
+                <div class="col-auto">
+                    <label for="orderID" class="form-label">Order ID</label>
+                    <input type="number" id="orderID" name="orderID" class="form-control" placeholder="Enter Order ID" value="${param.orderID}" />
+                </div>
+
+                <!-- Start Date -->
+                <div class="col-auto">
+                    <label for="startDate" class="form-label">Start Date</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                        <input type="date" id="startDate" name="startDate" class="form-control" value="${param.startDate}" />
+                    </div>
+                </div>
+
+                <!-- End Date -->
+                <div class="col-auto">
+                    <label for="endDate" class="form-label">End Date</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                        <input type="date" id="endDate" name="endDate" class="form-control" value="${param.endDate}" />
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">🔍 Search</button>
+                    <a href="${pageContext.request.contextPath}/order/management" class="btn btn-outline-secondary">🔄 Reset</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Bảng danh sách đơn -->
         <c:if test="${not empty orders}">
-            <table class="table table-bordered table-hover align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>Order ID</th>
-                        <th>Customer</th>
-                        <th>Order Date</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <c:forEach var="order" items="${orders}">
+            <div class="table-container">
+                <table class="table table-bordered align-middle text-center">
+                    <thead class="table-light">
                         <tr>
-                            <td class="fw-bold">#${order.orderID}</td>
-                            <td>${order.username}</td>
-                            <td><fmt:formatDate value="${order.orderDate}" pattern="dd/MM/yyyy HH:mm" /></td>
-                            <td>
-                                <c:choose>
-                                    <c:when test="${order.orderStatus == 0}">
-                                        <span class="badge bg-warning text-dark">Processing</span>
-                                    </c:when>
-                                    <c:when test="${order.orderStatus == 1}">
-                                        <span class="badge bg-info">Delivering</span>
-                                    </c:when>
-                                    <c:when test="${order.orderStatus == 2}">
-                                        <span class="badge bg-success">Delivered</span>
-                                    </c:when>
-                                    <c:when test="${order.orderStatus == 3}">
-                                        <span class="badge bg-danger">Cancelled</span>
-                                    </c:when>
-                                    <c:when test="${order.orderStatus == 4}">
-                                        <span class="badge bg-secondary">Returned</span>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <span class="badge bg-light text-dark">Unknown</span>
-                                    </c:otherwise>
-                                </c:choose>
-                            </td>
-                            <td>
-                                <a href="${pageContext.request.contextPath}/order/details?orderID=${order.orderID}" class="btn btn-sm btn-outline-info" title="View">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                <a href="${pageContext.request.contextPath}/order/edit?orderID=${order.orderID}" class="btn btn-sm btn-outline-primary" title="Edit">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                            </td>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Order Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
                         </tr>
-                    </c:forEach>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="order" items="${orders}">
+                            <tr>
+                                <td class="fw-bold">#${order.orderID}</td>
+                                <td>${order.username}</td>
+                                <td><fmt:formatDate value="${order.orderDate}" pattern="dd/MM/yyyy HH:mm" /></td>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${order.orderStatus == 0}">
+                                            <span class="status-badge processing">Processing</span>
+                                        </c:when>
+                                        <c:when test="${order.orderStatus == 1}">
+                                            <span class="status-badge delivering">Delivering</span>
+                                        </c:when>
+                                        <c:when test="${order.orderStatus == 2}">
+                                            <span class="status-badge delivered">Delivered</span>
+                                        </c:when>
+                                        <c:when test="${order.orderStatus == 3}">
+                                            <span class="status-badge cancelled">Cancelled</span>
+                                        </c:when>
+                                        <c:when test="${order.orderStatus == 4}">
+                                            <span class="status-badge returned">Returned</span>
+                                        </c:when>
+                                        <c:when test="${order.orderStatus == 5}">
+                                            <span class="status-badge payment">Payment</span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="status-badge unknown">Unknown</span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td>
+                                    <a href="${pageContext.request.contextPath}/order/details?orderID=${order.orderID}" class="action-btn btn-view" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="${pageContext.request.contextPath}/order/edit?orderID=${order.orderID}" class="action-btn btn-edit" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
+                </table>
+            </div>
         </c:if>
 
-        <!-- No orders -->
+        <!-- Không có đơn -->
         <c:if test="${empty orders}">
             <div class="alert alert-info text-center py-4">
                 <i class="bi bi-inbox fs-1 text-muted"></i>
@@ -107,3 +131,47 @@
         </c:if>
     </div>
 </div>
+
+<!-- Custom Styles -->
+<style>
+    .status-badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 5px;
+        font-weight: bold;
+        font-size: 0.85rem;
+    }
+
+    .processing { background-color: #fff3cd; color: #856404; }
+    .delivering { background-color: #d1ecf1; color: #0c5460; }
+    .delivered  { background-color: #d4edda; color: #155724; }
+    .cancelled  { background-color: #f8d7da; color: #721c24; }
+    .returned   { background-color: #e2e3e5; color: #6c757d; }
+    .payment    { background-color: #d1e7dd; color: #0f5132; }
+    .unknown    { background-color: #fefefe; color: #6c757d; }
+
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        color: #fff;
+        font-size: 16px;
+        text-decoration: none;
+        margin: 2px;
+    }
+
+    .btn-view {
+        background-color: #2196f3;
+    }
+
+    .btn-edit {
+        background-color: #ff9800;
+    }
+
+    .action-btn:hover {
+        opacity: 0.85;
+    }
+</style>
