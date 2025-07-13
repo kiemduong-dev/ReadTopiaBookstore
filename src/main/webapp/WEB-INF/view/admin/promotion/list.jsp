@@ -16,15 +16,27 @@
         </div>
 
         <!-- Search and Action Bar -->
-        <form action="${pageContext.request.contextPath}/admin/promotion/list" method="get" class="toolbar">
-            <input type="text" name="search" value="${search}" class="search-box" placeholder="Search by name or code" />
+        <form action="${pageContext.request.contextPath}/admin/promotion/list" method="get" class="toolbar" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
 
-            <div class="btn-group">
+            <!-- Ô tìm kiếm + nút search nằm cạnh nhau -->
+            <div style="display: flex; align-items: center; gap: 5px;">
+                <input type="text" name="search" value="${search}" class="search-box" placeholder="Search by name or code" />
                 <button type="submit" class="btn btn-primary">Search</button>
-                <a href="${pageContext.request.contextPath}/admin/promotion/add" class="btn btn-primary">Add New</a>
-                <a href="${pageContext.request.contextPath}/admin/promotion/logs" class="btn btn-secondary">Log</a>
             </div>
+
+            <!-- Dropdown status -->
+            <select name="status" class="form-select" onchange="this.form.submit()" style="width: 150px;">
+                <c:set var="statusVal" value="${status != null ? status : -1}" />
+                <option value="-1" <c:if test="${statusVal == -1}">selected</c:if>>All</option>
+                <option value="1" <c:if test="${statusVal == 1}">selected</c:if>>Active</option>
+                <option value="0" <c:if test="${statusVal == 0}">selected</c:if>>Inactive</option>
+                </select>
+
+                <!-- Các nút khác -->
+                <a href="${pageContext.request.contextPath}/admin/promotion/add" class="btn btn-primary">Add New</a>
+            <a href="${pageContext.request.contextPath}/admin/promotion/logs" class="btn btn-secondary">Log</a>
         </form>
+
 
         <!-- Table -->
         <div class="table-container">
