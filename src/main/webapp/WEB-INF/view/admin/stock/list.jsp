@@ -7,13 +7,11 @@
 
 <div class="main-content">
     <div class="content-area">
-        <!-- Page Header -->
         <div class="page-header">
             <h1 class="page-title">Inventory Management</h1>
             <p class="page-subtitle">Manage imported stock</p>
         </div>
 
-        <!-- ✅ IMPORT TAB -->
         <div id="importTab" class="card">
             <div class="card-title">Import Stock List</div>
 
@@ -47,46 +45,65 @@
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <c:choose>
-                            <c:when test="${empty importList}">
-                                <tr>
-                                    <td colspan="7" style="text-align: center; color: #777;">No stock imports found.</td>
-                                </tr>
-                            </c:when>
-                            <c:otherwise>
-                                <c:forEach var="s" items="${importList}">
-                                    <tr>
-                                        <td>${s.id}</td>
-                                        <td>${s.supplierName}</td>
-                                        <td><fmt:formatDate value="${s.importDate}" pattern="yyyy-MM-dd" /></td>
-                                        <td>${s.staffName}</td>
-                                        <td><fmt:formatNumber value="${s.totalPrice}" type="number" groupingUsed="true" /> VND</td>
-                                        <td>
-                                            <span class="status-badge ${s.status == 1 ? 'active' : 'inactive'}">
-                                                ${s.status == 1 ? 'Active' : 'Inactive'}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <a href="${pageContext.request.contextPath}/ImportStockDetailServlet?isid=${s.id}" 
-                                               class="btn-icon btn-info" title="View detail">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                </c:forEach>
-                            </c:otherwise>
-                        </c:choose>
+                    <tbody class="stock-body">
+                        <c:forEach var="s" items="${importList}">
+                            <tr>
+                                <td>${s.id}</td>
+                                <td>${s.supplierName}</td>
+                                <td><fmt:formatDate value="${s.importDate}" pattern="yyyy-MM-dd" /></td>
+                                <td>${s.staffName}</td>
+                                <td><fmt:formatNumber value="${s.totalPrice}" type="number" groupingUsed="true" /> VND</td>
+                                <td>
+                                    <span class="status-badge ${s.status == 1 ? 'active' : 'inactive'}">
+                                        ${s.status == 1 ? 'Active' : 'Inactive'}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="${pageContext.request.contextPath}/ImportStockDetailServlet?isid=${s.id}" 
+                                       class="btn-icon btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </c:forEach>
                     </tbody>
                 </table>
             </div>
+            <div class="pagination-wrapper">
+                <ul class="pagination">
+                    <li>
+                        <button class="page-btn"
+                                onclick="pagingStock(${currentPage - 1})"
+                                data-page="${currentPage - 1}"
+                                ${currentPage == 1 ? 'disabled' : ''}>
+                            &lt;
+                        </button>
+                    </li>
+
+                    <c:forEach begin="1" end="${totalPages}" var="i">
+                        <li>
+                            <button class="page-btn ${i == currentPage ? 'active' : ''}"
+                                    onclick="pagingStock(${i})"
+                                    data-page="${i}">
+                                ${i}
+                            </button>
+                        </li>
+                    </c:forEach>
+
+                    <li>
+                        <button class="page-btn"
+                                onclick="pagingStock(${currentPage + 1})"
+                                data-page="${currentPage + 1}"
+                                ${currentPage == totalPages ? 'disabled' : ''}>
+                            &gt;
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+
         </div>
     </div>
 </div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        // Auto show import tab only
-        document.getElementById("importTab").style.display = "block";
-    });
-</script>
+<script src="${pageContext.request.contextPath}/assets/js/paging-stock.js"></script>

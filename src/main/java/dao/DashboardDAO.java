@@ -159,4 +159,35 @@ public class DashboardDAO {
         }
         return list;
     }
+     public Map<String, Integer> getImportStockLast7Days() throws Exception {
+        String sql = "SELECT CONVERT(varchar, s.importDate, 23) AS day, "
+                + "ISNULL(SUM(d.ISDQuantity * d.importPrice), 0) AS total "
+                + "FROM ImportStock s "
+                + "LEFT JOIN ImportStockDetail d ON s.ISID = d.ISID "
+                + "WHERE s.importDate >= DATEADD(DAY, -6, CAST(GETDATE() AS DATE)) "
+                + "GROUP BY CONVERT(varchar, s.importDate, 23) "
+                + "ORDER BY day ASC";
+
+        Map<String, Integer> result = new LinkedHashMap<>();
+
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
+
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.DATE, -6);
+            for (int i = 0; i < 7; i++) {
+                java.sql.Date d = new java.sql.Date(cal.getTimeInMillis());
+                result.put(d.toString(), 0);
+                cal.add(Calendar.DATE, 1);
+            }
+
+            // Ghi đè các ngày có dữ liệu từ DB
+            while (rs.next()) {
+                String day = rs.getString("day");
+                int total = rs.getInt("total");
+                result.put(day, total);
+            }
+        }
+
+        return result;
+    }
 }

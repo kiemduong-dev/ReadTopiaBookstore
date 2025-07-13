@@ -89,7 +89,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
-        // Chuyển List<String> và List<Integer> truyền từ Servlet thành JS Array thủ công để không bị lỗi
+        // Nhận dữ liệu từ server
         const revenueLabels = [
         <c:forEach items="${revenueLabels}" var="label" varStatus="status">
         '${label}'<c:if test="${!status.last}">,</c:if>
@@ -102,19 +102,34 @@
         </c:forEach>
         ];
 
-        // Vẽ chart doanh thu 7 ngày gần đây
+        const importStock = [
+        <c:forEach items="${importStockData}" var="data" varStatus="status">
+            ${data}<c:if test="${!status.last}">,</c:if>
+        </c:forEach>
+        ];
+
+        // Vẽ biểu đồ
         const ctxRevenue = document.getElementById('revenueChart').getContext('2d');
         const revenueChart = new Chart(ctxRevenue, {
             type: 'line',
             data: {
                 labels: revenueLabels,
-                datasets: [{
+                datasets: [
+                    {
                         label: 'Revenue (VND)',
                         data: revenueData,
                         borderColor: '#2196f3',
                         backgroundColor: 'rgba(33, 150, 243, 0.1)',
                         tension: 0.4
-                    }]
+                    },
+                    {
+                        label: 'Import Stock (VND)',
+                        data: importStock,
+                        borderColor: '#4caf50',
+                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                        tension: 0.4
+                    }
+                ]
             },
             options: {
                 responsive: true,
@@ -132,5 +147,6 @@
             }
         });
     </script>
+
 </body>
 </html>

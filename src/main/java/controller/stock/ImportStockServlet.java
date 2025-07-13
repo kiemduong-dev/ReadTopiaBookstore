@@ -6,25 +6,20 @@ import dao.StaffDAO;
 import dao.SupplierDAO;
 import dto.ImportStockDTO;
 import dto.ImportStockDetailDTO;
+import dto.Data;
+import com.google.gson.Gson;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.*;
 
 import java.io.IOException;
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-/**
- * Import Stock – Handle listing & adding import stock records
- * @author ReadTopia
- */
 @WebServlet("/admin/stock/list")
 public class ImportStockServlet extends HttpServlet {
 
+    private static final int PAGE_SIZE = 5;
     private ImportStockDAO dao;
 
     @Override
@@ -32,44 +27,71 @@ public class ImportStockServlet extends HttpServlet {
         dao = new ImportStockDAO();
     }
 
-    /**
-     * Display either Add Form or List of Import Stocks
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
+
         String action = Optional.ofNullable(request.getParameter("action")).orElse("list");
 
         try {
-            if (action.equals("add")) {
-                SupplierDAO supplierDAO = new SupplierDAO();
-                StaffDAO staffDAO = new StaffDAO();
-                BookDAO bookDAO = new BookDAO();
-
-                request.setAttribute("supplierList", supplierDAO.getAllSuppliers());
-                request.setAttribute("staffList", staffDAO.getAllStaff());
-                request.setAttribute("bookList", bookDAO.getAllBooks());
-
-                request.getRequestDispatcher("/WEB-INF/view/admin/stock/add.jsp").forward(request, response);
-
-            } else {
-                // Lấy tất cả nhập kho mà không phân trang
-                List<ImportStockDTO> importList = dao.getAllImportStocks(); // Bỏ phân trang
-                request.setAttribute("importList", importList);
-                request.getRequestDispatcher("/WEB-INF/view/admin/stock/list.jsp").forward(request, response);
+            switch (action) {
+                case "add":
+                    forwardAddPage(request, response);
+                    break;
+                case "paging":
+                    handlePagingAjax(request, response);
+                    break;
+                default:
+                    handleListPage(request, response);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("errorMessage", "❌ Unexpected error occurred: " + e.getMessage());
+            request.setAttribute("errorMessage", "❌ Unexpected error: " + e.getMessage());
             request.getRequestDispatcher("/WEB-INF/view/admin/stock/list.jsp").forward(request, response);
         }
     }
 
-    /**
-     * Handle Insert New Import Stock
-     */
+    private void handleListPage(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        int total = dao.getTotalImportStockCount();
+        int totalPages = (int) Math.ceil((double) total / PAGE_SIZE);
+        int page = 1;
+
+        List<ImportStockDTO> stocks = dao.getImportStocksByPage(page, PAGE_SIZE);
+        request.setAttribute("importList", stocks);
+        request.setAttribute("totalPages", totalPages);
+        request.setAttribute("currentPage", page);
+
+        request.getRequestDispatcher("/WEB-INF/view/admin/stock/list.jsp").forward(request, response);
+    }
+
+    private void handlePagingAjax(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+
+        int page = 1;
+        try {
+            page = Integer.parseInt(request.getParameter("value"));
+            if (page < 1) page = 1;
+        } catch (NumberFormatException ignored) {}
+
+        int total = dao.getTotalImportStockCount();
+        int totalPages = (int) Math.ceil((double) total / PAGE_SIZE);
+
+        List<ImportStockDTO> stocks = dao.getImportStocksByPage(page, PAGE_SIZE);
+        Data helper = new Data();
+
+        Map<String, String> result = new HashMap<>();
+        result.put("rowsHtml", helper.getInterfaceImportStock(stocks));
+        result.put("paginationHtml", helper.getStockPaginationHTML(page, totalPages));
+
+        response.setContentType("application/json");
+        response.getWriter().write(new Gson().toJson(result));
+    }
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
@@ -78,7 +100,6 @@ public class ImportStockServlet extends HttpServlet {
             int staffID = Integer.parseInt(request.getParameter("staffID"));
             Date importDate = Date.valueOf(request.getParameter("importDate"));
 
-            // ✅ Fix: đúng với name="xxx[]" bên JSP
             String[] bookIDs = request.getParameterValues("bookIDList[]");
             String[] quantities = request.getParameterValues("quantityList[]");
             String[] prices = request.getParameterValues("priceList[]");
@@ -107,6 +128,7 @@ public class ImportStockServlet extends HttpServlet {
 
             ImportStockDTO stock = new ImportStockDTO(0, supID, importDate, staffID, 1);
             dao.insertFullImportStock(stock, detailList);
+
             response.sendRedirect(request.getContextPath() + "/admin/stock/list?action=list");
 
         } catch (Exception e) {
@@ -116,19 +138,17 @@ public class ImportStockServlet extends HttpServlet {
         }
     }
 
-    /**
-     * Helper: Load dropdown data and forward to Add page
-     */
-    private void forwardAddPage(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        SupplierDAO supplierDAO = new SupplierDAO();
-        StaffDAO staffDAO = new StaffDAO();
-        BookDAO bookDAO = new BookDAO();
+   private void forwardAddPage(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+    SupplierDAO supplierDAO = new SupplierDAO();
+    StaffDAO staffDAO = new StaffDAO();
+    BookDAO bookDAO = new BookDAO();
 
-        request.setAttribute("supplierList", supplierDAO.getAllSuppliers());
-        request.setAttribute("staffList", staffDAO.getAllStaff());
-        request.setAttribute("bookList", bookDAO.getAllBooks());
+    request.setAttribute("supplierList", supplierDAO.getActiveSuppliers());
+    request.setAttribute("staffList", staffDAO.getAllActiveSellerAndWarehouseStaff()); 
+    request.setAttribute("bookList", bookDAO.getAllBooks());
 
-        request.getRequestDispatcher("/WEB-INF/view/admin/stock/add.jsp").forward(request, response);
-    }
+    request.getRequestDispatcher("/WEB-INF/view/admin/stock/add.jsp").forward(request, response);
+}
+
 }

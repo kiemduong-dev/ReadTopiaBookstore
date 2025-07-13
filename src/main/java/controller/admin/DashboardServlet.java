@@ -51,6 +51,8 @@ public class DashboardServlet extends HttpServlet {
             int totalBooks = dashboardDAO.getTotalBooks();
             Map<String, Integer> revenueMap = dashboardDAO.getRevenueLast7Days();
             List<BookSoldDTO> topBooks = dashboardDAO.getTopBooksSold();
+             Map<String, Integer> importStockMap = dashboardDAO.getImportStockLast7Days();
+            request.setAttribute("importStockData", new ArrayList<>(importStockMap.values()));
 
             // Set data to request scope for JSP rendering
             request.setAttribute("totalRevenue", totalRevenue);
@@ -59,6 +61,7 @@ public class DashboardServlet extends HttpServlet {
             request.setAttribute("totalBooks", totalBooks);
             request.setAttribute("revenueLabels", new ArrayList<>(revenueMap.keySet()));
             request.setAttribute("revenueData", new ArrayList<>(revenueMap.values()));
+               request.setAttribute("importStockData", new ArrayList<>(importStockMap.values()));
             request.setAttribute("topBooks", topBooks);
 
             // Forward to JSP

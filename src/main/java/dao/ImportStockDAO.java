@@ -140,4 +140,39 @@ public class ImportStockDAO {
         }
         return list;
     }
+    public List<ImportStockDTO> getImportStocksByPage(int page, int pageSize) {
+    List<ImportStockDTO> list = new ArrayList<>();
+    String sql = "SELECT i.ISID, i.importDate, i.ISStatus, s.supID, s.supName, st.staffID, " +
+                 "a.firstName + ' ' + a.lastName AS staffName, " +
+                 "SUM(ISNULL(d.ISDQuantity * d.importPrice, 0)) AS totalPrice " +
+                 "FROM ImportStock i " +
+                 "JOIN Supplier s ON i.supID = s.supID " +
+                 "JOIN Staff st ON i.staffID = st.staffID " +
+                 "JOIN Account a ON st.username = a.username " +
+                 "LEFT JOIN ImportStockDetail d ON i.ISID = d.ISID " +
+                 "GROUP BY i.ISID, i.importDate, i.ISStatus, s.supID, s.supName, st.staffID, a.firstName, a.lastName " +
+                 "ORDER BY i.ISID ASC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, (page - 1) * pageSize);
+        ps.setInt(2, pageSize);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            ImportStockDTO stock = new ImportStockDTO();
+            stock.setId(rs.getInt("ISID"));
+            stock.setImportDate(rs.getDate("importDate"));
+            stock.setStatus(rs.getInt("ISStatus"));
+            stock.setSupplierID(rs.getInt("supID"));
+            stock.setSupplierName(rs.getString("supName"));
+            stock.setStaffID(rs.getInt("staffID"));
+            stock.setStaffName(rs.getString("staffName"));
+            stock.setTotalPrice(rs.getDouble("totalPrice"));
+            list.add(stock);
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return list;
+}
+
 }

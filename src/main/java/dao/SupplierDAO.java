@@ -86,29 +86,39 @@ public class SupplierDAO {
     public List<SupplierDTO> getSupplierBySupplierName(String name) {
         List<SupplierDTO> list = new ArrayList<>();
         String sql = "SELECT * FROM Supplier WHERE supName COLLATE SQL_Latin1_General_CP1_CI_AI LIKE ?";
-        try (Connection conn = getConnection();
+
+        try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, "%" + name + "%");
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    SupplierDTO s = new SupplierDTO(
-                            rs.getInt("supID"),
-                            rs.getString("supName"),
-                            rs.getString("supEmail"),
-                            rs.getString("supPhone"),
-                            rs.getString("supAddress"),
-                            rs.getString("supPassword"),
-                            rs.getString("supImage"),
-                            rs.getInt("supStatus")
-                    );
-                    list.add(s);
+                    list.add(extractSupplier(rs));
                 }
             }
         } catch (Exception e) {
-            System.out.println("getSupplierBySupplierName: " + e);
+            System.out.println("getSupplierBySupplierName: " + e.getMessage());
         }
         return list;
+    }
+
+    /**
+     * Extract supplier from ResultSet
+     * @param rs result set
+     * @return supplier DTO
+     * @throws SQLException error if any
+     */
+    private SupplierDTO extractSupplier(ResultSet rs) throws SQLException {
+        return new SupplierDTO(
+                rs.getInt("supID"),
+                rs.getString("supName"),
+                rs.getString("supEmail"),
+                rs.getString("supPhone"),
+                rs.getString("supAddress"),
+                rs.getString("supPassword"),
+                rs.getString("supImage"),
+                rs.getInt("supStatus")
+        );
     }
 
     public void addSupplier(String name, String password, String email, String phone, String address, boolean status, String image) {
@@ -157,17 +167,57 @@ public class SupplierDAO {
         }
     }
 
-    public int getTotalSupplier() {
-        String query = "SELECT COUNT(supID) AS total FROM Supplier";
-        try (Connection con = getConnection();
+  public int getTotalSuppliers() {
+        String query = "SELECT COUNT(*) FROM Supplier";
+        try (Connection con = DBContext.getConnection();
              PreparedStatement pst = con.prepareStatement(query);
              ResultSet rs = pst.executeQuery()) {
             if (rs.next()) {
-                return rs.getInt("total");
+                return rs.getInt(1);
             }
         } catch (Exception e) {
-            System.out.println("getTotalSupplier: " + e);
+            System.out.println("getTotalSuppliers: " + e.getMessage());
         }
-        return -1;
+        return 0;
     }
+    
+    public List<SupplierDTO> getSuppliersByPage(int page, int pageSize) {
+        List<SupplierDTO> list = new ArrayList<>();
+        String query = "SELECT * FROM Supplier ORDER BY supID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        int offset = (page - 1) * pageSize;
+
+        try (Connection con = DBContext.getConnection();
+             PreparedStatement pst = con.prepareStatement(query)) {
+
+            pst.setInt(1, offset);
+            pst.setInt(2, pageSize);
+
+            try (ResultSet rs = pst.executeQuery()) {
+                while (rs.next()) {
+                    list.add(extractSupplier(rs));
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("getSuppliersByPage: " + e.getMessage());
+        }
+
+        return list;
+    }
+     public List<SupplierDTO> getActiveSuppliers() {
+    List<SupplierDTO> list = new ArrayList<>();
+    String sql = "SELECT supID, supName FROM Supplier WHERE supStatus = 1 ORDER BY supName";
+    try (Connection conn = getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) {
+            SupplierDTO s = new SupplierDTO();
+            s.setSupID(rs.getInt("supID"));
+            s.setSupName(rs.getString("supName"));
+            list.add(s);
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return list;
+}
 }
