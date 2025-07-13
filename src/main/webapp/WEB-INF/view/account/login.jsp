@@ -69,7 +69,7 @@
 
                     <!-- Back Home -->
                     <div class="text-center mt-3">
-                        <a href="${pageContext.request.contextPath}/home" class="link">Back to Home</a>
+                        <a href="${pageContext.request.contextPath}/customer/book/list" class="link">Back to Home</a>
                     </div>
                 </form>
             </div>

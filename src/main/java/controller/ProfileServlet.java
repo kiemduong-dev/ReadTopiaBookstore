@@ -8,10 +8,12 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 
 /**
- * ProfileServlet – Displays the profile page of the authenticated user.
- * Redirects to login page if no valid session exists.
+ * ProfileServlet – Displays the profile page of the authenticated user. Only
+ * handles GET requests. If no valid session exists, redirects to login.
  *
- * URL mapping: /profile Author: CE181518 Dương An Kiếm
+ * URL Mapping: /profile
+ *
+ * @author CE181518 Dương An Kiếm
  */
 @WebServlet(name = "ProfileServlet", urlPatterns = {"/profile"})
 public class ProfileServlet extends HttpServlet {
@@ -19,9 +21,9 @@ public class ProfileServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Handles both GET and POST requests to show user profile.
+     * Handles GET request to show user profile page.
      *
-     * Flow: 1. Get existing session without creating a new one. 2. Check if
+     * Flow: 1. Check existing session without creating new one. 2. Check if
      * session contains authenticated user. 3. If not logged in → redirect to
      * login. 4. If logged in → forward to profile.jsp with user data.
      *
@@ -30,7 +32,8 @@ public class ProfileServlet extends HttpServlet {
      * @throws ServletException if servlet error occurs
      * @throws IOException if I/O error occurs
      */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         response.setContentType("text/html;charset=UTF-8");
@@ -48,28 +51,24 @@ public class ProfileServlet extends HttpServlet {
     }
 
     /**
-     * Handles GET request.
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
-    }
-
-    /**
-     * Handles POST request (same as GET – allows resubmission or refresh).
+     * POST method is disabled for ProfileServlet. Redirects to profile page.
+     *
+     * @param request HttpServletRequest object
+     * @param response HttpServletResponse object
+     * @throws ServletException if servlet error occurs
+     * @throws IOException if I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        response.sendRedirect(request.getContextPath() + "/profile");
     }
 
     /**
-     * @return Brief description of servlet.
+     * @return Description of servlet.
      */
     @Override
     public String getServletInfo() {
-        return "Displays authenticated user's profile page.";
+        return "Displays authenticated user's profile page (GET only).";
     }
 }

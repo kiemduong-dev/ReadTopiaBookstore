@@ -24,29 +24,28 @@ public class ValidationUtil {
     }
 
     /**
-     * Validate first/last name: allow Vietnamese characters & spaces, no digits
-     * or symbols
+     * Validate first/last name: alphabet letters & spaces only, no digits or
+     * symbols
      *
      * @param name input name
      * @return true if valid
      */
     public static boolean isValidName(String name) {
-        return name != null && name.matches("^[\\p{L} .'-]{1,50}$");
+        return name != null && name.matches("^[A-Za-z ]{1,50}$");
     }
 
     /**
-     * Validate general email format (allow any domain)
+     * Validate email format
      *
      * @param email input email
-     * @return true if valid format
+     * @return true if valid
      */
     public static boolean isValidEmail(String email) {
         return email != null && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$");
     }
 
     /**
-     * Validate password strength - At least 8 characters - Includes lowercase,
-     * uppercase, number, special character
+     * Validate password strength
      *
      * @param password input password
      * @return true if valid
@@ -68,8 +67,7 @@ public class ValidationUtil {
     }
 
     /**
-     * Validate Vietnamese phone number: - 10 digits - Starts with 03, 05, 07,
-     * 08, 09
+     * Validate Vietnamese phone number
      *
      * @param phone input phone number
      * @return true if valid
@@ -82,38 +80,34 @@ public class ValidationUtil {
      * Validate address is not blank
      *
      * @param address input address
-     * @return true if not empty or blank
+     * @return true if valid
      */
     public static boolean isValidAddress(String address) {
         return address != null && !address.trim().isEmpty();
     }
 
     /**
-     * Validate gender: must be "male" or "female" (case-insensitive)
+     * Validate gender: must be "0" or "1"
      *
      * @param gender input gender
      * @return true if valid
      */
     public static boolean isValidGender(String gender) {
-        return gender != null
-                && (gender.equalsIgnoreCase("male") || gender.equalsIgnoreCase("female"));
+        return gender != null && (gender.equals("0") || gender.equals("1"));
     }
 
     /**
-     * Validate date of birth: - Format: dd/MM/yyyy (VN style) - User must be ≥
-     * 13 years old
+     * Validate date of birth: format yyyy-MM-dd and age >= 13
      *
-     * @param dobString input date string in dd/MM/yyyy format
-     * @return true if valid format and age >= 13
+     * @param dobString input date string yyyy-MM-dd
+     * @return true if valid
      */
     public static boolean isValidDob(String dobString) {
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            LocalDate dob = LocalDate.parse(dobString, formatter);
+            LocalDate dob = LocalDate.parse(dobString);
             return Period.between(dob, LocalDate.now()).getYears() >= 13;
         } catch (DateTimeParseException e) {
             return false;
         }
     }
-
 }

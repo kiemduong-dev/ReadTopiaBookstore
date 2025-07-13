@@ -17,7 +17,9 @@ import java.time.format.DateTimeParseException;
  * EditProfileServlet – Handles displaying and updating user's profile. Supports
  * GET (view form) and POST (handle update).
  *
- * URL Mapping: /edit-profile Author: CE181518 Dương An Kiếm
+ * URL Mapping: /edit-profile
+ *
+ * @author CE181518 Dương An Kiếm
  */
 @WebServlet(name = "EditProfileServlet", urlPatterns = {"/edit-profile"})
 public class EditProfileServlet extends HttpServlet {
@@ -25,12 +27,16 @@ public class EditProfileServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Handle GET/POST logic
+     * Handles GET request to show edit profile form.
+     *
+     * @param request HttpServletRequest
+     * @param response HttpServletResponse
+     * @throws ServletException
+     * @throws IOException
      */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        response.setContentType("text/html;charset=UTF-8");
         HttpSession session = request.getSession(false);
         AccountDTO account = (session != null) ? (AccountDTO) session.getAttribute("account") : null;
 
@@ -39,14 +45,30 @@ public class EditProfileServlet extends HttpServlet {
             return;
         }
 
-        // GET → Hiển thị form
-        if ("GET".equalsIgnoreCase(request.getMethod())) {
-            request.setAttribute("user", account);
-            request.getRequestDispatcher("/WEB-INF/view/account/editProfile.jsp").forward(request, response);
+        request.setAttribute("user", account);
+        request.getRequestDispatcher("/WEB-INF/view/account/editProfile.jsp").forward(request, response);
+    }
+
+    /**
+     * Handles POST request to update profile information.
+     *
+     * @param request HttpServletRequest
+     * @param response HttpServletResponse
+     * @throws ServletException
+     * @throws IOException
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        HttpSession session = request.getSession(false);
+        AccountDTO account = (session != null) ? (AccountDTO) session.getAttribute("account") : null;
+
+        if (account == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
 
-        // POST → Xử lý cập nhật
         try {
             String firstName = request.getParameter("firstName");
             String lastName = request.getParameter("lastName");
@@ -56,7 +78,7 @@ public class EditProfileServlet extends HttpServlet {
             String dobStr = request.getParameter("dob");
             String gender = request.getParameter("sex");
 
-            int sex = "male".equalsIgnoreCase(gender) ? 1 : 0;
+            int sex = Integer.parseInt(gender);
 
             // Validate input
             if (!ValidationUtil.isValidName(firstName)) {
@@ -74,12 +96,9 @@ public class EditProfileServlet extends HttpServlet {
             } else if (!ValidationUtil.isValidAddress(address)) {
                 request.setAttribute("error", "Address is required.");
             } else {
-                // Parse date dd/MM/yyyy
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                LocalDate parsedDob = LocalDate.parse(dobStr, formatter);
+                LocalDate parsedDob = LocalDate.parse(dobStr);
                 Date dob = Date.valueOf(parsedDob);
 
-                // Update DTO
                 account.setFirstName(firstName);
                 account.setLastName(lastName);
                 account.setEmail(email);
@@ -88,11 +107,11 @@ public class EditProfileServlet extends HttpServlet {
                 account.setSex(sex);
                 account.setDob(dob);
 
-                AccountDAO dao = new AccountDAO();
+                AccountDAO dao = new AccountDAO(); // Hoặc AccountDAO dao = new AccountDAOImpl();
                 boolean updated = dao.updateProfile(account);
 
                 if (updated) {
-                    session.setAttribute("account", account); // Update session
+                    session.setAttribute("account", account);
                     request.setAttribute("success", "✅ Profile updated successfully.");
                 } else {
                     request.setAttribute("error", "❌ Failed to update profile. Please try again.");
@@ -100,7 +119,7 @@ public class EditProfileServlet extends HttpServlet {
             }
 
         } catch (DateTimeParseException e) {
-            request.setAttribute("error", "Date of birth must be in dd/MM/yyyy format.");
+            request.setAttribute("error", "Date of birth must be in yyyy-MM-dd format.");
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "An unexpected error occurred: " + e.getMessage());
@@ -108,24 +127,6 @@ public class EditProfileServlet extends HttpServlet {
 
         request.setAttribute("user", account);
         request.getRequestDispatcher("/WEB-INF/view/account/editProfile.jsp").forward(request, response);
-    }
-
-    /**
-     * Handle GET request
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
-    }
-
-    /**
-     * Handle POST request
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
     }
 
     @Override
