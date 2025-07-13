@@ -127,19 +127,12 @@ public class PromotionDAO {
 
     // Update promotion
     public boolean updatePromotion(PromotionDTO p) throws SQLException {
-        String sql = "UPDATE Promotion SET proName=?, proCode=?, discount=?, startDate=?, endDate=?, quantity=?, proStatus=?, createdBy=?, approvedBy=? "
-                + "WHERE proID=?";
+        String sql = "UPDATE Promotion SET startDate = ?, endDate = ?, quantity = ? WHERE proID = ?";
         try ( PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, p.getProName());
-            ps.setString(2, p.getProCode());
-            ps.setDouble(3, p.getDiscount());
-            ps.setDate(4, p.getStartDate());
-            ps.setDate(5, p.getEndDate());
-            ps.setInt(6, p.getQuantity());
-            ps.setInt(7, p.getProStatus());
-            ps.setInt(8, p.getCreatedBy());
-            ps.setInt(9, p.getApprovedBy());
-            ps.setInt(10, p.getProID());
+            ps.setDate(1, p.getStartDate());
+            ps.setDate(2, p.getEndDate());
+            ps.setInt(3, p.getQuantity());
+            ps.setInt(4, p.getProID());
             return ps.executeUpdate() > 0;
         }
     }
@@ -239,16 +232,48 @@ public class PromotionDAO {
 
         return null;
     }
-    
-    public void updatePromotionStatus(int proID, int status, int approvedBy) throws SQLException {
-    String sql = "UPDATE Promotion SET proStatus = ?, approvedBy = ? WHERE proID = ?";
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setInt(1, status);
-        ps.setInt(2, approvedBy);
-        ps.setInt(3, proID);
-        ps.executeUpdate();
-    }
-}
 
+    public void updatePromotionStatus(int proID, int status, int approvedBy) throws SQLException {
+        String sql = "UPDATE Promotion SET proStatus = ?, approvedBy = ? WHERE proID = ?";
+        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, status);
+            ps.setInt(2, approvedBy);
+            ps.setInt(3, proID);
+            ps.executeUpdate();
+        }
+    }
+
+    // Filter promotions by status: -1 (all), 1 (active), 0 (inactive)
+    public List<PromotionDTO> filterByStatus(int status) throws SQLException {
+        List<PromotionDTO> list = new ArrayList<>();
+        String sql = "SELECT * FROM Promotion";
+        if (status == 0 || status == 1) {
+            sql += " WHERE proStatus = ?";
+        }
+        sql += " ORDER BY proID DESC";
+
+        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
+            if (status == 0 || status == 1) {
+                ps.setInt(1, status);
+            }
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                PromotionDTO p = new PromotionDTO(
+                        rs.getInt("proID"),
+                        rs.getString("proName"),
+                        rs.getString("proCode"),
+                        rs.getDouble("discount"),
+                        rs.getDate("startDate"),
+                        rs.getDate("endDate"),
+                        rs.getInt("quantity"),
+                        rs.getInt("proStatus"),
+                        rs.getInt("createdBy"),
+                        rs.getInt("approvedBy")
+                );
+                list.add(p);
+            }
+        }
+        return list;
+    }
 
 }

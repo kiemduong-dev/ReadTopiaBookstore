@@ -7,45 +7,49 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<!-- Notification Icon -->
-<button class="header-icon" title="notification" onclick="toggleNotificationDropdown()">
-    <i class="fas fa-bell"></i>
-</button>
+<!-- Notification Wrapper -->
+<div class="notification-wrapper" style="position: relative; display: inline-block;">
+    <!-- Notification Icon -->
+    <button class="header-icon" title="notification" onclick="toggleNotificationDropdown()" style="background: none; border: none;">
+        <i class="fas fa-bell"></i>
+    </button>
 
-<!-- Notification Dropdown -->
-<div class="notification-dropdown" id="notificationDropdown">
-    <div class="notification-title">Notifications</div>
+    <!-- Notification Dropdown -->
+    <div class="notification-dropdown" id="notificationDropdown">
+        <div class="notification-title">Notifications</div>
 
-    <c:choose>
-        <c:when test="${empty sessionScope.account}">
-            <div class="notification-content locked">
-                <i class="fas fa-lock fa-2x"></i>
-                <p>Please log in to view notifications</p>
-                <a href="${pageContext.request.contextPath}/login" class="btn btn-danger">Log In</a>
-                <a href="${pageContext.request.contextPath}/register" class="btn btn-outline-danger">Register</a>
-            </div>
-        </c:when>
-        <c:otherwise>
-            <div class="notification-content">
-                <c:forEach var="noti" items="${notifications}">
-                    <div class="notification-item">
-                        <strong>${noti.notTitle}</strong>
-                        <p>${noti.notDescription}</p>
-                    </div>
-                </c:forEach>
-                <c:if test="${empty notifications}">
-                    <p>No notifications available.</p>
-                </c:if>
-            </div>
-        </c:otherwise>
-    </c:choose>
+        <c:choose>
+            <c:when test="${empty sessionScope.account}">
+                <div class="notification-content locked">
+                    <i class="fas fa-lock fa-2x mb-2"></i>
+                    <p>Please log in to view notifications</p>
+                    <a href="${pageContext.request.contextPath}/login" class="btn btn-danger">Log In</a>
+                    <a href="${pageContext.request.contextPath}/register" class="btn btn-outline-danger mt-2">Register</a>
+                </div>
+            </c:when>
+            <c:otherwise>
+                <div class="notification-content">
+                    <c:forEach var="noti" items="${notifications}">
+                        <div class="notification-item">
+                            <strong>${noti.notTitle}</strong>
+                            <p>${noti.notDescription}</p>
+                        </div>
+                    </c:forEach>
+                    <c:if test="${empty notifications}">
+                        <p>No notifications available.</p>
+                    </c:if>
+                </div>
+            </c:otherwise>
+        </c:choose>
+    </div>
 </div>
 
 <style>
     .notification-dropdown {
         position: absolute;
-        top: 60px;
-        right: 80px;
+        top: 100%;
+        right: 0;
+        margin-top: 10px;
         background: #fff;
         width: 300px;
         border-radius: 8px;
@@ -55,31 +59,49 @@
         z-index: 1000;
         color: #000;
     }
+
     .notification-dropdown.show {
         display: block;
     }
+
     .notification-title {
         font-weight: bold;
         font-size: 16px;
         margin-bottom: 10px;
     }
+
     .notification-content.locked {
         text-align: center;
         padding: 20px;
     }
+
     .notification-content .btn {
-        margin-top: 8px;
         display: block;
         width: 100%;
     }
+
     .notification-item {
         padding: 8px 0;
         border-bottom: 1px solid #eee;
     }
+
     .notification-item:last-child {
         border-bottom: none;
     }
 
+    /* Optional: make sure the bell icon doesn't shift the layout */
+    .header-icon {
+        position: relative;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1.2rem;
+        color: #fff;
+    }
+
+    .header-icon:focus {
+        outline: none;
+    }
 </style>
 
 <script>
@@ -95,5 +117,4 @@
             dropdown?.classList.remove('show');
         }
     });
-
 </script>

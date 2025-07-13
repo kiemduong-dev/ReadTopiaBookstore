@@ -13,27 +13,6 @@
 %>
 
 <div class="container py-4">
-    <!-- Banner Carousel -->
-    <div id="promoCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <a href="${pageContext.request.contextPath}/customer/promotion/list">
-                    <img src="${pageContext.request.contextPath}/images/slide1.jpg" class="d-block w-100" alt="Summer Promotion">
-                </a>
-            </div>
-            <div class="carousel-item">
-                <a href="${pageContext.request.contextPath}/customer/promotion/list">
-                    <img src="${pageContext.request.contextPath}/images/slide2.jpg" class="d-block w-100" alt="Special Offer">
-                </a>
-            </div>
-        </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#promoCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon"></span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#promoCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon"></span>
-        </button>
-    </div>
 
     <h2 class="mb-4">📚 All Books</h2>
 

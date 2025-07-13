@@ -21,6 +21,11 @@
             <div class="header-icons">
                               
                 <jsp:include page="/WEB-INF/view/customer/notification/notification-widget.jsp"/>
+                
+                <a href="${pageContext.request.contextPath}/customer/promotion/list" class="header-icon" title="promotion">
+                    <i class="fas fa-tags"></i>
+                </a>
+
                 <button class="header-icon" title="Bi?u ?? th?nng kê">
 
                     <i class="fas fa-chart-line"></i>

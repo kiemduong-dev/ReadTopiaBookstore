@@ -48,22 +48,31 @@ public class PromotionEditServlet extends HttpServlet {
             PromotionDAO dao = new PromotionDAO(conn);
             PromotionLogDAO logDao = new PromotionLogDAO(conn);
 
+            int proID = Integer.parseInt(request.getParameter("proID"));
+            Date startDate = Date.valueOf(request.getParameter("startDate"));
+            Date endDate = Date.valueOf(request.getParameter("endDate"));
+            int quantity = Integer.parseInt(request.getParameter("quantity"));
+            int createdBy = Integer.parseInt(request.getParameter("createdBy")); // hoặc từ session
+
+            // Kiểm tra ngày
+            Date currentDate = new Date(System.currentTimeMillis());
+
+            if (startDate.before(currentDate) || endDate.before(currentDate)) {
+                request.setAttribute("error", "Start date and end date must be today or in the future.");
+                request.setAttribute("promotion", new PromotionDTO(proID, null, null, 0.0, startDate, endDate, quantity, 0, createdBy, 0));
+                request.getRequestDispatcher("/WEB-INF/view/admin/promotion/edit.jsp").forward(request, response);
+                return;
+            }
+
             PromotionDTO pro = new PromotionDTO();
-            pro.setProID(Integer.parseInt(request.getParameter("proID")));
-            pro.setProName(request.getParameter("proName"));
-            pro.setProCode(request.getParameter("proCode"));
-            pro.setDiscount(Double.parseDouble(request.getParameter("discount")));
-            pro.setStartDate(Date.valueOf(request.getParameter("startDate")));
-            pro.setEndDate(Date.valueOf(request.getParameter("endDate")));
-            pro.setQuantity(Integer.parseInt(request.getParameter("quantity")));
-            pro.setProStatus(Integer.parseInt(request.getParameter("proStatus")));
-            pro.setCreatedBy(Integer.parseInt(request.getParameter("createdBy")));
-            pro.setApprovedBy(Integer.parseInt(request.getParameter("approvedBy")));
+            pro.setProID(proID);
+            pro.setStartDate(startDate);
+            pro.setEndDate(endDate);
+            pro.setQuantity(quantity);
 
             dao.updatePromotion(pro);
 
-            int staffID = pro.getCreatedBy();
-            logDao.insertLog(pro.getProID(), staffID, 2);
+            logDao.insertLog(proID, createdBy, 2); // 2 = edit
 
             response.sendRedirect("list");
 

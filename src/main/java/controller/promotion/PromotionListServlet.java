@@ -29,19 +29,26 @@ public class PromotionListServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String keyword = request.getParameter("search");
+        String statusParam = request.getParameter("status");
+        int status = -1; // -1 nghĩa là All
+
+        if (statusParam != null && (statusParam.equals("0") || statusParam.equals("1"))) {
+            status = Integer.parseInt(statusParam);
+        }
 
         try ( Connection conn = new DBContext().getConnection()) {
             PromotionDAO dao = new PromotionDAO(conn);
             List<PromotionDTO> list;
 
             if (keyword != null && !keyword.trim().isEmpty()) {
-                list = dao.searchPromotions(keyword);
+                list = dao.searchPromotions(keyword); // tìm kiếm ưu tiên hơn filter status
             } else {
-                list = dao.getAllPromotions();
+                list = dao.filterByStatus(status);
             }
 
             request.setAttribute("promotionList", list);
             request.setAttribute("search", keyword);
+            request.setAttribute("status", status);
             request.getRequestDispatcher("/WEB-INF/view/admin/promotion/list.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
