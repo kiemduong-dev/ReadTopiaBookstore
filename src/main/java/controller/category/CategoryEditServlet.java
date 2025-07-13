@@ -5,90 +5,116 @@ import dto.CategoryDTO;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.util.List;
 
 /**
- * CategoryEditServlet - Handles category editing for Admin.
- * This servlet provides the form to edit a category and processes the update.
+ * Category Edit Servlet - Handles editing of categories for Admin.
  *
- * Author: Vuong Chi Bao_CE182018
+ * Supports: - GET: Loads category data into the edit form. - POST: Updates
+ * category details in the database.
+ *
+ * URL: /admin/category/edit?id={categoryID}
+ *
+ * Author: CE182018 Vuong Chi Bao
  */
 @WebServlet("/admin/category/edit")
 public class CategoryEditServlet extends HttpServlet {
 
-    private final CategoryDAO dao = new CategoryDAO();
+    private final CategoryDAO categoryDAO = new CategoryDAO();
 
+    /**
+     * Handles the HTTP GET request to load category data into the edit form.
+     *
+     * Steps: 1. Retrieve the "id" parameter from the request. 2. Fetch category
+     * details and parent categories from the database. 3. Exclude the current
+     * category from the parent list. 4. Forward to the edit JSP view or
+     * redirect on error.
+     *
+     * @param request the HttpServletRequest object
+     * @param response the HttpServletResponse object
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an input or output error occurs
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         try {
-            int id = Integer.parseInt(request.getParameter("id"));
-            CategoryDTO category = dao.getCategoryById(id);
+            int categoryId = Integer.parseInt(request.getParameter("id"));
+            CategoryDTO category = categoryDAO.getCategoryById(categoryId);
 
             if (category != null) {
-                // Lấy danh sách danh mục cha, loại bỏ chính nó khỏi danh sách
-                List<CategoryDTO> parentList = dao.getAllCategoriesExcluding(id);
+                List<CategoryDTO> parentList = categoryDAO.getAllCategoriesExcluding(categoryId);
 
                 request.setAttribute("category", category);
                 request.setAttribute("parentList", parentList);
 
                 request.getRequestDispatcher("/WEB-INF/view/admin/category/edit.jsp").forward(request, response);
             } else {
-                request.getSession().setAttribute("error", "❌ Category not found.");
+                request.getSession().setAttribute("error", "Category not found.");
                 response.sendRedirect(request.getContextPath() + "/admin/category/list");
             }
 
         } catch (NumberFormatException e) {
-            request.getSession().setAttribute("error", "❌ Invalid category ID.");
+            request.getSession().setAttribute("error", "Invalid category ID format.");
             response.sendRedirect(request.getContextPath() + "/admin/category/list");
         } catch (Exception e) {
-            e.printStackTrace();
-            request.getSession().setAttribute("error", "❌ Error loading category.");
+            request.getSession().setAttribute("error", "Error loading category details.");
             response.sendRedirect(request.getContextPath() + "/admin/category/list");
         }
     }
 
+    /**
+     * Handles the HTTP POST request to update category details.
+     *
+     * Steps: 1. Retrieve and validate form parameters. 2. Prevent selecting the
+     * category as its own parent. 3. Update the category in the database. 4.
+     * Redirect with success or error message.
+     *
+     * @param request the HttpServletRequest object containing form data
+     * @param response the HttpServletResponse object
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an input or output error occurs
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         try {
-            int categoryID = Integer.parseInt(request.getParameter("categoryID"));
+            int categoryId = Integer.parseInt(request.getParameter("categoryID"));
             String categoryName = request.getParameter("categoryName");
             String description = request.getParameter("description");
-            String parentIDRaw = request.getParameter("parentID");
+            String parentIdRaw = request.getParameter("parentID");
 
-            int parentID = 0;
-            if (parentIDRaw != null && !parentIDRaw.isEmpty()) {
-                parentID = Integer.parseInt(parentIDRaw);
+            int parentId = 0;
+            if (parentIdRaw != null && !parentIdRaw.isEmpty()) {
+                parentId = Integer.parseInt(parentIdRaw);
             }
 
-            // Không được chọn chính nó làm cha
-            if (categoryID == parentID) {
-                request.getSession().setAttribute("error", "❌ A category cannot be its own parent.");
-                response.sendRedirect(request.getContextPath() + "/admin/category/edit?id=" + categoryID);
+            if (categoryId == parentId) {
+                request.getSession().setAttribute("error", "A category cannot be its own parent.");
+                response.sendRedirect(request.getContextPath() + "/admin/category/edit?id=" + categoryId);
                 return;
             }
 
-            // Build DTO
             CategoryDTO category = new CategoryDTO();
-            category.setCategoryID(categoryID);
+            category.setCategoryID(categoryId);
             category.setCategoryName(categoryName);
             category.setCategoryDescription(description);
-            category.setParentID(parentID);
+            category.setParentID(parentId);
 
-            dao.updateCategory(category);
+            categoryDAO.updateCategory(category);
 
-            request.getSession().setAttribute("success", "✅ Category updated successfully.");
+            request.getSession().setAttribute("success", "Category updated successfully.");
             response.sendRedirect(request.getContextPath() + "/admin/category/list");
 
         } catch (Exception e) {
-            e.printStackTrace();
-            request.getSession().setAttribute("error", "❌ Failed to update category.");
+            request.getSession().setAttribute("error", "Failed to update category. Please try again.");
             response.sendRedirect(request.getContextPath() + "/admin/category/list");
         }
     }

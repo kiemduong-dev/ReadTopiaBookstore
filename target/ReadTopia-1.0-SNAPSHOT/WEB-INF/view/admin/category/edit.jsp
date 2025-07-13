@@ -6,7 +6,7 @@
 
 <div class="main-content">
     <div class="content-area">
-        <h2 class="page-title">✏️ Edit Category: <c:out value="${category.categoryName}" /></h2>
+        <h2 class="page-title"> Edit Category: <c:out value="${category.categoryName}" /></h2>
 
         <!-- Hiển thị lỗi nếu có -->
         <c:if test="${not empty errorMessage}">

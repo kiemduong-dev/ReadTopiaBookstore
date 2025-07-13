@@ -9,7 +9,11 @@ import dto.NotificationDTO;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -18,62 +22,89 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import util.DBContext;
 
+/**
+ * Book List Customer - Displays the list of books for customers.
+ *
+ * Retrieves books from the database with optional filtering, sorting, and
+ * category selection. Also loads user notifications if the customer is logged
+ * in.
+ *
+ * URL: /customer/book/list
+ *
+ * Author: CE182018 Vuong Chi Bao
+ */
 @WebServlet("/customer/book/list")
 public class BookListCustomerServlet extends HttpServlet {
 
+    /**
+     * Handles HTTP GET requests to display the book list for customers.
+     *
+     * Steps: 1. Check for logged-in user and load notifications (if any). 2.
+     * Retrieve optional filters: keyword, sort option, category ID. 3. Fetch
+     * the list of books based on filters. 4. Load all categories for the filter
+     * dropdown. 5. Set data as request attributes and forward to the homepage
+     * JSP.
+     *
+     * @param request the HttpServletRequest object
+     * @param response the HttpServletResponse object
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an input or output error occurs
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         String keyword = request.getParameter("keyword");
-        String sort = request.getParameter("sort");
-        String catIdParam = request.getParameter("catID");
+        String sortOption = request.getParameter("sort");
+        String categoryIdParam = request.getParameter("catID");
 
         BookDAO bookDAO = new BookDAO();
         List<BookDTO> books;
 
         HttpSession session = request.getSession();
 
-        //Notification
+        // Load notifications for logged-in user
         if (session.getAttribute("account") != null) {
             int role = (int) session.getAttribute("role");
             try ( Connection conn = new DBContext().getConnection()) {
                 List<NotificationDTO> notifications = new NotificationDAO(conn).getNotificationsForRole(role);
                 request.setAttribute("notifications", notifications);
-            } catch (SQLException ex) {
-                Logger.getLogger(BookListCustomerServlet.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(BookListCustomerServlet.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SQLException | ClassNotFoundException e) {
+                Logger.getLogger(BookListCustomerServlet.class.getName())
+                        .log(Level.SEVERE, "Error loading notifications", e);
             }
         }
 
-        // Ưu tiên filter theo category nếu có
-        if (catIdParam != null && !catIdParam.isEmpty()) {
+        // Determine books to display based on filters
+        if (categoryIdParam != null && !categoryIdParam.isEmpty()) {
             try {
-                int catID = Integer.parseInt(catIdParam);
-                books = bookDAO.getBooksByCategory(catID);
+                int categoryId = Integer.parseInt(categoryIdParam);
+                books = bookDAO.getBooksByCategory(categoryId);
             } catch (NumberFormatException e) {
+                Logger.getLogger(BookListCustomerServlet.class.getName())
+                        .log(Level.WARNING, "Invalid category ID format", e);
                 books = bookDAO.getAllBooks();
             }
         } else if (keyword != null && !keyword.isEmpty()) {
             books = bookDAO.searchBooksByTitleOrAuthor(keyword);
-        } else if (sort != null && !sort.isEmpty()) {
-            books = bookDAO.getBooksSortedBy(sort);
+        } else if (sortOption != null && !sortOption.isEmpty()) {
+            books = bookDAO.getBooksSortedBy(sortOption);
         } else {
             books = bookDAO.getAllBooks();
         }
 
-        // Load danh mục
+        // Load all categories for filtering
         CategoryDAO categoryDAO = new CategoryDAO();
         List<CategoryDTO> categories = categoryDAO.getAllCategories();
 
-        // Gửi dữ liệu sang view
+        // Set attributes for JSP rendering
         request.setAttribute("bookList", books);
         request.setAttribute("categoryList", categories);
         request.setAttribute("keyword", keyword);
-        request.setAttribute("sort", sort);
-        request.setAttribute("catID", catIdParam);
+        request.setAttribute("sort", sortOption);
+        request.setAttribute("catID", categoryIdParam);
 
+        // Forward to homepage view
         request.getRequestDispatcher("/WEB-INF/view/book/homepage.jsp").forward(request, response);
     }
 }

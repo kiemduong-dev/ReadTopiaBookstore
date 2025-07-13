@@ -7,7 +7,7 @@
 <div class="main-content">
     <div class="content-area">
         <div class="page-header">
-            <h1 class="page-title">📚 Add New Book</h1>
+            <h1 class="page-title"> Add New Book</h1>
         </div>
 
         <!-- Thông báo lỗi -->
@@ -111,7 +111,7 @@
 
             <div class="btn-group">
                 <button type="submit" class="btn btn-primary">
-                    ✅ Add Book
+                    Add Book
                 </button>
                 <a href="${pageContext.request.contextPath}/admin/book/list" class="btn btn-secondary">
                     ⬅ Cancel

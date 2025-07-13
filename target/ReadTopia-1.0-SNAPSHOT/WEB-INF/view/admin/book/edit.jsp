@@ -7,7 +7,7 @@
 <div class="main-content">
     <div class="content-area">
         <div class="form-container bg-white shadow p-5 rounded mx-auto" style="max-width: 800px; margin-top: 50px;">
-            <h2 class="fw-bold text-center mb-4">✏️ Edit Book</h2>
+            <h2 class="fw-bold text-center mb-4"> Edit Book</h2>
 
             <c:if test="${not empty error}">
                 <div class="alert alert-danger"><c:out value="${error}" /></div>
@@ -93,8 +93,8 @@
                     </div>
 
                     <div class="btn-group mt-4">
-                        <button type="submit" class="btn btn-success">💾 Update Book</button>
-                        <a href="${pageContext.request.contextPath}/admin/book/list" class="btn btn-secondary">⬅ Back to List</a>
+                        <button type="submit" class="btn btn-success"> Update Book</button>
+                        <a href="${pageContext.request.contextPath}/admin/book/list" class="btn btn-secondary"> Back to List</a>
                 </div>
             </form>
         </div>

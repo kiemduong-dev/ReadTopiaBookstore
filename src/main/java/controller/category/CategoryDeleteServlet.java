@@ -1,55 +1,61 @@
-/**
- * CategoryDeleteServlet - Handles deletion of a category by Admin.
- * This servlet performs a deletion based on category ID and provides
- * session feedback on success or failure.
- *
- * Author: Vuong Chi Bao_CE182018
- */
 package controller.category;
 
 import dao.CategoryDAO;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
 /**
- * Servlet mapped to /admin/category/delete for deleting a category by ID.
+ * Category Delete Servlet - Handles the deletion of a category by Admin.
+ *
+ * Deletes a category based on its ID and provides session feedback on success
+ * or failure.
+ *
+ * URL: /admin/category/delete?id={categoryID}
+ *
+ * Author: CE182018 Vuong Chi Bao
  */
 @WebServlet("/admin/category/delete")
 public class CategoryDeleteServlet extends HttpServlet {
 
-    private final CategoryDAO dao = new CategoryDAO();
+    private final CategoryDAO categoryDAO = new CategoryDAO();
 
     /**
-     * Handles GET request to delete a category based on ID.
+     * Handles the HTTP GET request to delete a category.
+     *
+     * Steps: 1. Retrieve the "id" parameter from the request. 2. Parse the
+     * category ID and attempt deletion using CategoryDAO. 3. Set a success or
+     * error message in the session. 4. Redirect to the category list page.
      *
      * @param request the HttpServletRequest object
      * @param response the HttpServletResponse object
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException if an input or output error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         try {
-            int id = Integer.parseInt(request.getParameter("id"));
+            int categoryId = Integer.parseInt(request.getParameter("id"));
 
-            boolean deleted = dao.deleteCategory(id);
+            boolean isDeleted = categoryDAO.deleteCategory(categoryId);
 
-            if (deleted) {
-                request.getSession().setAttribute("success", " Category deleted successfully.");
+            if (isDeleted) {
+                request.getSession().setAttribute("success", "Category deleted successfully.");
             } else {
-                request.getSession().setAttribute("error", " Cannot delete this category. It might be used by existing books.");
+                request.getSession().setAttribute("error", "Cannot delete this category. It may be linked to existing books.");
             }
 
         } catch (NumberFormatException e) {
             request.getSession().setAttribute("error", "Invalid category ID format.");
         } catch (Exception e) {
-            e.printStackTrace();
-            request.getSession().setAttribute("error", " Internal system error during category deletion.");
+            request.getSession().setAttribute("error", "An unexpected error occurred while deleting the category.");
         }
 
         response.sendRedirect(request.getContextPath() + "/admin/category/list");

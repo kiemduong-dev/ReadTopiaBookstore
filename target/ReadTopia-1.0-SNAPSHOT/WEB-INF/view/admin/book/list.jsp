@@ -8,7 +8,7 @@
     <div class="content-area">
         <!-- Tiêu đề -->
         <div class="page-header">
-            <h1 class="page-title">📚 Book Management</h1>
+            <h1 class="page-title"> Book Management</h1>
         </div>
 
         <!-- Thông báo thành công -->
@@ -23,7 +23,7 @@
         <div class="toolbar">
             <form action="${pageContext.request.contextPath}/admin/book/list" method="get" class="d-flex gap-2">
                 <input type="text" name="keyword" class="form-control search-box" placeholder="Search by title or author" value="${keyword}" />
-                <button type="submit" class="btn btn-primary">🔍 Search</button>
+                <button type="submit" class="btn btn-primary"> Search</button>
             </form>
             <a href="${pageContext.request.contextPath}/admin/book/add" class="btn btn-primary">
                 <i class="fas fa-plus"></i> Add Book
@@ -91,7 +91,7 @@
         <!-- Không có sách -->
         <c:if test="${empty bookList}">
             <div class="alert alert-info mt-4 text-center">
-                📭 No books found in the system.
+                No books found in the system.
             </div>
         </c:if>
     </div>

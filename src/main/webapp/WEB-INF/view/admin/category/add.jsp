@@ -6,7 +6,7 @@
 
 <div class="main-content">
     <div class="content-area">
-        <h2 class="page-title">➕ Add Category</h2>
+        <h2 class="page-title"> Add Category</h2>
 
         <form action="${pageContext.request.contextPath}/admin/category/add" method="post" style="max-width: 700px; margin: 0 auto;">
             <div class="form-group">

@@ -9,7 +9,7 @@
     <div class="content-area">
         <!-- Tiêu đề -->
         <div class="page-header">
-            <h1 class="page-title">📂 Category Management</h1>
+            <h1 class="page-title"> Category Management</h1>
         </div>
 
         <!-- Chỉ hiển thị ô tìm kiếm nếu có hơn 10 danh mục -->
@@ -20,12 +20,12 @@
                         type="text" 
                         name="keyword" 
                         class="form-control search-box" 
-                        placeholder="🔍 Search category name..." 
+                        placeholder=" Search category name..." 
                         value="${fn:escapeXml(keyword)}" />
                     <button type="submit" class="btn btn-primary">Search</button>
                 </form>
 
-                <button class="btn btn-success" onclick="location.href='${pageContext.request.contextPath}/admin/category/add'">
+                <button class="btn btn-success" onclick="location.href = '${pageContext.request.contextPath}/admin/category/add'">
                     <i class="fas fa-plus"></i> Add Category
                 </button>
             </div>
@@ -34,7 +34,7 @@
         <!-- Nếu danh mục <= 10 thì chỉ hiển thị nút Add -->
         <c:if test="${fn:length(categoryList) <= 10}">
             <div class="d-flex justify-content-end mb-3">
-                <button class="btn btn-success" onclick="location.href='${pageContext.request.contextPath}/admin/category/add'">
+                <button class="btn btn-success" onclick="location.href = '${pageContext.request.contextPath}/admin/category/add'">
                     <i class="fas fa-plus"></i> Add Category
                 </button>
             </div>
@@ -51,7 +51,7 @@
         <!-- Hiển thị số kết quả tìm được -->
         <c:if test="${not empty categoryList}">
             <div class="text-muted text-end mb-2">
-                🔎 Found <strong>${fn:length(categoryList)}</strong> result(s).
+                Found <strong>${fn:length(categoryList)}</strong> result(s).
             </div>
         </c:if>
 
@@ -94,7 +94,7 @@
         <!-- Không có dữ liệu -->
         <c:if test="${empty categoryList}">
             <div class="alert alert-info mt-4 text-center">
-                📭 No categories found in the system.
+                No categories found in the system.
             </div>
         </c:if>
     </div>

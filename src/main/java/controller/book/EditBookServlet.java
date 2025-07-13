@@ -1,9 +1,3 @@
-/**
- * EditBookServlet - Handles both displaying and updating book details by Admin.
- * Supports GET for preloading the book form and POST for submitting edits.
- *
- * @author Vuong Chi Bao_CE182018
- */
 package controller.book;
 
 import dao.BookDAO;
@@ -11,22 +5,36 @@ import dto.BookDTO;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 
 /**
- * Servlet mapped to /admin/book/edit to edit existing books.
+ * Edit Book Servlet - Handles displaying and updating book details for Admin.
+ *
+ * Supports: - GET: Loads existing book data into the edit form. - POST:
+ * Processes the submitted form and updates the book in the database.
+ *
+ * URL: /admin/book/edit?id={bookID}
+ *
+ * Author: CE182018 Vuong Chi Bao
  */
 @WebServlet("/admin/book/edit")
 public class EditBookServlet extends HttpServlet {
 
     /**
-     * Handles GET requests to load book data into edit form.
+     * Handles the HTTP GET request to load book data into the edit form.
+     *
+     * Steps: 1. Retrieve "id" from request parameters. 2. Fetch the book by ID
+     * using BookDAO. 3. Forward to the edit JSP view if found. 4. Redirect to
+     * the book list page if not found or invalid ID.
      *
      * @param request the HttpServletRequest object
      * @param response the HttpServletResponse object
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException if an input or output error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -40,39 +48,46 @@ public class EditBookServlet extends HttpServlet {
         }
 
         try {
-            int id = Integer.parseInt(idParam);
-            BookDAO dao = new BookDAO();
-            BookDTO book = dao.getBookByID(id);
+            int bookId = Integer.parseInt(idParam);
+            BookDAO bookDAO = new BookDAO();
+            BookDTO book = bookDAO.getBookByID(bookId);
 
             if (book != null) {
                 request.setAttribute("book", book);
                 request.getRequestDispatcher("/WEB-INF/view/admin/book/edit.jsp").forward(request, response);
             } else {
+                request.getSession().setAttribute("error", "Book not found.");
                 response.sendRedirect(request.getContextPath() + "/admin/book/list");
             }
 
         } catch (NumberFormatException e) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid book ID.");
+            request.getSession().setAttribute("error", "Invalid book ID format.");
+            response.sendRedirect(request.getContextPath() + "/admin/book/list");
         }
     }
 
     /**
-     * Handles POST requests to update book details after admin submits form.
+     * Handles the HTTP POST request to update book details.
+     *
+     * Steps: 1. Parse form parameters and populate a BookDTO object. 2. Update
+     * the book in the database using BookDAO. 3. Redirect to the book list page
+     * on success. 4. Forward back to the edit form with an error message on
+     * failure.
      *
      * @param request the HttpServletRequest object
      * @param response the HttpServletResponse object
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException if an input or output error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         try {
-            int id = Integer.parseInt(request.getParameter("id"));
+            int bookId = Integer.parseInt(request.getParameter("id"));
 
             BookDTO book = new BookDTO();
-            book.setBookID(id);
+            book.setBookID(bookId);
             book.setBookTitle(request.getParameter("title"));
             book.setAuthor(request.getParameter("author"));
             book.setTranslator(request.getParameter("translator"));
@@ -88,15 +103,18 @@ public class EditBookServlet extends HttpServlet {
             book.setBookQuantity(Integer.parseInt(request.getParameter("quantity")));
             book.setBookStatus(Integer.parseInt(request.getParameter("status")));
 
-            BookDAO dao = new BookDAO();
-            dao.updateBook(book);
+            BookDAO bookDAO = new BookDAO();
+            bookDAO.updateBook(book);
 
+            request.getSession().setAttribute("success", "Book updated successfully.");
             response.sendRedirect(request.getContextPath() + "/admin/book/list");
 
+        } catch (NumberFormatException e) {
+            request.getSession().setAttribute("error", "Invalid data format. Please check your inputs.");
+            response.sendRedirect(request.getContextPath() + "/admin/book/edit?id=" + request.getParameter("id"));
         } catch (Exception e) {
-            e.printStackTrace();
-            request.setAttribute("error", " Failed to update book. Please check your input.");
-            request.getRequestDispatcher("/WEB-INF/view/admin/book/edit.jsp").forward(request, response);
+            request.getSession().setAttribute("error", "Failed to update the book. Please try again.");
+            response.sendRedirect(request.getContextPath() + "/admin/book/edit?id=" + request.getParameter("id"));
         }
     }
 }

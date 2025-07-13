@@ -7,54 +7,71 @@ import dto.CategoryDTO;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.util.List;
 
 /**
- * AddBookServlet - Handles the book creation process by the admin. - GET: Loads
- * category list and displays the book creation form. - POST: Processes form
- * submission, inserts book data into the database.
+ * Add Book Servlet - Handles the creation of new books by Admin.
  *
- * @author CE182018 Vuong Chi Bao
+ * Supports: - GET: Loads available categories and displays the add book form. -
+ * POST: Processes the submitted form, inserts the book into the database, and
+ * maps it to the selected category.
+ *
+ * URL: /admin/book/add
+ *
+ * Author: CE182018 Vuong Chi Bao
  */
 @WebServlet("/admin/book/add")
 public class AddBookServlet extends HttpServlet {
 
+    private static final int ACTIVE_STATUS = 1;
+
     /**
-     * Handles the HTTP GET method. Loads the list of available categories and
-     * forwards to the add book form view.
+     * Handles the HTTP GET request to display the add book form.
      *
-     * @param request the HttpServletRequest
-     * @param response the HttpServletResponse
+     * Steps: 1. Retrieve all categories using CategoryDAO. 2. Set the category
+     * list as a request attribute. 3. Forward the request to the add book JSP
+     * page.
+     *
+     * @param request the HttpServletRequest object
+     * @param response the HttpServletResponse object
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException if an input or output error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         CategoryDAO categoryDAO = new CategoryDAO();
         List<CategoryDTO> categories = categoryDAO.getAllCategories();
+
         request.setAttribute("categoryList", categories);
         request.getRequestDispatcher("/WEB-INF/view/admin/book/add.jsp").forward(request, response);
     }
 
     /**
-     * Handles the HTTP POST method. Extracts form data, creates a BookDTO
-     * object, inserts it into the database, then redirects to the book list
-     * page or shows an error.
+     * Handles the HTTP POST request to process the submitted add book form.
      *
-     * @param request the HttpServletRequest
-     * @param response the HttpServletResponse
+     * Steps: 1. Extract form data from request parameters. 2. Create a BookDTO
+     * and populate its properties. 3. Insert the book using BookDAO and map it
+     * to the selected category. 4. Redirect to the book list page on success or
+     * reload the form on failure.
+     *
+     * @param request the HttpServletRequest object containing form submission
+     * data
+     * @param response the HttpServletResponse object for sending the response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException if an input or output error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         try {
-            // Create new book object and set values from form parameters
             BookDTO book = new BookDTO();
             book.setBookTitle(request.getParameter("title"));
             book.setAuthor(request.getParameter("author"));
@@ -69,16 +86,16 @@ public class AddBookServlet extends HttpServlet {
             book.setWeight(Float.parseFloat(request.getParameter("weight")));
             book.setBookPrice(Double.parseDouble(request.getParameter("price")));
             book.setBookQuantity(Integer.parseInt(request.getParameter("quantity")));
-            book.setBookStatus(1); // Active status
+            book.setBookStatus(ACTIVE_STATUS);
 
-            int categoryID = Integer.parseInt(request.getParameter("categoryID"));
+            int categoryId = Integer.parseInt(request.getParameter("categoryID"));
 
-            // Insert book and map it to the selected category
             BookDAO bookDAO = new BookDAO();
-            int bookID = bookDAO.insertBook(book);
+            int bookId = bookDAO.insertBook(book);
 
-            if (bookID != -1) {
-                bookDAO.insertBookCategory(bookID, categoryID);
+            if (bookId != -1) {
+                bookDAO.insertBookCategory(bookId, categoryId);
+                request.getSession().setAttribute("success", "Book added successfully.");
                 response.sendRedirect(request.getContextPath() + "/admin/book/list");
             } else {
                 throw new Exception("Failed to insert book.");
@@ -87,7 +104,7 @@ public class AddBookServlet extends HttpServlet {
         } catch (Exception e) {
             request.setAttribute("error", "Failed to add book. Please check your input.");
 
-            // Reload category list on error
+            // Reload category list for form
             CategoryDAO categoryDAO = new CategoryDAO();
             List<CategoryDTO> categories = categoryDAO.getAllCategories();
             request.setAttribute("categoryList", categories);

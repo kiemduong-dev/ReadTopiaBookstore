@@ -1,10 +1,3 @@
-/**
- * BookListHomepageServlet - Handles the display of book listings for customers.
- * Supports keyword-based search, category filtering, and sorting.
- *
- * @author
- * Vuong Chi Bao_CE182018
- */
 package controller.book;
 
 import dao.BookDAO;
@@ -14,52 +7,66 @@ import dto.CategoryDTO;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.util.List;
 
 /**
- * Servlet mapped to /book/home to show the book list page for end users.
+ * Book List Homepage - Displays a list of books for customers.
+ *
+ * Supports: - Search by keyword (title or author) - Filter by category - Sort
+ * by title or price
+ *
+ * URL: /book/home
+ *
+ * Author: CE182018 Vuong Chi Bao
  */
 @WebServlet("/book/home")
 public class BookListHomepageServlet extends HttpServlet {
 
     /**
-     * Processes GET requests to show books with optional filters: - Search by
-     * keyword (title or author) - Filter by category - Sort by title or price
+     * Handles the HTTP GET request to display books with optional filters.
+     *
+     * Steps: 1. Retrieve optional query parameters: keyword, category ID, sort
+     * option. 2. Fetch books based on the provided filters. 3. Retrieve all
+     * categories for the filter dropdown. 4. Set attributes for rendering in
+     * the JSP view. 5. Forward to the homepage JSP.
      *
      * @param request the HttpServletRequest object
      * @param response the HttpServletResponse object
-     * @throws ServletException if servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an input or output error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         String keyword = request.getParameter("keyword");
-        String catIDStr = request.getParameter("catID");
-        String sortBy = request.getParameter("sortBy");
+        String categoryIdParam = request.getParameter("catID");
+        String sortOption = request.getParameter("sortBy");
 
-        int catID = 0;
+        int categoryId = 0;
         try {
-            if (catIDStr != null && !catIDStr.isEmpty()) {
-                catID = Integer.parseInt(catIDStr);
+            if (categoryIdParam != null && !categoryIdParam.isEmpty()) {
+                categoryId = Integer.parseInt(categoryIdParam);
             }
-        } catch (NumberFormatException ignored) {
-            // Ignore invalid category ID format
+        } catch (NumberFormatException e) {
+            // Invalid category ID, ignore and continue without filter
         }
 
         BookDAO bookDAO = new BookDAO();
         List<BookDTO> books;
 
-        // Determine which book list to return based on query params
+        // Determine which books to fetch based on filters
         if (keyword != null && !keyword.trim().isEmpty()) {
             books = bookDAO.searchBooksByTitleOrAuthor(keyword.trim());
-        } else if (catID > 0) {
-            books = bookDAO.getBooksByCategory(catID);
-        } else if (sortBy != null && !sortBy.isEmpty()) {
-            books = bookDAO.getBooksSortedBy(sortBy);
+        } else if (categoryId > 0) {
+            books = bookDAO.getBooksByCategory(categoryId);
+        } else if (sortOption != null && !sortOption.isEmpty()) {
+            books = bookDAO.getBooksSortedBy(sortOption);
         } else {
             books = bookDAO.getAllBooks();
         }
@@ -72,10 +79,10 @@ public class BookListHomepageServlet extends HttpServlet {
         request.setAttribute("bookList", books);
         request.setAttribute("categoryList", categories);
         request.setAttribute("keyword", keyword);
-        request.setAttribute("selectedCatID", catID);
-        request.setAttribute("sortBy", sortBy);
+        request.setAttribute("selectedCatID", categoryId);
+        request.setAttribute("sortBy", sortOption);
 
-        // Forward to homepage view
-        request.getRequestDispatcher("/book/homepage.jsp").forward(request, response);
+        // Forward to the homepage JSP view
+        request.getRequestDispatcher("/WEB-INF/view/book/homepage.jsp").forward(request, response);
     }
 }
