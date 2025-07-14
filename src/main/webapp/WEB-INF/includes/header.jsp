@@ -19,21 +19,20 @@
         <!-- Các hành ??ng -->
         <div class="header-actions">
             <div class="header-icons">
-                              
                 <jsp:include page="/WEB-INF/view/customer/notification/notification-widget.jsp"/>
-                
-                <a href="${pageContext.request.contextPath}/customer/promotion/list" class="header-icon" title="promotion">
-                    <i class="fas fa-tags"></i>
-                </a>
-
-                <button class="header-icon" title="Bi?u ?? th?nng kê">
-
+                <button class="header-icon" title="Bi?u ?? th?ng kê">
                     <i class="fas fa-chart-line"></i>
                 </button>
                 <a href="${pageContext.request.contextPath}/cart/view" class="header-icon" title="Gi? hàng">
                     <i class="fas fa-shopping-cart"></i>
                 </a>
 
+                <!-- Nút Admin Dashboard n?u là Admin -->
+                <c:if test="${sessionScope.account.role == 0}">
+                    <a href="${pageContext.request.contextPath}/admin/dashboard" class="header-icon btn-admin-dashboard" title="Admin Dashboard">
+                        <i class="fas fa-tools"></i>
+                    </a>
+                </c:if>
             </div>
 
             <!-- Menu ng??i dùng -->

@@ -521,7 +521,7 @@ body {
     .form-row {
         flex-direction: column;
     }
-     /* Hiệu ứng lướt chuột trên card sách */
+    /* Hiệu ứng lướt chuột trên card sách */
     .book-card {
         transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
@@ -531,4 +531,17 @@ body {
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
         border: 1px solid #1e88e5;
     }
+    .btn-admin-dashboard {
+        padding: 6px;
+        background: #ff5722;
+        color: white;
+        border-radius: 5px;
+        margin-left: 8px;
+        display: inline-block;
+    }
+
+    .btn-admin-dashboard:hover {
+        background: #e64a19;
+    }
+
 }
