@@ -71,6 +71,8 @@ public class PromotionAddServlet extends HttpServlet {
             System.out.println("Current username: " + username);
             System.out.println("Current staffID: " + staffID);
             System.out.println("Current role: " + role);
+            System.out.println("username: " + username);
+            System.out.println("resolved staffID: " + staffID);
 
             response.sendRedirect("list");
 

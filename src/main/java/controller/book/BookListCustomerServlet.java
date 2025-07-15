@@ -63,18 +63,6 @@ public class BookListCustomerServlet extends HttpServlet {
 
         HttpSession session = request.getSession();
 
-        // Load notifications for logged-in user
-        if (session.getAttribute("account") != null) {
-            int role = (int) session.getAttribute("role");
-            try ( Connection conn = new DBContext().getConnection()) {
-                List<NotificationDTO> notifications = new NotificationDAO(conn).getNotificationsForRole(role);
-                request.setAttribute("notifications", notifications);
-            } catch (SQLException | ClassNotFoundException e) {
-                Logger.getLogger(BookListCustomerServlet.class.getName())
-                        .log(Level.SEVERE, "Error loading notifications", e);
-            }
-        }
-
         // Determine books to display based on filters
         if (categoryIdParam != null && !categoryIdParam.isEmpty()) {
             try {

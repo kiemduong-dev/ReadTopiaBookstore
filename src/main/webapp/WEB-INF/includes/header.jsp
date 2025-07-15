@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <header class="header">
     <div class="header-content">
@@ -8,34 +9,35 @@
             ReadTopia
         </div>
 
-        <!-- Thanh tìm ki?m -->
+        <!-- Thanh tÃ¬m ki?m -->
         <div class="search-container">
-            <input type="text" class="search-input" placeholder="Tìm ki?m sách..." aria-label="Search books">
-            <button class="header-icon" id="searchBtn" title="Tìm ki?m">
+            <input type="text" class="search-input" placeholder="TÃ¬m ki?m sÃ¡ch..." aria-label="Search books">
+            <button class="header-icon" id="searchBtn" title="TÃ¬m ki?m">
                 <i class="fas fa-search"></i>
             </button>
         </div>
 
-        <!-- Các hành ??ng -->
+        <!-- CÃ¡c hÃ nh ??ng -->
         <div class="header-actions">
             <div class="header-icons">
+                              
                 <jsp:include page="/WEB-INF/view/customer/notification/notification-widget.jsp"/>
-                <button class="header-icon" title="Bi?u ?? th?ng kê">
+                
+                <a href="${pageContext.request.contextPath}/customer/promotion/list" class="header-icon" title="promotion">
+                    <i class="fas fa-tags"></i>
+                </a>
+
+                <button class="header-icon" title="Bi?u ?? th?nng kÃª">
+
                     <i class="fas fa-chart-line"></i>
                 </button>
-                <a href="${pageContext.request.contextPath}/cart/view" class="header-icon" title="Gi? hàng">
+                <a href="${pageContext.request.contextPath}/cart/view" class="header-icon" title="Gi? hÃ ng">
                     <i class="fas fa-shopping-cart"></i>
                 </a>
 
-                <!-- Nút Admin Dashboard n?u là Admin -->
-                <c:if test="${sessionScope.account.role == 0}">
-                    <a href="${pageContext.request.contextPath}/admin/dashboard" class="header-icon btn-admin-dashboard" title="Admin Dashboard">
-                        <i class="fas fa-tools"></i>
-                    </a>
-                </c:if>
             </div>
 
-            <!-- Menu ng??i dùng -->
+            <!-- Menu ng??i dÃ¹ng -->
             <div class="user-dropdown">
                 <div class="user-menu" onclick="toggleDropdown()" tabindex="0" role="button" aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-user"></i>

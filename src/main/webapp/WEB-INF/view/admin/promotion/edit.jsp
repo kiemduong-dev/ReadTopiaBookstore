@@ -21,60 +21,32 @@
                     <h2 class="page-title">Edit Promotion</h2>
                     <p class="page-subtitle">Modify the information of an existing promotion.</p>
                 </div>
+                <c:if test="${not empty error}">
+                    <div class="alert alert-danger">${error}</div>
+                </c:if>
 
                 <form method="post" action="edit">
                     <input type="hidden" name="proID" value="<%= promotion.getProID()%>" />
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="proName" class="form-label">Name</label>
-                            <input type="text" class="form-input" name="proName" id="proName" value="<%= promotion.getProName()%>" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="proCode" class="form-label">Code</label>
-                            <input type="text" class="form-input" name="proCode" id="proCode" value="<%= promotion.getProCode()%>" required>
-                        </div>
+                    <div class="form-group">
+                        <label for="startDate" class="form-label">Start Date</label>
+                        <input type="date" class="form-input" name="startDate" id="startDate"
+                               value="<%= promotion.getStartDate()%>" required>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="discount" class="form-label">Discount (%)</label>
-                            <input type="number" step="0.01" class="form-input" name="discount" id="discount" value="<%= promotion.getDiscount()%>" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="startDate" class="form-label">Start Date</label>
-                            <input type="date" class="form-input" name="startDate" id="startDate" value="<%= promotion.getStartDate()%>" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="endDate" class="form-label">End Date</label>
-                            <input type="date" class="form-input" name="endDate" id="endDate" value="<%= promotion.getEndDate()%>" required>
-                        </div>
+                    <div class="form-group">
+                        <label for="endDate" class="form-label">End Date</label>
+                        <input type="date" class="form-input" name="endDate" id="endDate"
+                               value="<%= promotion.getEndDate()%>" required>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="quantity" class="form-label">Quantity</label>
-                            <input type="number" class="form-input" name="quantity" id="quantity" value="<%= promotion.getQuantity()%>" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="proStatus" class="form-label">Status</label>
-                            <input type="number" class="form-input" name="proStatus" id="proStatus" value="<%= promotion.getProStatus()%>">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="createdBy" class="form-label">Created By</label>
-                            <input type="number" class="form-input" name="createdBy" id="createdBy" value="<%= promotion.getCreatedBy()%>">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="approvedBy" class="form-label">Approved By</label>
-                            <input type="number" class="form-input" name="approvedBy" id="approvedBy" value="<%= promotion.getApprovedBy()%>">
-                        </div>
+                    <div class="form-group">
+                        <label for="quantity" class="form-label">Quantity</label>
+                        <input type="number" class="form-input" name="quantity" id="quantity"
+                               value="<%= promotion.getQuantity()%>" required>
                     </div>
+
+                    <input type="hidden" name="createdBy" value="<%= promotion.getCreatedBy()%>" />
 
                     <div class="btn-group">
                         <button type="submit" class="btn btn-primary">
