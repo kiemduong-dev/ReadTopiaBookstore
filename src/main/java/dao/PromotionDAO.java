@@ -112,7 +112,8 @@ public class PromotionDAO {
             ps.setInt(6, pro.getQuantity());
             ps.setInt(7, pro.getProStatus());
             ps.setInt(8, pro.getCreatedBy());
-            ps.setInt(9, pro.getApprovedBy());
+            ps.setObject(9, pro.getApprovedBy(), Types.INTEGER); // hỗ trợ null
+
 
             ps.executeUpdate();
 
