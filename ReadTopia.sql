@@ -88,6 +88,7 @@
 		CONSTRAINT FK_Promotion_Staff_managerID FOREIGN KEY (approvedBy) REFERENCES Staff(staffID)
 	)
 	GO
+	ALTER TABLE Promotion ALTER COLUMN approvedBy INT NULL;
 
 	CREATE TABLE Supplier (
     supID INT IDENTITY(1,1),
@@ -359,6 +360,12 @@ VALUES
 ('Summer Sale 2025', 'SUMMER25', 20.0, '2025-07-01', '2025-07-15', 100, 1, 1, 2),
 ('Back to School', 'SCHOOL10', 10.0, '2025-08-01', '2025-08-31', 200, 1, 2, 3),
 ('Black Friday Deal', 'BLACK50', 50.0, '2025-11-25', '2025-11-30', 50, 0, 1, 3);
+
+INSERT INTO promotion_log (pro_id, staff_id, pro_action, pro_log_date)
+VALUES 
+    (101, 1, 1, '2025-07-01'),  
+    (102, 2, 2, '2025-07-10'),  
+    (103, 3, 3, '2025-07-15');  
 
 
 
