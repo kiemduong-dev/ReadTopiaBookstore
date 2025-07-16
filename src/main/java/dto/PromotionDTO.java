@@ -21,7 +21,7 @@ public class PromotionDTO {
     private int quantity;
     private int proStatus;
     private int createdBy;
-    private int approvedBy;
+    private Integer approvedBy;
 
     public PromotionDTO() {
     }
@@ -114,11 +114,11 @@ public class PromotionDTO {
         this.createdBy = createdBy;
     }
 
-    public int getApprovedBy() {
+    public Integer getApprovedBy() {
         return approvedBy;
     }
 
-    public void setApprovedBy(int approvedBy) {
+    public void setApprovedBy(Integer approvedBy) {
         this.approvedBy = approvedBy;
     }
 
