@@ -1,5 +1,5 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <header class="header">
     <div class="header-content">
@@ -9,35 +9,38 @@
             ReadTopia
         </div>
 
-        <!-- Thanh tìm ki?m -->
+        <!-- Thanh tìm kiếm -->
         <div class="search-container">
-            <input type="text" class="search-input" placeholder="Tìm ki?m sách..." aria-label="Search books">
-            <button class="header-icon" id="searchBtn" title="Tìm ki?m">
+            <input type="text" class="search-input" placeholder="Tìm kiếm sách..." aria-label="Search books">
+            <button class="header-icon" id="searchBtn" title="Tìm kiếm">
                 <i class="fas fa-search"></i>
             </button>
         </div>
 
-        <!-- Các hành ??ng -->
+        <!-- Các hành động -->
         <div class="header-actions">
             <div class="header-icons">
-                              
-                <jsp:include page="/WEB-INF/view/customer/notification/notification-widget.jsp"/>
-                
-                <a href="${pageContext.request.contextPath}/customer/promotion/list" class="header-icon" title="promotion">
+                <jsp:include page="/WEB-INF/view/customer/notification/notification-widget.jsp" />
+
+                <a href="${pageContext.request.contextPath}/customer/promotion/list" class="header-icon" title="Promotion">
                     <i class="fas fa-tags"></i>
                 </a>
 
-                <button class="header-icon" title="Bi?u ?? th?nng kê">
 
-                    <i class="fas fa-chart-line"></i>
-                </button>
-                <a href="${pageContext.request.contextPath}/cart/view" class="header-icon" title="Gi? hàng">
+
+                <a href="${pageContext.request.contextPath}/cart/view" class="header-icon" title="Giỏ hàng">
                     <i class="fas fa-shopping-cart"></i>
                 </a>
 
+                <!-- Nút Admin Dashboard nếu là Admin -->
+                <c:if test="${sessionScope.account.role == 0}">
+                    <a href="${pageContext.request.contextPath}/admin/dashboard" class="header-icon btn-admin-dashboard" title="Admin Dashboard">
+                        <i class="fas fa-tools"></i>
+                    </a>
+                </c:if>
             </div>
 
-            <!-- Menu ng??i dùng -->
+            <!-- Menu người dùng -->
             <div class="user-dropdown">
                 <div class="user-menu" onclick="toggleDropdown()" tabindex="0" role="button" aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-user"></i>
