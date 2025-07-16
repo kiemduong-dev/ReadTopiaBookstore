@@ -54,11 +54,11 @@ public class PromotionAddServlet extends HttpServlet {
 
             // Nếu là admin (role == 0) thì duyệt luôn
             if (role == 0) {
-                pro.setProStatus(1); // active
+                pro.setProStatus(1); // approved ngay
                 pro.setApprovedBy(staffID);
             } else {
-                pro.setProStatus(0); // inactive, chờ duyệt
-                pro.setApprovedBy(0);
+                pro.setProStatus(0); // chờ duyệt
+                pro.setApprovedBy(null); // để phù hợp với DB (nullable)
             }
 
             pro.setCreatedBy(staffID);
@@ -100,3 +100,4 @@ public class PromotionAddServlet extends HttpServlet {
     }// </editor-fold>
 
 }
+
