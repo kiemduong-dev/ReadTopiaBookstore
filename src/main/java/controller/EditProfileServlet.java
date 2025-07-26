@@ -14,25 +14,20 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 /**
- * EditProfileServlet – Handles displaying and updating user's profile. Supports
- * GET (view form) and POST (handle update).
+ * EditProfileServlet – Handles displaying and updating user's profile.
+ * Supports GET (view form) and POST (handle update).
  *
  * URL Mapping: /edit-profile
- *
  * @author CE181518 Dương An Kiếm
  */
 @WebServlet(name = "EditProfileServlet", urlPatterns = {"/edit-profile"})
 public class EditProfileServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
+    private static final DateTimeFormatter DOB_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     /**
      * Handles GET request to show edit profile form.
-     *
-     * @param request HttpServletRequest
-     * @param response HttpServletResponse
-     * @throws ServletException
-     * @throws IOException
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -51,11 +46,6 @@ public class EditProfileServlet extends HttpServlet {
 
     /**
      * Handles POST request to update profile information.
-     *
-     * @param request HttpServletRequest
-     * @param response HttpServletResponse
-     * @throws ServletException
-     * @throws IOException
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -75,7 +65,7 @@ public class EditProfileServlet extends HttpServlet {
             String email = request.getParameter("email");
             String phone = request.getParameter("phone");
             String address = request.getParameter("address");
-            String dobStr = request.getParameter("dob");
+            String dobStr = request.getParameter("dob"); // Expected format: dd/MM/yyyy
             String gender = request.getParameter("sex");
 
             int sex = Integer.parseInt(gender);
@@ -96,18 +86,19 @@ public class EditProfileServlet extends HttpServlet {
             } else if (!ValidationUtil.isValidAddress(address)) {
                 request.setAttribute("error", "Address is required.");
             } else {
-                LocalDate parsedDob = LocalDate.parse(dobStr);
+                // Parse date using dd/MM/yyyy
+                LocalDate parsedDob = LocalDate.parse(dobStr, DOB_FORMATTER);
                 Date dob = Date.valueOf(parsedDob);
 
-                account.setFirstName(firstName);
-                account.setLastName(lastName);
-                account.setEmail(email);
-                account.setPhone(phone);
-                account.setAddress(address);
+                account.setFirstName(firstName.trim());
+                account.setLastName(lastName.trim());
+                account.setEmail(email.trim());
+                account.setPhone(phone.trim());
+                account.setAddress(address.trim());
                 account.setSex(sex);
                 account.setDob(dob);
 
-                AccountDAO dao = new AccountDAO(); // Hoặc AccountDAO dao = new AccountDAOImpl();
+                AccountDAO dao = new AccountDAO();
                 boolean updated = dao.updateProfile(account);
 
                 if (updated) {
@@ -119,7 +110,7 @@ public class EditProfileServlet extends HttpServlet {
             }
 
         } catch (DateTimeParseException e) {
-            request.setAttribute("error", "Date of birth must be in yyyy-MM-dd format.");
+            request.setAttribute("error", "Date of birth must be in dd/MM/yyyy format.");
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "An unexpected error occurred: " + e.getMessage());

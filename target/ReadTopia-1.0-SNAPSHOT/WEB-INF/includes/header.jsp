@@ -3,10 +3,13 @@
 
 <header class="header">
     <div class="header-content">
-        <!-- Logo -->
+
+        <!-- Logo dạng hình ảnh -->
         <div class="logo">
-            <a href="${pageContext.request.contextPath}/customer/book/list" class="logo-icon">?</a>
-            ReadTopia
+            <a href="${pageContext.request.contextPath}/customer/book/list" class="logo-link">
+                <img src="${pageContext.request.contextPath}/assets/img/logo.png" alt="ReadTopia Logo" style="height: 40px;">
+            </a>
+            <span style="font-size: 22px; font-weight: bold; margin-left: 10px;">ReadTopia</span>
         </div>
 
         <!-- Thanh tìm kiếm -->
@@ -26,13 +29,10 @@
                     <i class="fas fa-tags"></i>
                 </a>
 
-
-
                 <a href="${pageContext.request.contextPath}/cart/view" class="header-icon" title="Giỏ hàng">
                     <i class="fas fa-shopping-cart"></i>
                 </a>
 
-                <!-- Nút Admin Dashboard nếu là Admin -->
                 <c:if test="${sessionScope.account.role == 0}">
                     <a href="${pageContext.request.contextPath}/admin/dashboard" class="header-icon btn-admin-dashboard" title="Admin Dashboard">
                         <i class="fas fa-tools"></i>

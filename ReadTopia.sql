@@ -71,7 +71,7 @@
 		CONSTRAINT FK_Staff_Account FOREIGN KEY (username) REFERENCES Account(username)
 	)
 	GO
-
+			
 	CREATE TABLE Promotion(
 		proID INT IDENTITY(1,1),
 		proName NVARCHAR(255),
@@ -257,19 +257,13 @@ VALUES
 -- Insert staff accounts
 INSERT INTO Account(username, [password], firstName, lastName, dob, email, [address], phone, sex, [role], accStatus)
 VALUES
-('YenQNPCE181445', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Yến', N'Quang Nhật Phi', '1998-04-16', 'YenQNPCE181445@fpt.edu.vn', N'1 Võ Văn Ngân, Thủ Đức, TP. Hồ Chí Minh', '0377777778', 1, 0, 1),
-('ThienNHNCE180035', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Thiện', N'Nguyễn Huỳnh Nhất', '1996-06-11', 'ThienNHNCE180035@fpt.edu.vn', N'600 Nguyễn Văn Cừ, Q.1, TP. Hồ Chí Minh', '0387654321', 0, 0, 1),
-('HanNNCE180049', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Hân', N'Nguyễn Ngọc', '1998-01-25', 'HanNNCE180049@fpt.edu.vn', N'Đại học FPT, Quận Cái Răng, TP. Cần Thơ', '0967123456', 1, 0, 1),
-('ThoHPCE181027', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Thọ', N'Huỳnh Phúc', '1996-05-10', 'ThoHPCE181027@fpt.edu.vn', N'Khu Công nghệ cao, Quận 9, TP. Hồ Chí Minh', '0909123456', 0, 0, 1),
-('ThuanPVHCE181377', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Thuận', N'Phan Văn Hoà', '1999-06-08', 'ThuanPVHCE181377@fpt.edu.vn', N'Trung tâm CNTT, Đà Nẵng', '0912345678', 0, 0, 1),
-('ToanLTCE190713', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Toàn', N'La Thiện', '1992-11-24', 'toanlt.ce190713@gmail.com', N'Hòa Lạc, Thạch Thất, Hà Nội', '0377777777', 0, 0, 1);
+('YenQNPCE181445', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Yến', N'Quang Nhật Phi', '1998-04-16', 'YenQNPCE181445@fpt.edu.vn', N'1 Võ Văn Ngân, Thủ Đức, TP. Hồ Chí Minh', '0377777778', 1, 1, 1),
+('ThienNHNCE180035', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Thiện', N'Nguyễn Huỳnh Nhất', '1996-06-11', 'ThienNHNCE180035@fpt.edu.vn', N'600 Nguyễn Văn Cừ, Q.1, TP. Hồ Chí Minh', '0387654321', 0, 1, 1),
+('HanNNCE180049', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Hân', N'Nguyễn Ngọc', '1998-01-25', 'HanNNCE180049@fpt.edu.vn', N'Đại học FPT, Quận Cái Răng, TP. Cần Thơ', '0967123456', 1, 1, 1),
+('ThoHPCE181027', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Thọ', N'Huỳnh Phúc', '1996-05-10', 'ThoHPCE181027@fpt.edu.vn', N'Khu Công nghệ cao, Quận 9, TP. Hồ Chí Minh', '0909123456', 0, 1, 1),
+('ThuanPVHCE181377', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Thuận', N'Phan Văn Hoà', '1999-06-08', 'ThuanPVHCE181377@fpt.edu.vn', N'Trung tâm CNTT, Đà Nẵng', '0912345678', 0, 1, 1),
+('ToanLTCE190713', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Toàn', N'La Thiện', '1992-11-24', 'toanlt.ce190713@gmail.com', N'Hòa Lạc, Thạch Thất, Hà Nội', '0377777777', 0, 1, 1);
 
--- ==================== INSERT STAFF ====================
-INSERT INTO Staff(username)
-VALUES
-
-('YenQNPCE181445'), ('ThienNHNCE180035'), ('HanNNCE180049'),
-('ThoHPCE181027'), ('ThuanPVHCE181377'), ('ToanLTCE190713');
 	-- Insert customer accounts
 INSERT INTO Account (username, [password], firstName, lastName, dob, email, [address], phone, sex, [role], accStatus)
 VALUES
@@ -295,7 +289,11 @@ VALUES
 ('DiemLTCE180621', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Diễm', N'Lương Thị', '2004-03-16', 'DiemLTCE180621@fpt.edu.vn', N'600 Nguyễn Văn Cừ, Q.1, TP. Hồ Chí Minh', '0980828479', 1, 4, 1),
 ('LinhLTTCE181262', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Linh', N'Lê Thị Trúc', '2004-02-03', 'LinhLTTCE181262@fpt.edu.vn', N'Đại học FPT, Quận Cái Răng, TP. Cần Thơ', '0912196241', 1, 4, 1),
 ('DucGTCE182376', '$2a$10$eOPmXlQga7pdM2Aw6DEzCuP78BjJGbLvxnuYLCGZBKCAtfSf/K0ku', N'Đức', N'Giang Tú', '2004-07-10', 'DucGTCE182376@fpt.edu.vn', N'Khu Công nghệ cao, Quận 9, TP. Hồ Chí Minh', '0962372983', 0, 4, 1);
-
+INSERT INTO Staff(username)
+SELECT username
+FROM Account
+WHERE role IN (1, 2, 3) AND accStatus = 1
+  AND username NOT IN (SELECT username FROM Staff);
 
 
 	--INSERT INTO Book (bookTitle, author, translator, publisher, publicationYear, bookPrice, [image], isbn, bookDescription, hardcover, dimension, weight, bookQuantity, bookStatus)
@@ -641,7 +639,3 @@ VALUES
 ('Python', 'Master Python', 1, 14),
 ('Marketing', 'Learn marketing strategies', 1, 15),
 ('Finance', 'Understand financial systems', 1, 15);
-
-
-
-

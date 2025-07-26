@@ -15,7 +15,6 @@ controller\promotion\PromotionDeclineServlet.class
 controller\stock\ImportStockServlet.class
 controller\category\CategoryDeleteServlet.class
 controller\VerifyOTPResetServlet.class
-controller\HomePageServlet.class
 dao\OrderDetailDAO.class
 controller\admin\StaffSearchServlet.class
 dto\NotificationDTO.class

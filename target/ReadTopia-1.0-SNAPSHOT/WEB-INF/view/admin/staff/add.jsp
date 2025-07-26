@@ -1,5 +1,4 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <jsp:include page="/WEB-INF/includes/head-admin.jsp" />
@@ -7,84 +6,83 @@
 
 <div class="main-content">
     <div class="content-area">
-        <div class="page-header">
-            <h1 class="page-title">Add New Staff</h1>
-        </div>
+        <h1 class="page-title">Add New Staff</h1>
 
         <c:if test="${not empty error}">
-            <div class="alert alert-danger">${error}</div>
+            <div class="alert alert-danger text-center fw-bold">${error}</div>
         </c:if>
 
-        <form method="post" action="${pageContext.request.contextPath}/admin/staff/add" class="card">
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="username" class="form-label">* Username</label>
-                    <input type="text" id="username" name="username" required class="form-input" value="${staff.username}" />
-                </div>
-                <div class="form-group">
-                    <label for="password" class="form-label">* Password</label>
-                    <input type="password" id="password" name="password" required class="form-input" />
-                </div>
+        <form method="post" action="${pageContext.request.contextPath}/admin/staff/add" class="form-container">
+
+            <div class="form-group">
+                <label>Username:</label>
+                <input type="text" name="username" required class="form-input"
+                       value="${staff.username != null ? staff.username : ''}" />
             </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="firstName" class="form-label">* First Name</label>
-                    <input type="text" id="firstName" name="firstName" required class="form-input" value="${staff.firstName}" />
-                </div>
-                <div class="form-group">
-                    <label for="lastName" class="form-label">* Last Name</label>
-                    <input type="text" id="lastName" name="lastName" required class="form-input" value="${staff.lastName}" />
-                </div>
+            <div class="form-group">
+                <label>Password:</label>
+                <input type="password" name="password" required class="form-input" />
             </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="dob" class="form-label">Date of Birth</label>
-                    <input type="date" id="dob" name="dob" class="form-input" value="${staff.dob}" />
-                </div>
-                <div class="form-group">
-                    <label for="email" class="form-label">* Email</label>
-                    <input type="email" id="email" name="email" required class="form-input" value="${staff.email}" />
-                </div>
+            <div class="form-group">
+                <label>Confirm Password:</label>
+                <input type="password" name="confirmPassword" required class="form-input" />
             </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="phone" class="form-label">Phone</label>
-                    <input type="tel" id="phone" name="phone" class="form-input" value="${staff.phone}" />
-                </div>
-                <div class="form-group">
-                    <label class="form-label">* Sex</label>
-                    <div class="radio-group">
-                        <div class="radio-item">
-                            <input type="radio" id="sexFemale" name="sex" value="0" ${staff.sex == 0 ? 'checked' : ''} />
-                            <label for="sexFemale">Female</label>
-                        </div>
-                        <div class="radio-item">
-                            <input type="radio" id="sexMale" name="sex" value="1" ${staff.sex == 1 ? 'checked' : ''} />
-                            <label for="sexMale">Male</label>
-                        </div>
-                    </div>
-                </div>
+            <div class="form-group">
+                <label>First Name:</label>
+                <input type="text" name="firstName" required class="form-input"
+                       value="${staff.firstName != null ? staff.firstName : ''}" />
             </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="role" class="form-label">Role</label>
-                    <select id="role" name="role" class="form-select" required>
-                        <option value="">Please select role</option>
-                        <option value="2" ${staff.role == 2 ? 'selected' : ''}>Seller Staff</option>
-                        <option value="3" ${staff.role == 3 ? 'selected' : ''}>Warehouse Staff</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="address" class="form-label">Address</label>
-                    <textarea id="address" name="address" rows="3" class="form-textarea">${staff.address}</textarea>
-                </div>
+            <div class="form-group">
+                <label>Last Name:</label>
+                <input type="text" name="lastName" required class="form-input"
+                       value="${staff.lastName != null ? staff.lastName : ''}" />
             </div>
 
-            <div class="btn-group">
+            <div class="form-group">
+                <label>Sex:</label>
+                <select name="sex" class="form-select" required>
+                    <option value="1" <c:if test="${staff.sex == 1}">selected</c:if>>Male</option>
+                    <option value="0" <c:if test="${staff.sex == 0}">selected</c:if>>Female</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Role:</label>
+                <select name="role" class="form-select" required>
+                    <option value="0" <c:if test="${staff.role == 0}">selected</c:if>>Admin</option>
+                    <option value="1" <c:if test="${staff.role == 1}">selected</c:if>>Staff Manager</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Date of Birth (dd/MM/yyyy):</label>
+                <input type="text" name="dob" class="form-input"
+                       value="${dobRaw != null ? dobRaw : ''}" placeholder="dd/MM/yyyy" />
+            </div>
+
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" name="email" required class="form-input"
+                       value="${staff.email != null ? staff.email : ''}" />
+            </div>
+
+            <div class="form-group">
+                <label>Phone:</label>
+                <input type="text" name="phone" required class="form-input"
+                       value="${staff.phone != null ? staff.phone : ''}" />
+            </div>
+
+            <div class="form-group">
+                <label>Address:</label>
+                <input type="text" name="address" required class="form-input"
+                       value="${staff.address != null ? staff.address : ''}" />
+            </div>
+
+            <div class="btn-group mt-4">
                 <button type="submit" class="btn btn-primary">Add Staff</button>
                 <a href="${pageContext.request.contextPath}/admin/staff/list" class="btn btn-secondary">Cancel</a>
             </div>

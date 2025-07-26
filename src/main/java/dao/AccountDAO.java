@@ -100,7 +100,7 @@ public class AccountDAO {
     public AccountDTO findByUsername(String username) throws Exception {
         AccountDTO account = null;
         String sql = "SELECT username, password, firstName, lastName, dob, email, phone, role, address, sex, accStatus, otp "
-                + "FROM AccountDTO WHERE username = ?";
+                + "FROM Account WHERE username = ?";
         try ( Connection conn = DBContext.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, username);
             try ( ResultSet rs = ps.executeQuery()) {

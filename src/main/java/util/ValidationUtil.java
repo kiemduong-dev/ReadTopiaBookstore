@@ -7,7 +7,7 @@ import java.time.format.DateTimeParseException;
 
 /**
  * ValidationUtil – Provides static methods to validate input fields for
- * registration/login/update
+ * registration/login/update.
  *
  * @author SE
  */
@@ -23,16 +23,15 @@ public class ValidationUtil {
         return username != null && username.matches("^[a-zA-Z0-9]{1,30}$");
     }
 
-    /**
-     * Validate first/last name: alphabet letters & spaces only, no digits or
-     * symbols
-     *
-     * @param name input name
-     * @return true if valid
-     */
-    public static boolean isValidName(String name) {
-        return name != null && name.matches("^[A-Za-z ]{1,50}$");
-    }
+/**
+ * Validate name: allow Vietnamese letters, spaces; no digits or special characters
+ *
+ * @param name input name
+ * @return true if valid
+ */
+public static boolean isValidName(String name) {
+    return name != null && name.matches("^[\\p{L}]+( [\\p{L}]+)*$");
+}
 
     /**
      * Validate email format
@@ -41,11 +40,12 @@ public class ValidationUtil {
      * @return true if valid
      */
     public static boolean isValidEmail(String email) {
-        return email != null && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$");
+        return email != null
+                && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$");
     }
 
     /**
-     * Validate password strength
+     * Validate strong password: min 8 chars, must include Aa#1
      *
      * @param password input password
      * @return true if valid
@@ -58,18 +58,18 @@ public class ValidationUtil {
     /**
      * Validate confirm password match
      *
-     * @param password original password
-     * @param confirm confirm password
-     * @return true if match
+     * @param password password
+     * @param confirm confirmation
+     * @return true if both match
      */
     public static boolean isConfirmPasswordMatch(String password, String confirm) {
         return password != null && password.equals(confirm);
     }
 
     /**
-     * Validate Vietnamese phone number
+     * Validate Vietnamese phone number format
      *
-     * @param phone input phone number
+     * @param phone input phone
      * @return true if valid
      */
     public static boolean isValidPhone(String phone) {
@@ -77,7 +77,7 @@ public class ValidationUtil {
     }
 
     /**
-     * Validate address is not blank
+     * Validate address not blank
      *
      * @param address input address
      * @return true if valid
@@ -87,7 +87,7 @@ public class ValidationUtil {
     }
 
     /**
-     * Validate gender: must be "0" or "1"
+     * Validate gender is either "0" or "1"
      *
      * @param gender input gender
      * @return true if valid
@@ -97,14 +97,14 @@ public class ValidationUtil {
     }
 
     /**
-     * Validate date of birth: format yyyy-MM-dd and age >= 13
+     * Validate date of birth is in dd/MM/yyyy format and age >= 13
      *
-     * @param dobString input date string yyyy-MM-dd
+     * @param dobString input dob (dd/MM/yyyy)
      * @return true if valid
      */
     public static boolean isValidDob(String dobString) {
         try {
-            LocalDate dob = LocalDate.parse(dobString);
+            LocalDate dob = LocalDate.parse(dobString, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
             return Period.between(dob, LocalDate.now()).getYears() >= 13;
         } catch (DateTimeParseException e) {
             return false;
