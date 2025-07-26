@@ -59,10 +59,9 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <a href="${pageContext.request.contextPath}/ImportStockDetailServlet?isid=${s.id}" 
-                                       class="btn-icon btn-info">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
+                                   <a href="${pageContext.request.contextPath}/admin/stock/ImportStockDetailServlet?isid=${s.id}"
+   class="btn btn-info"><i class="fas fa-eye"></i></a>
+
                                 </td>
                             </tr>
                         </c:forEach>

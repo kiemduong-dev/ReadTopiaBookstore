@@ -10,7 +10,8 @@ import jakarta.servlet.*;
 import java.io.IOException;
 import java.util.*;
 
-@WebServlet("/ImportStockDetailServlet")
+
+@WebServlet("/admin/stock/ImportStockDetailServlet")
 public class ImportStockDetailServlet extends HttpServlet {
     private ImportStockDAO dao;
 

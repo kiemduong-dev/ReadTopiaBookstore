@@ -66,23 +66,22 @@ public List<StaffDTO> findActiveSellerAndWarehouseStaff() {
      * Get all active Seller and Warehouse staff (role 2, 3)
      * @return list of StaffDTO
      */
-    public List<StaffDTO> getAllActiveSellerAndWarehouseStaff() {
-        List<StaffDTO> list = new ArrayList<>();
-        String sql = "SELECT s.staffID, a.* FROM Staff s "
-                   + "JOIN Account a ON s.username = a.username "
-                   + "WHERE a.accStatus = 1 AND a.role IN (2, 3)";
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+   public List<StaffDTO> getAllActiveSellerAndWarehouseStaff() {
+    List<StaffDTO> list = new ArrayList<>();
+    String sql = "SELECT s.staffID, a.* FROM Staff s JOIN Account a ON s.username = a.username "
+               + "WHERE a.accStatus = 1 AND (a.role = 0 OR a.role = 2 OR a.role = 3)"; // CHỈNH ROLE = 0
 
-            while (rs.next()) {
-                list.add(extractStaff(rs));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+    try (Connection conn = DBContext.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) {
+            list.add(extractStaff(rs));
         }
-        return list;
+    } catch (Exception e) {
+        e.printStackTrace();
     }
+    return list;
+}
 
     /**
      * Search staff by keyword – username, firstName, lastName, email
