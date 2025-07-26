@@ -10,9 +10,11 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 
 /**
- * AccountDeleteServlet – Handles soft-deletion of user accounts from the admin
- * dashboard. Only Admin role can perform this action. Deletes corresponding
- * staff record if role = 1. Author: CE181518 Dương An Kiếm
+ * AccountDeleteServlet – Handles soft deletion of accounts by Admin.
+ * Admin can only delete Staff Manager (role = 1) and Customer (role = 4).
+ * Cannot delete Admin (role = 0), Seller Staff (2), Warehouse Staff (3), or self.
+ *
+ * @author CE181518 Dương An Kiếm
  */
 @WebServlet(name = "AccountDeleteServlet", urlPatterns = {"/admin/account/delete"})
 public class AccountDeleteServlet extends HttpServlet {
@@ -36,8 +38,9 @@ public class AccountDeleteServlet extends HttpServlet {
 
     private void processDelete(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
-        HttpSession session = request.getSession();
-        AccountDTO currentUser = (AccountDTO) session.getAttribute("account");
+
+        HttpSession session = request.getSession(false);
+        AccountDTO currentUser = (session != null) ? (AccountDTO) session.getAttribute("account") : null;
 
         if (currentUser == null || currentUser.getRole() != 0) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -47,35 +50,46 @@ public class AccountDeleteServlet extends HttpServlet {
         String username = request.getParameter("username");
 
         if (username == null || username.trim().isEmpty()) {
-            session.setAttribute("message", "Invalid username. Deletion aborted.");
+            session.setAttribute("message", "⚠️ Invalid username.");
             response.sendRedirect(request.getContextPath() + "/admin/account/list");
             return;
         }
 
         username = username.trim();
-        AccountDTO account = accountDAO.getAccountByUsername(username);
+        AccountDTO target = accountDAO.getAccountByUsername(username);
 
-        if (account == null) {
-            session.setAttribute("message", "Account not found.");
+        if (target == null) {
+            session.setAttribute("message", "❌ Account not found.");
+            response.sendRedirect(request.getContextPath() + "/admin/account/list");
+            return;
+        }
+
+        if (username.equals(currentUser.getUsername())) {
+            session.setAttribute("message", "⛔ You cannot delete your own account.");
+            response.sendRedirect(request.getContextPath() + "/admin/account/list");
+            return;
+        }
+
+        int targetRole = target.getRole();
+        if (targetRole == 0 || targetRole == 2 || targetRole == 3) {
+            session.setAttribute("message", "🚫 Cannot delete Admin, Seller Staff or Warehouse Staff.");
+            response.sendRedirect(request.getContextPath() + "/admin/account/list");
+            return;
+        }
+
+        // ✅ Nếu là Staff Manager thì xóa dữ liệu trong bảng Staff
+        if (targetRole == 1) {
+            staffDAO.deleteByUsername(username);
+        }
+
+        // ✅ Soft delete: accStatus = 0
+        target.setAccStatus(0);
+        boolean deleted = accountDAO.updateAccountStatus(target);
+
+        if (deleted) {
+            session.setAttribute("message", "✅ Account \"" + username + "\" deleted successfully.");
         } else {
-            if (username.equals(currentUser.getUsername())) {
-                session.setAttribute("message", "You cannot delete your own account.");
-                response.sendRedirect(request.getContextPath() + "/admin/account/list");
-                return;
-            }
-
-            if (account.getRole() == 1) {
-                staffDAO.deleteByUsername(username);
-            }
-
-            account.setAccStatus(0);
-            boolean success = accountDAO.updateAccountStatus(account);
-
-            if (success) {
-                session.setAttribute("message", "Account \"" + username + "\" was deactivated successfully.");
-            } else {
-                session.setAttribute("message", "Failed to deactivate account \"" + username + "\".");
-            }
+            session.setAttribute("message", "❌ Failed to delete account \"" + username + "\".");
         }
 
         response.sendRedirect(request.getContextPath() + "/admin/account/list");
@@ -83,6 +97,6 @@ public class AccountDeleteServlet extends HttpServlet {
 
     @Override
     public String getServletInfo() {
-        return "Handles soft-deletion of user accounts from Admin Dashboard.";
+        return "Handles soft-deletion of Staff Manager or Customer accounts by Admin.";
     }
 }

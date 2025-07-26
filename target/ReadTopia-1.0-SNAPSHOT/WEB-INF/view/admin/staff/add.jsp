@@ -21,16 +21,6 @@
             </div>
 
             <div class="form-group">
-                <label>Password:</label>
-                <input type="password" name="password" required class="form-input" />
-            </div>
-
-            <div class="form-group">
-                <label>Confirm Password:</label>
-                <input type="password" name="confirmPassword" required class="form-input" />
-            </div>
-
-            <div class="form-group">
                 <label>First Name:</label>
                 <input type="text" name="firstName" required class="form-input"
                        value="${staff.firstName != null ? staff.firstName : ''}" />
@@ -53,8 +43,8 @@
             <div class="form-group">
                 <label>Role:</label>
                 <select name="role" class="form-select" required>
-                    <option value="0" <c:if test="${staff.role == 0}">selected</c:if>>Admin</option>
-                    <option value="1" <c:if test="${staff.role == 1}">selected</c:if>>Staff Manager</option>
+                    <option value="2" <c:if test="${staff.role == 2}">selected</c:if>>Seller Staff</option>
+                    <option value="3" <c:if test="${staff.role == 3}">selected</c:if>>Warehouse Staff</option>
                 </select>
             </div>
 

@@ -17,12 +17,6 @@ import java.util.List;
 
 public class AccountDAO {
 
-    /**
-     * Adds a new account to the database.
-     *
-     * @param acc the AccountDTO object containing user information
-     * @return true if the account was added successfully, false otherwise
-     */
     public boolean addAccount(AccountDTO acc) {
         String sql = "INSERT INTO Account (username, password, firstName, lastName, email, phone, role, address, accStatus, dob, sex, code) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -38,8 +32,38 @@ public class AccountDAO {
             ps.setInt(9, acc.getAccStatus());
             ps.setDate(10, acc.getDob());
             ps.setInt(11, acc.getSex());
-            ps.setString(12, acc.getCode());
+            ps.setString(12, acc.getCode() != null ? acc.getCode() : ""); // Đảm bảo không truyền null
             return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("SQL Error: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
+        }
+        return false;
+    }
+// CHUẨN HÓA THÊM METHOD DƯỚI
+
+    public boolean addAccountByAdmin(AccountDTO acc) {
+        String sql = "INSERT INTO Account (username, password, firstName, lastName, email, phone, role, address, accStatus, dob, sex, code) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, acc.getUsername());
+            ps.setString(2, acc.getPassword());
+            ps.setString(3, acc.getFirstName());
+            ps.setString(4, acc.getLastName());
+            ps.setString(5, acc.getEmail());
+            ps.setString(6, acc.getPhone());
+            ps.setInt(7, acc.getRole());
+            ps.setString(8, acc.getAddress());
+            ps.setInt(9, acc.getAccStatus());
+            ps.setDate(10, acc.getDob());
+            ps.setInt(11, acc.getSex());
+            ps.setString(12, null); // ✅ code = null → KHÔNG CÓ OTP
+
+            return ps.executeUpdate() > 0;
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -99,7 +123,7 @@ public class AccountDAO {
      */
     public AccountDTO findByUsername(String username) throws Exception {
         AccountDTO account = null;
-        String sql = "SELECT username, password, firstName, lastName, dob, email, phone, role, address, sex, accStatus, otp "
+        String sql = "SELECT username, password, firstName, lastName, dob, email, phone, role, address, sex, accStatus, code "
                 + "FROM Account WHERE username = ?";
         try ( Connection conn = DBContext.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, username);
@@ -117,7 +141,7 @@ public class AccountDAO {
                             rs.getString("address"),
                             rs.getInt("sex"),
                             rs.getInt("accStatus"),
-                            rs.getString("otp")
+                            rs.getString("code") // ✅ sửa ở đây
                     );
                 }
             }
@@ -230,30 +254,41 @@ public class AccountDAO {
         return false;
     }
 
-    /**
-     * Admin updates all user account fields.
-     *
-     * @param acc the updated account
-     * @return true if successful
-     */
-    public boolean updateAccountByAdmin(AccountDTO acc) {
-        String sql = "UPDATE Account SET firstName=?, lastName=?, email=?, phone=?, address=?, role=?, sex=?, dob=? WHERE username=?";
-        try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, acc.getFirstName());
-            ps.setString(2, acc.getLastName());
-            ps.setString(3, acc.getEmail());
-            ps.setString(4, acc.getPhone());
-            ps.setString(5, acc.getAddress());
-            ps.setInt(6, acc.getRole());
-            ps.setInt(7, acc.getSex());
-            ps.setDate(8, acc.getDob());
-            ps.setString(9, acc.getUsername());
-            return ps.executeUpdate() > 0;
-        } catch (Exception e) {
-            e.printStackTrace();
+/**
+ * Admin updates all user account fields.
+ *
+ * @param acc the updated account
+ * @return true if successful
+ */
+public boolean updateAccountByAdmin(AccountDTO acc) {
+    String sql = "UPDATE Account SET firstName=?, lastName=?, email=?, phone=?, address=?, role=?, sex=?, dob=? WHERE username=?";
+    try (Connection conn = new DBContext().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        // Kiểm tra các giá trị đầu vào
+        if (acc.getUsername() == null || acc.getUsername().isEmpty()) {
+            throw new IllegalArgumentException("Username cannot be null or empty");
         }
-        return false;
+
+        ps.setString(1, acc.getFirstName());
+        ps.setString(2, acc.getLastName());
+        ps.setString(3, acc.getEmail());
+        ps.setString(4, acc.getPhone());
+        ps.setString(5, acc.getAddress());
+        ps.setInt(6, acc.getRole());
+        ps.setInt(7, acc.getSex());
+        ps.setDate(8, acc.getDob());
+        ps.setString(9, acc.getUsername());
+
+        return ps.executeUpdate() > 0;
+    } catch (SQLException e) {
+        System.err.println("SQL Error: " + e.getMessage());
+        e.printStackTrace();
+    } catch (Exception e) {
+        System.err.println("Unexpected Error: " + e.getMessage());
+        e.printStackTrace();
     }
+    return false;
+}
+
 
     /**
      * Updates account status.

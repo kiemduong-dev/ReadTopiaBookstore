@@ -1,4 +1,4 @@
-package controller.supplier;
+package controller.Supplier;
 
 import dao.SupplierDAO;
 import jakarta.servlet.ServletException;

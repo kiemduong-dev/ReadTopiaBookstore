@@ -78,6 +78,7 @@ D:\SWP391\ReadTopiaBookstore\src\main\java\controller\EditProfileServlet.java
 D:\SWP391\ReadTopiaBookstore\src\main\java\controller\order\OrderSearchServlet.java
 D:\SWP391\ReadTopiaBookstore\src\main\java\dao\StaffDAO.java
 D:\SWP391\ReadTopiaBookstore\src\main\java\controller\promotion\PromotionDetailServlet.java
+D:\SWP391\ReadTopiaBookstore\src\main\java\util\PasswordUtil.java
 D:\SWP391\ReadTopiaBookstore\src\main\java\controller\stock\ImportStockServlet.java
 D:\SWP391\ReadTopiaBookstore\src\main\java\controller\admin\AccountEditServlet.java
 D:\SWP391\ReadTopiaBookstore\src\main\java\util\DBContext.java

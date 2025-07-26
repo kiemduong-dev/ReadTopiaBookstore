@@ -12,13 +12,7 @@
             <span style="font-size: 22px; font-weight: bold; margin-left: 10px;">ReadTopia</span>
         </div>
 
-        <!-- Thanh tìm kiếm -->
-        <div class="search-container">
-            <input type="text" class="search-input" placeholder="Tìm kiếm sách..." aria-label="Search books">
-            <button class="header-icon" id="searchBtn" title="Tìm kiếm">
-                <i class="fas fa-search"></i>
-            </button>
-        </div>
+       
 
         <!-- Các hành động -->
         <div class="header-actions">

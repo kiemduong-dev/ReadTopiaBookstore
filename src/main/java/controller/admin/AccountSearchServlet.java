@@ -2,19 +2,24 @@ package controller.admin;
 
 import dao.AccountDAO;
 import dto.AccountDTO;
-import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.*;
+
+import java.io.IOException;
 import java.util.List;
 
+/**
+ * AccountSearchServlet – Allows Admin to search for accounts by keyword.
+ * Only Admin (role = 0) can access this function.
+ * 
+ * @author CE181518
+ */
 @WebServlet(name = "AccountSearchServlet", urlPatterns = {"/admin/account/search"})
 public class AccountSearchServlet extends HttpServlet {
 
-    private final AccountDAO dao = new AccountDAO();
+    private static final long serialVersionUID = 1L;
+    private final AccountDAO accountDAO = new AccountDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -36,14 +41,20 @@ public class AccountSearchServlet extends HttpServlet {
         }
 
         try {
-            List<AccountDTO> accounts = dao.searchAccounts(keyword.trim());
-            request.setAttribute("accountList", accounts);
+            List<AccountDTO> result = accountDAO.searchAccounts(keyword.trim());
+            request.setAttribute("accountList", result);
             request.setAttribute("keyword", keyword.trim());
             request.getRequestDispatcher("/WEB-INF/view/admin/account/list.jsp").forward(request, response);
+
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("error", "Search failed: " + e.getMessage());
+            request.setAttribute("error", "🔍 Search failed: " + e.getMessage());
             request.getRequestDispatcher("/WEB-INF/view/admin/account/list.jsp").forward(request, response);
         }
+    }
+
+    @Override
+    public String getServletInfo() {
+        return "Search accounts by keyword (Admin only)";
     }
 }

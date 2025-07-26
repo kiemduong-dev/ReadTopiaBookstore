@@ -6,6 +6,9 @@ import dto.StaffDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
+import org.mindrot.jbcrypt.BCrypt;
+import util.MailUtil;
+import util.PasswordUtil;
 import util.ValidationUtil;
 
 import java.io.IOException;
@@ -15,10 +18,11 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 /**
- * StaffAddServlet – Handles staff creation (only Seller or Warehouse Staff)
+ * StaffAddServlet – Handles staff creation (only Seller or Warehouse Staff).
  * Only Staff (role = 1) is allowed to access this function. Admin cannot add staff.
  *
  * URL: /admin/staff/add
+ * 
  * @author CE181518 Dương An Kiếm
  */
 @WebServlet(name = "StaffAddServlet", urlPatterns = {"/admin/staff/add"})
@@ -35,7 +39,7 @@ public class StaffAddServlet extends HttpServlet {
         AccountDTO loginUser = (session != null) ? (AccountDTO) session.getAttribute("account") : null;
 
         if (loginUser == null || loginUser.getRole() != 1) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, "You do not have permission to access this page.");
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
 
@@ -51,14 +55,12 @@ public class StaffAddServlet extends HttpServlet {
         AccountDTO loginUser = (session != null) ? (AccountDTO) session.getAttribute("account") : null;
 
         if (loginUser == null || loginUser.getRole() != 1) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, "You do not have permission to add staff.");
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
 
-        // Get form data
+        // Lấy dữ liệu từ form
         String username = request.getParameter("username").trim();
-        String password = request.getParameter("password").trim();
-        String confirmPassword = request.getParameter("confirmPassword").trim();
         String firstName = request.getParameter("firstName").trim();
         String lastName = request.getParameter("lastName").trim();
         String dobRaw = request.getParameter("dob").trim();
@@ -68,10 +70,8 @@ public class StaffAddServlet extends HttpServlet {
         String sexStr = request.getParameter("sex");
         String roleStr = request.getParameter("role");
 
-        // Validate format
+        // Kiểm tra hợp lệ dữ liệu
         if (!ValidationUtil.isValidUsername(username)
-                || !ValidationUtil.isValidPassword(password)
-                || !ValidationUtil.isConfirmPasswordMatch(password, confirmPassword)
                 || !ValidationUtil.isValidName(firstName)
                 || !ValidationUtil.isValidName(lastName)
                 || !ValidationUtil.isValidEmail(email)
@@ -80,9 +80,8 @@ public class StaffAddServlet extends HttpServlet {
                 || !ValidationUtil.isValidGender(sexStr)
                 || !ValidationUtil.isValidDob(dobRaw)) {
 
-            request.setAttribute("error", "Invalid input. Please check all fields carefully.");
-            bindStaffToRequest(request, username, password, firstName, lastName, null,
-                    email, phone, safeParseInt(roleStr), address, safeParseInt(sexStr));
+            request.setAttribute("error", "Invalid input. Please check all fields.");
+            bindStaffToRequest(request, username, null, firstName, lastName, null, email, phone, safeParseInt(roleStr), address, safeParseInt(sexStr));
             request.setAttribute("dobRaw", dobRaw);
             request.getRequestDispatcher("/WEB-INF/view/admin/staff/add.jsp").forward(request, response);
             return;
@@ -92,19 +91,19 @@ public class StaffAddServlet extends HttpServlet {
             int role = Integer.parseInt(roleStr);
             int sex = Integer.parseInt(sexStr);
 
+            // Chỉ cho phép thêm role 2 hoặc 3
             if (role != 2 && role != 3) {
                 request.setAttribute("error", "Only Seller or Warehouse Staff can be added.");
-                bindStaffToRequest(request, username, password, firstName, lastName, null,
-                        email, phone, role, address, sex);
+                bindStaffToRequest(request, username, null, firstName, lastName, null, email, phone, role, address, sex);
                 request.setAttribute("dobRaw", dobRaw);
                 request.getRequestDispatcher("/WEB-INF/view/admin/staff/add.jsp").forward(request, response);
                 return;
             }
 
+            // Kiểm tra trùng username hoặc email
             if (staffDAO.findByUsername(username) != null || staffDAO.findByEmail(email) != null) {
                 request.setAttribute("error", "Username or Email already exists.");
-                bindStaffToRequest(request, username, password, firstName, lastName, null,
-                        email, phone, role, address, sex);
+                bindStaffToRequest(request, username, null, firstName, lastName, null, email, phone, role, address, sex);
                 request.setAttribute("dobRaw", dobRaw);
                 request.getRequestDispatcher("/WEB-INF/view/admin/staff/add.jsp").forward(request, response);
                 return;
@@ -113,11 +112,22 @@ public class StaffAddServlet extends HttpServlet {
             LocalDate dobLocal = LocalDate.parse(dobRaw, formatter);
             Date dob = Date.valueOf(dobLocal);
 
-            StaffDTO staff = new StaffDTO(username, password, firstName, lastName,
+            // Sinh mật khẩu ngẫu nhiên & mã hóa
+            String rawPassword = PasswordUtil.generateRandomPassword(10);
+            String hashedPassword = BCrypt.hashpw(rawPassword, BCrypt.gensalt());
+
+            StaffDTO staff = new StaffDTO(username, hashedPassword, firstName, lastName,
                     dob, email, phone, role, address, sex, 1, null);
 
             if (staffDAO.addStaff(staff)) {
-                session.setAttribute("message", "Staff added successfully.");
+                try {
+                    MailUtil.sendPassword(email, username, rawPassword);
+                    session.setAttribute("message", "Staff added and password sent successfully.");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    session.setAttribute("message", "Staff added, but failed to send password email.");
+                }
+
                 response.sendRedirect("list");
             } else {
                 request.setAttribute("error", "Failed to add staff. Please try again.");

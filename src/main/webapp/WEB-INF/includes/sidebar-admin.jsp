@@ -61,6 +61,10 @@
             <a href="${pageContext.request.contextPath}/admin/notification/list" class="menu-item">
                 <i class="fas fa-bell"></i> Notification Management
             </a>
+            <!-- Nút quay về trang sách -->
+            <a href="${pageContext.request.contextPath}/customer/book/list" class="menu-item">
+                <i class="fas fa-book-open"></i> Book List
+            </a>
         </c:if>
 
         <!-- Staff Manager -->
@@ -68,7 +72,6 @@
             <a href="${pageContext.request.contextPath}/admin/dashboard" class="menu-item">
                 <i class="fas fa-tachometer-alt"></i> Dashboard
             </a>
-           
             <a href="${pageContext.request.contextPath}/admin/staff/list" class="menu-item">
                 <i class="fas fa-user-tie"></i> Staff Management
             </a>

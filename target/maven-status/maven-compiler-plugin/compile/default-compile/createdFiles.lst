@@ -17,6 +17,7 @@ controller\category\CategoryDeleteServlet.class
 controller\VerifyOTPResetServlet.class
 dao\OrderDetailDAO.class
 controller\admin\StaffSearchServlet.class
+util\PasswordUtil.class
 dto\NotificationDTO.class
 dto\StaffDTO.class
 dao\StaffDAO.class
@@ -53,6 +54,7 @@ dto\Data.class
 controller\promotion\PromotionLogServlet.class
 controller\notification\NotificationAddServlet.class
 controller\book\DeleteBookServlet.class
+util\MailUtil$2.class
 controller\order\OrderHistoryServlet.class
 dto\OrderDetailDTO.class
 dao\PaymentDAO.class

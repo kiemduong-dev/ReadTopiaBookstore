@@ -110,4 +110,64 @@ public class MailUtil {
                 + "</body>"
                 + "</html>";
     }
+/**
+ * Sends a welcome email with username and random password.
+ *
+ * @param toEmail Recipient email
+ * @param username The staff's username
+ * @param password The staff's password (generated)
+ * @throws MessagingException If email fails
+ * @throws UnsupportedEncodingException If sender encoding fails
+ */
+public static void sendPassword(String toEmail, String username, String password)
+        throws MessagingException, UnsupportedEncodingException {
+
+    if (toEmail == null || toEmail.trim().isEmpty() || password == null || password.trim().isEmpty()) {
+        throw new IllegalArgumentException("Email or password cannot be empty.");
+    }
+
+    Properties props = new Properties();
+    props.put("mail.smtp.auth", "true");
+    props.put("mail.smtp.starttls.enable", "true");
+    props.put("mail.smtp.host", "smtp.gmail.com");
+    props.put("mail.smtp.port", "587");
+    props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+
+    Session session = Session.getInstance(props, new Authenticator() {
+        @Override
+        protected PasswordAuthentication getPasswordAuthentication() {
+            return new PasswordAuthentication(FROM_EMAIL, APP_PASSWORD);
+        }
+    });
+
+    Message message = new MimeMessage(session);
+    message.setFrom(new InternetAddress(FROM_EMAIL, "ReadTopia HR"));
+    message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
+    message.setSubject("Your ReadTopia Account Credentials");
+    message.setContent(buildPasswordEmailContent(username, password), "text/html; charset=utf-8");
+
+    Transport.send(message);
+}
+
+/**
+ * Builds the HTML content with username and password
+ */
+private static String buildPasswordEmailContent(String username, String password) {
+    return "<html>"
+            + "<head><style>"
+            + "body { font-family: Arial; background-color: #f4f4f4; padding: 20px; }"
+            + ".container { background: #fff; padding: 20px; border-radius: 10px; max-width: 500px; margin: auto; }"
+            + ".info { font-size: 18px; margin: 15px 0; }"
+            + ".footer { font-size: 12px; color: #888; margin-top: 30px; }"
+            + "</style></head>"
+            + "<body><div class='container'>"
+            + "<h2>Welcome to ReadTopia 🎉</h2>"
+            + "<p>Your account has been successfully created.</p>"
+            + "<div class='info'><strong>Username:</strong> " + username + "</div>"
+            + "<div class='info'><strong>Password:</strong> " + password + "</div>"
+            + "<p>Please log in and change your password as soon as possible.</p>"
+            + "<div class='footer'>Thank you,<br/>ReadTopia Team</div>"
+            + "</div></body></html>";
+}
+
 }
