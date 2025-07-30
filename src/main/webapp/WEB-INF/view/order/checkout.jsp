@@ -1,5 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" session="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
 <jsp:include page="/WEB-INF/includes/head.jsp" />
 <jsp:include page="/WEB-INF/includes/header.jsp" />
 
@@ -7,40 +9,44 @@
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
             <div class="card shadow">
-                <div class="card-header text-white text-center">
-                    <h2 class="mb-0"><i class="bi bi-credit-card me-2"></i>Checkout</h2>
+                <div class="card-header text-white text-center" style="background-color: #0d84e9;">
+                    <h2 class="mb-0">Checkout</h2>
                 </div>
-
                 <div class="card-body">
-                    <!-- Customer Info -->
+
+                    <!-- Recipient Info -->
                     <div class="mb-4">
-                        <h5><i class="bi bi-person me-2"></i>Recipient Information</h5>
+                        <h5>Recipient Information</h5>
                         <p><strong>Full Name:</strong> ${account.firstName} ${account.lastName}</p>
                         <p><strong>Phone:</strong> ${account.phone}</p>
                         <p><strong>Email:</strong> ${account.email}</p>
                     </div>
 
-                    <!-- Order Summary -->
+                    <!-- Order Details -->
                     <div class="alert alert-info">
-                        <h5><i class="bi bi-info-circle me-2"></i>Order Details</h5>
+                        <h5>Order Details</h5>
 
                         <c:choose>
                             <c:when test="${type == 'buynow' || type == 'single-cart'}">
                                 <p><strong>Product:</strong> ${bookTitle}</p>
                                 <p><strong>Quantity:</strong> ${quantity}</p>
-                                <p><strong>Unit Price:</strong> ${unitPrice} VND</p>
-                                <p><strong>Total Amount:</strong>
-                                    <span class="text-primary fw-bold">${amount} VND</span>
+                                <p><strong>Unit Price:</strong>
+                                    <fmt:formatNumber value="${unitPriceRaw}" pattern="#,##0" /> VND
+                                </p>
+                                <p><strong>Total:</strong>
+                                    <span class="text-primary fw-bold" id="originalAmount">
+                                        <fmt:formatNumber value="${amountRaw}" pattern="#,##0" />
+                                    </span> VND
                                 </p>
                             </c:when>
                             <c:otherwise>
                                 <table class="table table-bordered table-striped align-middle mb-3">
-                                    <thead class="table-primary text-center">
+                                    <thead class="text-center" style="background-color: #0d84e9; color: white;">
                                         <tr>
-                                            <th style="width: 50%">Product</th>
-                                            <th style="width: 15%">Quantity</th>
-                                            <th style="width: 15%" class="text-end">Unit Price</th>
-                                            <th style="width: 20%" class="text-end">Subtotal</th>
+                                            <th>Product</th>
+                                            <th>Qty</th>
+                                            <th class="text-end">Unit Price</th>
+                                            <th class="text-end">Subtotal</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -48,122 +54,156 @@
                                             <tr>
                                                 <td>${item.book.bookTitle}</td>
                                                 <td class="text-center">${item.cartItem.quantity}</td>
-                                                <td class="text-end">${item.formattedItemTotal} VND</td>
-                                                <td class="text-end text-primary fw-bold">${item.formattedItemTotal} VND</td>
+                                                <td class="text-end">
+                                                    <fmt:formatNumber value="${item.book.bookPrice}" pattern="#,##0" /> VND
+                                                </td>
+                                                <td class="text-end text-primary fw-bold">
+                                                    <fmt:formatNumber value="${item.itemTotal}" pattern="#,##0" /> VND
+                                                </td>
                                             </tr>
                                         </c:forEach>
                                     </tbody>
                                     <tfoot>
                                         <tr class="table-light">
                                             <td colspan="3" class="text-end fw-bold">Total:</td>
-                                            <td class="text-end fw-bold text-danger fs-5">${amount} VND</td>
+                                            <td class="text-end text-danger fw-bold fs-5">
+                                                <span id="originalAmount">
+                                                    <fmt:formatNumber value="${amountRaw}" pattern="#,##0" />
+                                                </span> VND
+                                            </td>
                                         </tr>
                                     </tfoot>
                                 </table>
                             </c:otherwise>
                         </c:choose>
+
+                        <!-- Promotion select -->
+                        <div class="mt-3">
+                            <label for="promotionSelect" class="form-label">Voucher:</label>
+                            <select class="form-select" id="promotionSelect">
+                                <option value="0" data-discount="0" <c:if test="${promotionID == 0}">selected</c:if>>
+                                        -- No Voucher --
+                                    </option>
+                                <c:forEach var="promo" items="${promotions}">
+                                    <option value="${promo.proID}" data-discount="${promo.discount}" <c:if test="${promo.proID == promotionID}">selected</c:if>>
+                                        ${promo.proCode} - ${promo.proName} (-${promo.discount}%)
+                                    </option>
+                                </c:forEach>
+                            </select>
+                        </div>
+
+                        <!-- Applied Promotion Info -->
+                        <c:if test="${true}">
+                            <div id="promotionInfoDisplay" class="mt-3 p-3 border rounded bg-light">
+                                <p><strong>Discount Amount:</strong> 
+                                    <span class="text-danger fw-bold" id="discountAmountDisplay">
+                                        - <fmt:formatNumber value="${discountAmount}" pattern="#,##0" /> VND
+                                    </span>
+                                </p>
+
+                                <p><strong>Final Amount:</strong> 
+                                    <span class="text-success fw-bold fs-5" id="finalAmountDisplay">
+                                        <fmt:formatNumber value="${finalAmount}" pattern="#,##0" /> VND
+                                    </span>
+                                </p>
+                            </div>
+                        </c:if>
+
+                        <!-- Payment Form -->
+                        <form id="checkoutForm" method="post" action="${pageContext.request.contextPath}/payment/process">
+                            <input type="hidden" name="amount" value="${amountRaw}" />
+                            <input type="hidden" name="type" value="${type}" />
+                            <input type="hidden" name="bookId" value="${bookId}" />
+                            <input type="hidden" name="quantity" value="${quantity}" />
+                            <input type="hidden" name="promotionID" id="selectedPromotionHidden" value="${promotionID}" />
+                            <input type="hidden" name="discountAmount" value="${discountAmount}" />
+                            <input type="hidden" name="finalAmount" value="${finalAmount}" />
+
+                            <c:forEach var="id" items="${selectedItems}">
+                                <input type="hidden" name="selectedCartIDs" value="${id}" />
+                            </c:forEach>
+
+                            <div class="mb-3">
+                                <label for="orderAddress" class="form-label">Shipping Address *</label>
+                                <textarea class="form-control" id="orderAddress" name="orderAddress" rows="3" required>${account.address}</textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Payment Method *</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" id="bank" value="CREDIT_CARD" checked />
+                                    <label class="form-check-label" for="bank">Bank Transfer (QR code)</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" id="cash" value="CASH" />
+                                    <label class="form-check-label" for="cash">Cash on Delivery</label>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+                                <a href="${pageContext.request.contextPath}/cart/view" class="btn btn-outline-secondary">
+                                    Back to Cart
+                                </a>
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    Confirm Order
+                                </button>
+                            </div>
+                        </form>
+
                     </div>
-
-                    <!-- Payment Form -->
-                    <form id="checkoutForm" method="post" action="${pageContext.request.contextPath}/payment/process">
-                        <input type="hidden" name="amount" value="${amount}" />
-                        <input type="hidden" name="type" value="${type}" />
-                        <input type="hidden" name="bookId" value="${bookId}" />
-                        <input type="hidden" name="quantity" value="${quantity}" />
-
-                        <c:forEach var="id" items="${selectedItems}">
-                            <input type="hidden" name="selectedCartIDs" value="${id}" />
-                        </c:forEach>
-
-                        <!-- Shipping Address -->
-                        <div class="mb-3">
-                            <label for="orderAddress" class="form-label">
-                                <i class="bi bi-geo-alt me-1"></i>Shipping Address *
-                            </label>
-                            <textarea class="form-control" id="orderAddress" name="orderAddress"
-                                      rows="3" required placeholder="Enter your full shipping address...">${account.address}</textarea>
-                        </div>
-
-                        <!-- Payment Method -->
-                        <div class="mb-3">
-                            <label class="form-label">
-                                <i class="bi bi-credit-card me-1"></i>Payment Method *
-                            </label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="paymentMethod"
-                                       id="creditCard" value="CREDIT_CARD" checked>
-                                <label class="form-check-label" for="creditCard">
-                                    <i class="bi bi-credit-card me-1"></i>Bank Transfer
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="paymentMethod"
-                                       id="cash" value="CASH">
-                                <label class="form-check-label" for="cash">
-                                    <i class="bi bi-cash me-1"></i>Cash on Delivery
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-between">
-                            <a href="${pageContext.request.contextPath}/cart/view"
-                               class="btn btn-outline-secondary">
-                                <i class="bi bi-arrow-left me-1"></i>Back to Cart
-                            </a>
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="bi bi-check-circle me-1"></i>Confirm Order
-                            </button>
-                        </div>
-                    </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Bootstrap icons -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-
-<style>
-    .card-header {
-        background-color: #007bff !important;
-        border-radius: 15px 15px 0 0;
-        padding: 1.5rem;
-    }
-
-    .btn-primary {
-        background-color: #007bff !important;
-        border-color: #007bff !important;
-    }
-
-    .text-primary {
-        color: #007bff !important;
-    }
-
-    .table-primary {
-        background-color: #e6f0ff;
-    }
-</style>
-
-<!-- ✅ JavaScript to handle different payment flows -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+        const promoSelect = document.getElementById("promotionSelect");
+
+        const originalAmount = parseFloat("${amountRaw}");
+        const discountAmountInput = document.querySelector("input[name='discountAmount']");
+        const finalAmountInput = document.querySelector("input[name='finalAmount']");
+        const promotionHiddenInput = document.getElementById("selectedPromotionHidden");
+
+        const discountAmountDisplay = document.getElementById("discountAmountDisplay");
+        const finalAmountDisplay = document.getElementById("finalAmountDisplay");
+
+        // ✅ Hàm cập nhật discount và finalAmount
+        function updateDiscountValues() {
+            const selectedOption = promoSelect.options[promoSelect.selectedIndex];
+            const discountPercent = parseFloat(selectedOption.getAttribute("data-discount")) || 0;
+            const selectedPromotionID = selectedOption.value;
+
+            const discountAmount = Math.round(originalAmount * discountPercent / 100);
+            const finalAmount = originalAmount - discountAmount;
+
+            promotionHiddenInput.value = selectedPromotionID;
+            discountAmountInput.value = discountAmount;
+            finalAmountInput.value = finalAmount;
+
+            discountAmountDisplay.textContent = "- " + discountAmount.toLocaleString("vi-VN") + " VND";
+            finalAmountDisplay.textContent = finalAmount.toLocaleString("vi-VN") + " VND";
+        }
+
+        // ✅ Cập nhật ban đầu
+        updateDiscountValues();
+
+        // ✅ Khi chọn khuyến mãi khác
+        promoSelect.addEventListener("change", updateDiscountValues);
+
+        // ✅ Khi nhấn thanh toán
         const form = document.getElementById("checkoutForm");
-
         form.addEventListener("submit", function (e) {
-            const formData = new FormData(form);
-            const paymentMethod = formData.get("paymentMethod");
-
-            if (paymentMethod === "CREDIT_CARD") {
+            const method = form.querySelector("input[name='paymentMethod']:checked").value;
+            if (method === "CREDIT_CARD") {
                 e.preventDefault();
-                const queryParams = new URLSearchParams(formData).toString();
-                const targetUrl = form.action.replace("/payment/process", "/payment/online") + "?" + queryParams;
-                window.location.href = targetUrl;
-            } else if (paymentMethod === "CASH") {
+                updateDiscountValues();
+                form.action = form.action.replace("/process", "/online");
+                form.submit();
             }
         });
     });
-
 </script>
 
 <jsp:include page="/WEB-INF/includes/footer.jsp" />

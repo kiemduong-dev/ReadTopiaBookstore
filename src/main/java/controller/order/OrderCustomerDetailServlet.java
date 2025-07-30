@@ -26,8 +26,8 @@ public class OrderCustomerDetailServlet extends HttpServlet {
         String username = (String) session.getAttribute("username");
         Integer role = (Integer) session.getAttribute("role");
 
-        // Chỉ cho khách hàng (role = 1) truy cập
-        if (username == null || role == null || role != 1) {
+        // Chỉ cho khách hàng (role = 4) truy cập
+        if (username == null || role == null || role != 4) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }

@@ -10,16 +10,11 @@ import dto.OrderDTO;
 import dto.OrderDetailDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.*;
 
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @WebServlet("/payment/process")
 public class PaymentProcessServlet extends HttpServlet {
@@ -33,22 +28,22 @@ public class PaymentProcessServlet extends HttpServlet {
         String username = (String) session.getAttribute("username");
         Integer role = (Integer) session.getAttribute("role");
 
-        if (username == null || role == null || role != 1) {
+        if (username == null || role == null || role != 4) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
 
-        String paymentMethod = request.getParameter("paymentMethod");
-        String orderAddress = request.getParameter("orderAddress");
-        String type = request.getParameter("type");
-
-        if (paymentMethod == null || orderAddress == null || orderAddress.trim().isEmpty()) {
-            request.setAttribute("error", "Missing payment information.");
-            request.getRequestDispatcher("/WEB-INF/view/order/checkout.jsp").forward(request, response);
-            return;
-        }
-
         try {
+            String paymentMethod = request.getParameter("paymentMethod");
+            String orderAddress = request.getParameter("orderAddress");
+            String type = request.getParameter("type");
+
+            if (paymentMethod == null || orderAddress == null || orderAddress.trim().isEmpty()) {
+                request.setAttribute("error", "Missing payment information.");
+                request.getRequestDispatcher("/WEB-INF/view/order/checkout.jsp").forward(request, response);
+                return;
+            }
+
             CartDAO cartDAO = new CartDAO();
             BookDAO bookDAO = new BookDAO();
             OrderDAO orderDAO = new OrderDAO();
@@ -59,13 +54,12 @@ public class PaymentProcessServlet extends HttpServlet {
             double totalAmount = 0;
 
             if ("buynow".equals(type)) {
-                // Case: "Buy Now"
                 int bookId = Integer.parseInt(request.getParameter("bookId"));
                 int quantity = Integer.parseInt(request.getParameter("quantity"));
 
                 BookDTO book = bookDAO.getBookByID(bookId);
                 if (book == null || quantity > book.getBookQuantity()) {
-                    request.setAttribute("error", "Not enough quantity available for this book.");
+                    request.setAttribute("error", "Not enough stock for this book.");
                     request.getRequestDispatcher("/WEB-INF/view/order/checkout.jsp").forward(request, response);
                     return;
                 }
@@ -78,7 +72,6 @@ public class PaymentProcessServlet extends HttpServlet {
                 totalAmount = quantity * book.getBookPrice();
 
             } else {
-                // Case: Checkout from cart
                 String[] selectedCartIdsStr = request.getParameterValues("selectedCartIDs");
 
                 if (selectedCartIdsStr != null && selectedCartIdsStr.length > 0) {
@@ -88,73 +81,89 @@ public class PaymentProcessServlet extends HttpServlet {
                         if (cartItem != null) {
                             BookDTO book = bookDAO.getBookByID(cartItem.getBookID());
                             if (book != null) {
+                                // Check tồn kho
+                                if (cartItem.getQuantity() > book.getBookQuantity()) {
+                                    request.setAttribute("error", "Not enough stock for " + book.getBookTitle() + ".");
+                                    request.getRequestDispatcher("/WEB-INF/view/order/checkout.jsp").forward(request, response);
+                                    return;
+                                }
+
                                 totalAmount += cartItem.getQuantity() * book.getBookPrice();
                                 cartItems.add(cartItem);
                                 selectedCartIDs.add(cartId);
                             }
                         }
                     }
-                } else {
-                    // No selection → checkout entire cart
-                    cartItems = cartDAO.getCartByUsername(username);
-                    for (CartDTO cartItem : cartItems) {
-                        BookDTO book = bookDAO.getBookByID(cartItem.getBookID());
-                        if (book != null) {
-                            totalAmount += cartItem.getQuantity() * book.getBookPrice();
-                            selectedCartIDs.add(cartItem.getCartID());
-                        }
-                    }
-                }
-
-                // Cart is empty
-                if (cartItems.isEmpty()) {
-                    request.setAttribute("error", "There are no items to checkout.");
-                    request.getRequestDispatcher("/WEB-INF/view/order/checkout.jsp").forward(request, response);
-                    return;
                 }
             }
 
-            // Create order
+            if (cartItems.isEmpty()) {
+                request.setAttribute("error", "No valid items to checkout.");
+                request.getRequestDispatcher("/WEB-INF/view/order/checkout.jsp").forward(request, response);
+                return;
+            }
+
+            // Xử lý giảm giá
+            double discountAmount = 0;
+            String discountRaw = request.getParameter("discountAmount");
+            if (discountRaw != null && !discountRaw.trim().isEmpty()) {
+                discountAmount = Double.parseDouble(discountRaw);
+            }
+
+            double finalAmount = totalAmount - discountAmount;
+            if (finalAmount < 0) {
+                finalAmount = 0;
+            }
+
+            // Tạo order
             OrderDTO order = new OrderDTO();
             order.setUsername(username);
             order.setOrderDate(new Timestamp(new Date().getTime()));
-            order.setTotalAmount(totalAmount);
-            int status = "CASH".equalsIgnoreCase(request.getParameter("paymentMethod")) ? 0 : 5;
-            order.setOrderStatus(status); // Set status: 2 = Delivered (for Cash), 0 = Processing
+            order.setTotalAmount(finalAmount);
+            order.setOrderStatus("CASH".equalsIgnoreCase(paymentMethod) ? 0 : 5);
             order.setOrderAddress(orderAddress);
+            // Lưu mã khuyến mãi nếu có
+            String promotionIdRaw = request.getParameter("promotionID");
+            if (promotionIdRaw != null && !promotionIdRaw.trim().isEmpty()) {
+                try {
+                    int promotionID = Integer.parseInt(promotionIdRaw.trim());
+                    if (promotionID != 0) {
+                        order.setProID(promotionID);  // Sử dụng proID như đã định nghĩa trong OrderDTO
+                    }
+                } catch (NumberFormatException e) {
+                    // Có thể ghi log nếu cần, hoặc bỏ qua yên lặng
+                }
+            }
+
             int orderID = orderDAO.createOrder(order);
 
-            // Save order details
+            // Lưu chi tiết đơn hàng và trừ kho
             for (CartDTO cart : cartItems) {
                 BookDTO book = bookDAO.getBookByID(cart.getBookID());
                 if (book != null) {
-                    // 1. Create order detail
                     OrderDetailDTO detail = new OrderDetailDTO();
                     detail.setOrderID(orderID);
                     detail.setBookID(book.getBookID());
                     detail.setQuantity(cart.getQuantity());
-                    detail.setTotalPrice(book.getBookPrice());
+                    detail.setTotalPrice(book.getBookPrice() * cart.getQuantity());
                     orderDetailDAO.addOrderDetail(detail);
 
-                    // 2. Update stock
                     int newQuantity = book.getBookQuantity() - cart.getQuantity();
-                    if (newQuantity < 0) {
-                        newQuantity = 0; // ensure stock is not negative
-                    }
-                    bookDAO.updateBookQuantity(book.getBookID(), newQuantity);
+                    bookDAO.updateBookQuantity(book.getBookID(), Math.max(0, newQuantity));
                 }
             }
 
-            // Clear cart if not "Buy Now"
-            cartDAO.deleteMultipleFromCart(selectedCartIDs, username);
+            // Xóa giỏ nếu không phải buynow
+            if (!"buynow".equals(type)) {
+                cartDAO.deleteMultipleFromCart(selectedCartIDs, username);
+            }
 
-            // Redirect to confirmation page
             request.setAttribute("orderID", orderID);
             request.getRequestDispatcher("/WEB-INF/view/order/confirmation.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("error", "An error occurred during the payment process.");
+            request.setAttribute("error", "An error occurred during payment processing.");
             request.getRequestDispatcher("/WEB-INF/view/order/checkout.jsp").forward(request, response);
         }
     }

@@ -27,7 +27,7 @@ public class PaymentConfirmServlet extends HttpServlet {
         String username = (String) session.getAttribute("username");
         Integer role = (Integer) session.getAttribute("role");
 
-        if (username == null || role == null || role != 1) {
+        if (username == null || role == null || role != 4) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
@@ -37,11 +37,19 @@ public class PaymentConfirmServlet extends HttpServlet {
             String orderAddress = request.getParameter("orderAddress");
             String bookIdRaw = request.getParameter("bookId");
             String quantityRaw = request.getParameter("quantity");
-            String amountRaw = request.getParameter("amount");
+            String finalAmountRaw = request.getParameter("finalAmount");
             String[] selectedIds = request.getParameterValues("selectedCartIDs");
-            
+            String proIDRaw = request.getParameter("promotionID");
+            Integer proID = null;
+            if (proIDRaw != null && !proIDRaw.isEmpty()) {
+                try {
+                    proID = Integer.parseInt(proIDRaw);
+                } catch (NumberFormatException ignored) {
+                }
+            }
 
-            double amount = Double.parseDouble(amountRaw.replaceAll("[^\\d.]", ""));
+            double finalAmount = Double.parseDouble(finalAmountRaw.replaceAll("[^\\d.]", ""));
+
             List<CartDTO> selectedItems = new ArrayList<>();
             List<Integer> selectedCartIDs = new ArrayList<>();
             CartDAO cartDAO = new CartDAO();
@@ -53,7 +61,7 @@ public class PaymentConfirmServlet extends HttpServlet {
                 temp.setBookID(bookId);
                 temp.setQuantity(quantity);
                 selectedItems.add(temp);
-            } else {
+            } else if (selectedIds != null) {
                 for (String idStr : selectedIds) {
                     int cartId = Integer.parseInt(idStr);
                     CartDTO cartItem = cartDAO.findByCartID(cartId);
@@ -64,6 +72,11 @@ public class PaymentConfirmServlet extends HttpServlet {
                 }
             }
 
+            if (selectedItems.isEmpty()) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No items found for confirmation.");
+                return;
+            }
+
             BookDAO bookDAO = new BookDAO();
             OrderDAO orderDAO = new OrderDAO();
             OrderDetailDAO orderDetailDAO = new OrderDetailDAO();
@@ -71,9 +84,10 @@ public class PaymentConfirmServlet extends HttpServlet {
             OrderDTO order = new OrderDTO();
             order.setUsername(username);
             order.setOrderDate(new Timestamp(new Date().getTime()));
-            order.setTotalAmount(amount);
+            order.setTotalAmount(finalAmount); // ✅ Ghi nhận finalAmount
             order.setOrderStatus(5); // Bank transfer pending
             order.setOrderAddress(orderAddress);
+            order.setProID(proID); // ✅ Gán mã khuyến mãi
 
             int orderID = orderDAO.createOrder(order);
 
@@ -88,14 +102,19 @@ public class PaymentConfirmServlet extends HttpServlet {
                     orderDetailDAO.addOrderDetail(detail);
 
                     int remaining = book.getBookQuantity() - cart.getQuantity();
+                    if (remaining < 0) {
+                        remaining = 0; // Không để số lượng âm
+                    }
                     bookDAO.updateBookQuantity(book.getBookID(), remaining);
                 }
             }
 
-            if (!"buynow".equals(type)) {
+            // Xóa cart nếu không phải "buynow"
+            if (!"buynow".equals(type) && !selectedCartIDs.isEmpty()) {
                 cartDAO.deleteMultipleFromCart(selectedCartIDs, username);
             }
 
+            // Xóa transferCode để tránh lặp giao dịch
             session.removeAttribute("transferCode");
 
             request.setAttribute("orderID", orderID);
@@ -103,7 +122,7 @@ public class PaymentConfirmServlet extends HttpServlet {
 
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Order creation failed.");
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Order confirmation failed.");
         }
     }
 }

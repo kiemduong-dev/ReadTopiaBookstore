@@ -17,7 +17,7 @@ public class OrderCustomerUpdateStatusServlet extends HttpServlet {
         Integer role = (Integer) session.getAttribute("role");
 
         // Only allow customer (role == 1)
-        if (username == null || role == null || role != 1) {
+        if (username == null || role == null || role != 4) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }

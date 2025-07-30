@@ -4,6 +4,7 @@ import dao.BookDAO;
 import dao.CartDAO;
 import dto.BookDTO;
 import dto.CartDTO;
+import dto.PromotionDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -15,6 +16,14 @@ import java.util.*;
 @WebServlet("/payment/online")
 public class PaymentOnlineServlet extends HttpServlet {
 
+    // ✅ Xử lý POST để tránh lỗi 405 khi form submit từ checkout
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        doGet(request, response); // Dùng chung logic với GET để render trang QR
+    }
+
+    // ✅ Logic hiển thị trang mã QR và xác nhận đơn hàng online
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -26,7 +35,7 @@ public class PaymentOnlineServlet extends HttpServlet {
             String username = (String) session.getAttribute("username");
             Integer role = (Integer) session.getAttribute("role");
 
-            if (username == null || role == null || role != 1) {
+            if (username == null || role == null || role != 4) {
                 response.sendRedirect(request.getContextPath() + "/login");
                 return;
             }
@@ -35,8 +44,29 @@ public class PaymentOnlineServlet extends HttpServlet {
             String paymentMethod = request.getParameter("paymentMethod");
             String addressRaw = request.getParameter("orderAddress");
             String amountParam = request.getParameter("amount");
+            String finalAmountParam = request.getParameter("finalAmount");
+            String proIDRaw = request.getParameter("promotionID");
+            if (proIDRaw == null) {
+                proIDRaw = request.getParameter("proID"); // Thử thêm key khác nữa
+            }
 
-            if (type == null || paymentMethod == null || addressRaw == null || amountParam == null) {
+            Integer proID = null;
+
+            if (proIDRaw != null && !proIDRaw.isEmpty()) {
+                try {
+                    proID = Integer.parseInt(proIDRaw);
+                } catch (NumberFormatException ignored) {
+                }
+            }
+
+            if (proID == null) {
+                PromotionDTO appliedPromotion = (PromotionDTO) session.getAttribute("appliedPromotion");
+                if (appliedPromotion != null) {
+                    proID = appliedPromotion.getProID();
+                }
+            }
+
+            if (type == null || paymentMethod == null || addressRaw == null) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing required data.");
                 return;
             }
@@ -48,11 +78,30 @@ public class PaymentOnlineServlet extends HttpServlet {
 
             List<CartDTO> selectedItems = new ArrayList<>();
             List<Integer> selectedCartIDs = new ArrayList<>();
+
             double totalAmount = 0;
 
+            if (finalAmountParam != null && !finalAmountParam.trim().isEmpty()) {
+                totalAmount = Double.parseDouble(finalAmountParam);
+            } else if (amountParam != null && !amountParam.trim().isEmpty()) {
+                totalAmount = Double.parseDouble(amountParam);
+            } else {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Amount is required.");
+                return;
+            }
+
             if ("buynow".equals(type)) {
-                int bookId = Integer.parseInt(request.getParameter("bookId"));
-                int quantity = Integer.parseInt(request.getParameter("quantity"));
+                String bookIdRaw = request.getParameter("bookId");
+                String quantityRaw = request.getParameter("quantity");
+
+                if (bookIdRaw == null || quantityRaw == null) {
+                    response.sendRedirect(request.getContextPath() + "/order/checkout");
+                    return;
+                }
+
+                int bookId = Integer.parseInt(bookIdRaw);
+                int quantity = Integer.parseInt(quantityRaw);
+
                 BookDTO book = bookDAO.getBookByID(bookId);
 
                 if (book == null || quantity > book.getBookQuantity()) {
@@ -66,9 +115,13 @@ public class PaymentOnlineServlet extends HttpServlet {
                 temp.setQuantity(quantity);
                 selectedItems.add(temp);
 
-                totalAmount = quantity * book.getBookPrice();
+                request.setAttribute("bookTitle", book.getBookTitle());
+                request.setAttribute("bookId", bookId);
+                request.setAttribute("quantity", quantity);
+
             } else {
                 String[] selectedIDs = request.getParameterValues("selectedCartIDs");
+
                 if (selectedIDs == null || selectedIDs.length == 0) {
                     request.setAttribute("error", "No items selected for payment.");
                     request.getRequestDispatcher("/WEB-INF/view/order/checkout.jsp").forward(request, response);
@@ -79,12 +132,8 @@ public class PaymentOnlineServlet extends HttpServlet {
                     int cartId = Integer.parseInt(idStr);
                     CartDTO item = cartDAO.findByCartID(cartId);
                     if (item != null) {
-                        BookDTO book = bookDAO.getBookByID(item.getBookID());
-                        if (book != null) {
-                            totalAmount += item.getQuantity() * book.getBookPrice();
-                            selectedItems.add(item);
-                            selectedCartIDs.add(cartId);
-                        }
+                        selectedItems.add(item);
+                        selectedCartIDs.add(cartId);
                     }
                 }
 
@@ -93,27 +142,27 @@ public class PaymentOnlineServlet extends HttpServlet {
                     request.getRequestDispatcher("/WEB-INF/view/order/checkout.jsp").forward(request, response);
                     return;
                 }
+
+                String selectedCartIDsString = String.join(",", selectedIDs);
+                request.setAttribute("selectedCartIDsString", selectedCartIDsString);
             }
 
-            String transferCode = "TMP-" + UUID.randomUUID().toString().substring(0, 8);
-            session.setAttribute("transferCode", transferCode);
+            // Tạo mã chuyển khoản
+            String transferCode = (String) session.getAttribute("transferCode");
+            if (transferCode == null) {
+                transferCode = "TX-" + System.currentTimeMillis() + "-" + (int) (Math.random() * 1000);
+                session.setAttribute("transferCode", transferCode);
+            }
 
             request.setAttribute("transferCode", transferCode);
-            request.setAttribute("amount", totalAmount);
+            request.setAttribute("finalAmount", totalAmount);
+            request.setAttribute("amount", amountParam);
             request.setAttribute("orderAddress", orderAddress);
             request.setAttribute("paymentMethod", paymentMethod);
             request.setAttribute("type", type);
+            request.setAttribute("proID", proID);
 
-            List<String> idsAsString = new ArrayList<>();
-            for (Integer id : selectedCartIDs) {
-                idsAsString.add(String.valueOf(id));
-            }
-            String selectedCartIDsString = String.join(",", idsAsString);
-
-            request.setAttribute("bookId", request.getParameter("bookId"));
-            request.setAttribute("quantity", request.getParameter("quantity"));
-            request.setAttribute("selectedCartIDsString", selectedCartIDsString);
-
+            // Chuyển đến trang hiển thị QR code
             request.getRequestDispatcher("/WEB-INF/view/payment/process.jsp").forward(request, response);
 
         } catch (Exception e) {

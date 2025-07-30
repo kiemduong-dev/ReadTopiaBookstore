@@ -2,33 +2,34 @@ package controller.order;
 
 import dao.BookDAO;
 import dao.CartDAO;
+import dao.PromotionDAO;
 import dto.AccountDTO;
 import dto.BookDTO;
 import dto.CartDTO;
+import dto.PromotionDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
+import util.DBContext;
 
 @WebServlet("/order/checkout")
 public class CheckoutServlet extends HttpServlet {
 
     public static class CartItemWithBook {
+
         private CartDTO cartItem;
         private BookDTO book;
         private double itemTotal;
-        private String formattedItemTotal;
 
-        public CartItemWithBook(CartDTO cartItem, BookDTO book, DecimalFormat formatter) {
+        public CartItemWithBook(CartDTO cartItem, BookDTO book) {
             this.cartItem = cartItem;
             this.book = book;
             this.itemTotal = cartItem.getQuantity() * book.getBookPrice();
-            this.formattedItemTotal = formatter.format(this.itemTotal);
         }
 
         public CartDTO getCartItem() {
@@ -42,10 +43,6 @@ public class CheckoutServlet extends HttpServlet {
         public double getItemTotal() {
             return itemTotal;
         }
-
-        public String getFormattedItemTotal() {
-            return formattedItemTotal;
-        }
     }
 
     @Override
@@ -56,26 +53,34 @@ public class CheckoutServlet extends HttpServlet {
         String username = (String) session.getAttribute("username");
         Integer role = (Integer) session.getAttribute("role");
 
-        if (username == null || role == null || role != 1) {
+        if (username == null || role == null || role != 4) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
 
-        // Setup decimal formatter
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-        symbols.setGroupingSeparator(' ');
-        DecimalFormat formatter = new DecimalFormat("#,###", symbols);
-
         String bookIdRaw = request.getParameter("bookID");
         String quantityRaw = request.getParameter("quantity");
         String idsRaw = request.getParameter("ids");
+        String promotionIdRaw = request.getParameter("promotionID");
 
-        BookDAO bookDAO = new BookDAO();
-        CartDAO cartDAO = new CartDAO();
+        try ( Connection conn = DBContext.getConnection()) {
+            BookDAO bookDAO = new BookDAO();
+            CartDAO cartDAO = new CartDAO();
+            PromotionDAO promotionDAO = new PromotionDAO(conn);
 
-        try {
+            int promotionID = 0;
+            if (promotionIdRaw != null && !promotionIdRaw.trim().isEmpty()) {
+                try {
+                    promotionID = Integer.parseInt(promotionIdRaw.trim());
+                } catch (NumberFormatException e) {
+                    promotionID = 0;
+                }
+            }
+
+            double totalAmount = 0;
+
             if (bookIdRaw != null && quantityRaw != null) {
-                // ➤ Buy Now case
+                // Buy Now flow
                 int bookID = Integer.parseInt(bookIdRaw);
                 int quantity = Integer.parseInt(quantityRaw);
 
@@ -85,19 +90,17 @@ public class CheckoutServlet extends HttpServlet {
                     return;
                 }
 
-                double total = quantity * book.getBookPrice();
-                String formattedUnitPrice = formatter.format(book.getBookPrice());
-                String formattedTotal = formatter.format(total);
+                totalAmount = quantity * book.getBookPrice();
 
                 request.setAttribute("type", "buynow");
                 request.setAttribute("bookId", bookID);
                 request.setAttribute("bookTitle", book.getBookTitle());
-                request.setAttribute("unitPrice", formattedUnitPrice);
+                request.setAttribute("unitPriceRaw", book.getBookPrice());
                 request.setAttribute("quantity", quantity);
-                request.setAttribute("amount", formattedTotal);
+                request.setAttribute("amountRaw", totalAmount);
 
             } else {
-                // ➤ From Cart case
+                // Cart checkout flow
                 List<CartDTO> selectedItems;
 
                 if (idsRaw != null && !idsRaw.trim().isEmpty()) {
@@ -110,7 +113,8 @@ public class CheckoutServlet extends HttpServlet {
                             if (item != null && username.equals(item.getUsername())) {
                                 selectedItems.add(item);
                             }
-                        } catch (NumberFormatException ignored) {}
+                        } catch (NumberFormatException ignored) {
+                        }
                     }
                 } else {
                     selectedItems = cartDAO.getCartByUsername(username);
@@ -122,31 +126,31 @@ public class CheckoutServlet extends HttpServlet {
                 }
 
                 if (selectedItems.size() == 1) {
+                    // Single cart item
                     CartDTO item = selectedItems.get(0);
                     BookDTO book = bookDAO.getBookByID(item.getBookID());
+
                     if (book == null || !cartDAO.isStockAvailable(item.getBookID(), item.getQuantity())) {
                         response.sendRedirect(request.getContextPath() + "/cart/view?error=insufficient_stock");
                         return;
                     }
 
-                    double total = item.getQuantity() * book.getBookPrice();
-                    String formattedUnitPrice = formatter.format(book.getBookPrice());
-                    String formattedTotal = formatter.format(total);
-
-                    List<Integer> singleIdList = new ArrayList<>();
-                    singleIdList.add(item.getCartID());
+                    totalAmount = item.getQuantity() * book.getBookPrice();
 
                     request.setAttribute("type", "single-cart");
                     request.setAttribute("bookTitle", book.getBookTitle());
                     request.setAttribute("quantity", item.getQuantity());
-                    request.setAttribute("unitPrice", formattedUnitPrice);
-                    request.setAttribute("amount", formattedTotal);
+                    request.setAttribute("unitPriceRaw", book.getBookPrice());
+                    request.setAttribute("amountRaw", totalAmount);
+
+                    List<Integer> singleIdList = new ArrayList<>();
+                    singleIdList.add(item.getCartID());
                     request.setAttribute("selectedItems", singleIdList);
 
                 } else {
+                    // Multi-cart
                     List<CartItemWithBook> cartItemsWithBooks = new ArrayList<>();
                     List<Integer> ids = new ArrayList<>();
-                    double total = 0;
 
                     for (CartDTO item : selectedItems) {
                         if (!cartDAO.isStockAvailable(item.getBookID(), item.getQuantity())) {
@@ -156,24 +160,30 @@ public class CheckoutServlet extends HttpServlet {
 
                         BookDTO book = bookDAO.getBookByID(item.getBookID());
                         if (book != null) {
-                            cartItemsWithBooks.add(new CartItemWithBook(item, book, formatter));
-                            total += item.getQuantity() * book.getBookPrice();
+                            cartItemsWithBooks.add(new CartItemWithBook(item, book));
+                            totalAmount += item.getQuantity() * book.getBookPrice();
                             ids.add(item.getCartID());
                         }
                     }
 
-                    String formattedTotal = formatter.format(total);
-
                     request.setAttribute("type", "multi-cart");
                     request.setAttribute("cartItemsWithBooks", cartItemsWithBooks);
                     request.setAttribute("orderItems", cartItemsWithBooks.size());
-                    request.setAttribute("amount", formattedTotal);
+                    request.setAttribute("amountRaw", totalAmount);
                     request.setAttribute("selectedItems", ids);
                 }
             }
 
+            // Áp dụng khuyến mãi (không check valid)
+            setPromotionAttributes(request, promotionID, promotionDAO, totalAmount);
+
+            // Load thông tin account
             AccountDTO account = (AccountDTO) session.getAttribute("account");
             request.setAttribute("account", account);
+
+            // Load danh sách khuyến mãi còn hạn, còn số lượng
+            List<PromotionDTO> promotions = promotionDAO.getValidPromotions();
+            request.setAttribute("promotions", promotions);
 
             request.getRequestDispatcher("/WEB-INF/view/order/checkout.jsp").forward(request, response);
 
@@ -183,8 +193,31 @@ public class CheckoutServlet extends HttpServlet {
         }
     }
 
+    private void setPromotionAttributes(HttpServletRequest request, int promotionID, PromotionDAO promotionDAO, double originalAmount) throws Exception {
+        double discountAmount = 0;
+        double finalAmount = originalAmount;
+
+        PromotionDTO selectedPromotion = null;
+
+        if (promotionID > 0) {
+            selectedPromotion = promotionDAO.getPromotionByID(promotionID); // Không check valid thời gian
+
+            if (selectedPromotion != null) {
+                double discountPercent = selectedPromotion.getDiscount();
+                discountAmount = Math.round(originalAmount * discountPercent / 100.0);
+                finalAmount = originalAmount - discountAmount;
+            }
+        }
+
+        request.setAttribute("promotionID", promotionID);
+        request.setAttribute("discountAmount", discountAmount);
+        request.setAttribute("finalAmount", finalAmount);
+        request.setAttribute("selectedPromotion", selectedPromotion);
+    }
+
     @Override
-    public String getServletInfo() {
-        return "Handles Buy Now and Cart Checkout (single or multiple items)";
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        doGet(request, response);
     }
 }

@@ -29,6 +29,14 @@ public class PromotionDAO {
         this.conn = conn;
     }
 
+    public PromotionDAO() {
+        try {
+            this.conn = DBContext.getConnection();
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace(); // hoặc log ra lỗi
+        }
+    }
+
     // Lấy danh sách promotion theo trang
     public List<PromotionDTO> getAllPromotions() throws SQLException {
         List<PromotionDTO> list = new ArrayList<>();
@@ -114,7 +122,6 @@ public class PromotionDAO {
             ps.setInt(8, pro.getCreatedBy());
             ps.setObject(9, pro.getApprovedBy(), Types.INTEGER); // hỗ trợ null
 
-
             ps.executeUpdate();
 
             try ( ResultSet rs = ps.getGeneratedKeys()) {
@@ -152,7 +159,9 @@ public class PromotionDAO {
     // Get promotion by ID
     public PromotionDTO getPromotionByID(int proID) throws SQLException {
         String sql = "SELECT * FROM Promotion WHERE proID=?";
-        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (
+                 Connection conn = DBContext.getConnection(); 
+                  PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, proID);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -169,6 +178,8 @@ public class PromotionDAO {
                         rs.getInt("approvedBy")
                 );
             }
+        } catch (Exception e) {
+            e.printStackTrace(); // THÊM ĐỂ DEBUG
         }
         return null;
     }
@@ -275,6 +286,60 @@ public class PromotionDAO {
             }
         }
         return list;
+    }
+
+    // PromotionDAO.java
+    public List<PromotionDTO> getValidPromotions() throws SQLException {
+        List<PromotionDTO> list = new ArrayList<>();
+        String sql = "SELECT * FROM Promotion \n"
+                + "WHERE proStatus = 1 \n"
+                + "AND quantity > 0 \n"
+                + "AND CAST(GETDATE() AS DATE) BETWEEN startDate AND endDate\n"
+                + "ORDER BY proID DESC";
+
+        try ( PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                PromotionDTO p = new PromotionDTO(
+                        rs.getInt("proID"),
+                        rs.getString("proName"),
+                        rs.getString("proCode"),
+                        rs.getDouble("discount"),
+                        rs.getDate("startDate"),
+                        rs.getDate("endDate"),
+                        rs.getInt("quantity"),
+                        rs.getInt("proStatus"),
+                        rs.getInt("createdBy"),
+                        rs.getInt("approvedBy")
+                );
+                list.add(p);
+            }
+        }
+        return list;
+    }
+
+    public PromotionDTO getValidPromotionByID(int id) throws Exception {
+        String sql = "SELECT * FROM Promotion WHERE proID = ? AND proStatus = 1 AND startDate <= GETDATE() AND endDate >= GETDATE()";
+
+        PreparedStatement stm = conn.prepareStatement(sql);
+        stm.setInt(1, id);
+        ResultSet rs = stm.executeQuery();
+
+        if (rs.next()) {
+            return new PromotionDTO(
+                    rs.getInt("proID"),
+                    rs.getString("proName"),
+                    rs.getString("proCode"),
+                    rs.getDouble("discount"),
+                    rs.getDate("startDate"),
+                    rs.getDate("endDate"),
+                    rs.getInt("quantity"),
+                    rs.getInt("proStatus"),
+                    rs.getInt("createdBy"),
+                    rs.getInt("approvedBy")
+            );
+        }
+        return null;
     }
 
 }

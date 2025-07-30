@@ -7,18 +7,18 @@
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
             <div class="card shadow text-center">
-                <div class="card-header bg-success text-white">
-                    <h2 class="mb-0"><i class="bi bi-check-circle-fill me-2"></i>Order Confirmation</h2>
+                <div class="card-header text-white" style="background-color: #0d84e9;">
+                    <h2 class="mb-0">Order Confirmation</h2>
                 </div>
 
                 <div class="card-body py-5">
                     <div class="mb-4">
                         <div class="success-icon mb-3">
-                            <i class="bi bi-check-circle text-success" style="font-size: 5rem;"></i>
+                            <i class="bi bi-check-circle" style="font-size: 5rem; color: #0d84e9;"></i>
                         </div>
                         <h3 class="mb-3">Thank you for your order!</h3>
                         <p class="lead mb-4">
-                            Your order <strong class="text-primary">#${param.orderID}</strong> has been placed successfully.
+                            Your order has been placed successfully.
                         </p>
                     </div>
 
@@ -26,23 +26,17 @@
                         <div class="col-md-6">
                             <a href="${pageContext.request.contextPath}/order/history"
                                class="btn btn-outline-primary w-100">
-                                <i class="bi bi-clock-history me-2"></i>View Order History
+                                View Order History
                             </a>
                         </div>
                         <div class="col-md-6">
                             <a href="${pageContext.request.contextPath}/customer/book/list"
-                               class="btn btn-primary w-100">
-                                <i class="bi bi-book me-2"></i>Continue Shopping
+                               class="btn w-100"
+                               style="background-color: #0d84e9; border-color: #0d84e9; color: white;">
+                                Continue Shopping
                             </a>
                         </div>
                     </div>
-                </div>
-
-                <div class="card-footer bg-light border-0">
-                    <small class="text-muted">
-                        <i class="bi bi-question-circle me-1"></i>
-                        Need help? <a href="${pageContext.request.contextPath}/contact" class="text-decoration-none">Contact us</a>
-                    </small>
                 </div>
             </div>
         </div>

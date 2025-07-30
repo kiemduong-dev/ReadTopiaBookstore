@@ -7,15 +7,15 @@
 
 <div class="container py-5">
     <div class="card shadow-lg">
-        <div class="card-header bg-info text-white text-center">
-            <h4><i class="bi bi-credit-card me-2"></i>Bank Transfer Payment</h4>
+        <div class="card-header text-white text-center" style="background-color: #0d84e9;">
+            <h4>Bank Transfer Payment</h4>
         </div>
         <div class="card-body">
             <div class="row">
                 <!-- Left: QR Code -->
                 <div class="col-md-5 d-flex justify-content-center align-items-start">
                     <div class="qr-container text-center">
-                        <h5><i class="bi bi-qr-code me-2"></i>Scan QR to Pay</h5>
+                        <h5>Scan QR to Pay</h5>
                         <img src="${pageContext.request.contextPath}/img/z6755080902176_6e54f4f14f5bf5ee3caaed1d5ed253a4.jpg"
                              alt="QR Code"
                              class="img-fluid rounded shadow"
@@ -26,11 +26,10 @@
                 <!-- Right: Payment Info -->
                 <div class="col-md-7">
                     <!-- Order Summary -->
-                    <div class="mb-3">
-                        <p><strong>Order ID:</strong> Temporary</p>
+                    <div class="mb-3">                   
                         <p><strong>Amount to Pay:</strong>
                             <span class="text-danger fw-bold">
-                                <fmt:formatNumber value="${amount}" pattern="#,##0" /> VND
+                                <fmt:formatNumber value="${finalAmount}" pattern="#,##0" /> VND
                             </span>
                         </p>
                         <p><strong>Transfer Note:</strong>
@@ -40,25 +39,25 @@
 
                     <!-- Bank Details -->
                     <div class="border rounded p-3 mb-4 bg-light">
-                        <h6 class="mb-2"><i class="bi bi-bank me-2"></i>Bank Account Info</h6>
+                        <h6 class="mb-2">Bank Account Info</h6>
                         <p><strong>Bank:</strong> BIDV</p>
                         <p><strong>Account Number:</strong> 7850673111</p>
                         <p><strong>Account Holder:</strong> NGUYEN THAI ANH</p>
                         <p><strong>Transfer Note:</strong>
                             <span class="text-primary fw-bold">${transferCode}</span>
                         </p>
-
-                        <!-- ✅ Confirm Payment Form -->
+                        <!-- Confirm Payment Form -->
                         <form method="post" action="${pageContext.request.contextPath}/payment/confirm">
                             <input type="hidden" name="amount" value="${amount}" />
+                            <input type="hidden" name="finalAmount" value="${finalAmount}" />
                             <input type="hidden" name="type" value="${type}" />
                             <input type="hidden" name="bookId" value="${bookId}" />
                             <input type="hidden" name="quantity" value="${quantity}" />
+                            <input type="hidden" name="promotionID" value="${proID}" />
                             <input type="hidden" name="orderAddress" value="${orderAddress}" />
                             <input type="hidden" name="paymentMethod" value="${paymentMethod}" />
                             <input type="hidden" name="transferCode" value="${transferCode}" />
 
-                            <!-- ✅ Send cart IDs if present -->
                             <c:if test="${not empty selectedCartIDsString}">
                                 <c:forEach var="id" items="${fn:split(selectedCartIDsString, ',')}">
                                     <input type="hidden" name="selectedCartIDs" value="${id}" />
@@ -66,11 +65,11 @@
                             </c:if>
 
                             <div class="mt-3 text-center">
-                                <button type="submit" class="btn btn-success btn-lg">
-                                    <i class="bi bi-check-circle me-1"></i>✅ I Have Transferred
+                                <button type="submit" class="btn btn-lg" style="background-color: #0d84e9; color: white;">
+                                    I Have Transferred
                                 </button>
                                 <a href="${pageContext.request.contextPath}/customer/book/list"
-                                   class="btn btn-outline-danger">❌ Cancel Payment</a>
+                                   class="btn btn-outline-danger">Cancel Payment</a>
                             </div>
                         </form>
                     </div>

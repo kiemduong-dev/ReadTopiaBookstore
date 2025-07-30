@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <jsp:include page="/WEB-INF/includes/head.jsp" />
 <jsp:include page="/WEB-INF/includes/header.jsp" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <%
     DecimalFormatSymbols symbols = new DecimalFormatSymbols();
@@ -9,6 +10,25 @@
     DecimalFormat formatter = new DecimalFormat("###,###,###", symbols);
     request.setAttribute("formatter", formatter);
 %>
+<c:if test="${param.error == 'insufficient_stock'}">
+    <div aria-live="polite" aria-atomic="true"
+         class="position-fixed top-0 end-0 p-3"
+         style="z-index: 9999;">
+        <div id="stockToast" class="toast align-items-center text-bg-danger border-0"
+             role="alert" aria-live="assertive" aria-atomic="true"
+             data-bs-delay="5000" data-bs-autohide="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    The quantity you requested exceeds the available inventory.
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+</c:if>
+
+
+
 
 <div class="container py-5">
     <div class="row">
@@ -50,6 +70,7 @@
             <div class="modal-content p-3">
                 <div class="modal-header">
                     <h5 class="modal-title">🎉 Added to Cart</h5>
+                    <button type="button" class="btn-close" aria-label="Close" onclick="document.getElementById('addedModal').style.display = 'none';"></button>
                 </div>
                 <div class="modal-body d-flex">
                     <img src="${book.image}" alt="${book.bookTitle}" class="me-3 rounded" style="width: 80px; height: 100px; object-fit: cover;"
@@ -63,7 +84,6 @@
                 </div>
                 <div class="modal-footer">
                     <a href="${pageContext.request.contextPath}/cart/view" class="btn btn-success">🛒 Go to Cart</a>
-                    <a href="${pageContext.request.contextPath}/customer/book/list" class="btn btn-secondary">No, Continue Shopping</a>
                 </div>
             </div>
         </div>
@@ -72,7 +92,27 @@
         setTimeout(() => {
             document.getElementById("addedModal").style.display = 'none';
         }, 10000);
+
+    </script>
+
+</c:if>
+<c:if test="${param.error == 'insufficient_stock'}">
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log("⚠️ Attempting to show toast for insufficient_stock...");
+            const toastEl = document.getElementById("stockToast");
+            if (toastEl) {
+                const toast = new bootstrap.Toast(toastEl, {
+                    delay: 5000, // tự động ẩn sau 5 giây
+                    autohide: true
+                });
+                toast.show();
+            } else {
+                console.warn("⚠️ stockToast not found");
+            }
+        });
     </script>
 </c:if>
+
 
 <jsp:include page="/WEB-INF/includes/footer.jsp" />

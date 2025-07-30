@@ -21,7 +21,7 @@ public class CartAddServlet extends HttpServlet {
         String username = (String) session.getAttribute("username");
         Integer role = (Integer) session.getAttribute("role");
 
-        if (username == null || role == null || role != 1) {
+        if (username == null || role == null || role != 4) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
@@ -82,7 +82,9 @@ public class CartAddServlet extends HttpServlet {
         }
 
         if (!cartDAO.isStockAvailable(bookID, totalQuantity)) {
-            response.sendRedirect("home?msg=insufficient_stock");
+            response.sendRedirect(request.getContextPath()
+                    + "/customer/book/detail?id=" + bookID + "&error=insufficient_stock");
+
             return;
         }
 

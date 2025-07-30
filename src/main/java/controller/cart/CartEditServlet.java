@@ -24,7 +24,7 @@ public class CartEditServlet extends HttpServlet {
         Integer role = (Integer) session.getAttribute("role");
 
         // Kiểm tra quyền đăng nhập
-        if (username == null || role == null || role != 1) {
+        if (username == null || role == null || role != 4) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }

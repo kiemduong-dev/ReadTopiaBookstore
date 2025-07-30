@@ -106,4 +106,6 @@ public class OrderDTO {
     public void setTotalAmount(Double totalAmount) {
         this.totalAmount = totalAmount;
     }
+    
 }
+
