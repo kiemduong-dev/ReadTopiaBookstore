@@ -49,7 +49,18 @@ public class AddBookServlet extends HttpServlet {
         CategoryDAO categoryDAO = new CategoryDAO();
         List<CategoryDTO> categories = categoryDAO.getAllCategories();
 
+        BookDAO bookDAO = new BookDAO();
+        List<String> authors = bookDAO.getAllAuthors();  // Lấy danh sách tác giả
+        List<String> translators = bookDAO.getAllTranslators();  // Lấy danh sách người phiên dịch
+        List<String> publishers = bookDAO.getAllPublishers();  // Lấy danh sách nhà xuất bản
+
+        // Đưa các danh sách vào request để gửi vào JSP
         request.setAttribute("categoryList", categories);
+        request.setAttribute("authors", authors);
+        request.setAttribute("translators", translators);
+        request.setAttribute("publishers", publishers);
+
+        // Chuyển tiếp tới trang thêm sách
         request.getRequestDispatcher("/WEB-INF/view/admin/book/add.jsp").forward(request, response);
     }
 
@@ -74,9 +85,9 @@ public class AddBookServlet extends HttpServlet {
         try {
             BookDTO book = new BookDTO();
             book.setBookTitle(request.getParameter("title"));
-            book.setAuthor(request.getParameter("author"));
-            book.setTranslator(request.getParameter("translator"));
-            book.setPublisher(request.getParameter("publisher"));
+            book.setAuthor(request.getParameter("author"));  // Lấy tác giả từ dropdown
+            book.setTranslator(request.getParameter("translator"));  // Lấy người phiên dịch từ dropdown
+            book.setPublisher(request.getParameter("publisher"));  // Lấy nhà xuất bản từ dropdown
             book.setPublicationYear(Integer.parseInt(request.getParameter("publicationYear")));
             book.setIsbn(request.getParameter("isbn"));
             book.setImage(request.getParameter("image"));
@@ -89,6 +100,7 @@ public class AddBookServlet extends HttpServlet {
             book.setBookStatus(ACTIVE_STATUS);
 
             int categoryId = Integer.parseInt(request.getParameter("categoryID"));
+            book.setCategoryID(categoryId);
 
             BookDAO bookDAO = new BookDAO();
             int bookId = bookDAO.insertBook(book);
@@ -109,7 +121,14 @@ public class AddBookServlet extends HttpServlet {
             List<CategoryDTO> categories = categoryDAO.getAllCategories();
             request.setAttribute("categoryList", categories);
 
+            // Reload author, translator, and publisher lists for form
+            BookDAO bookDAO = new BookDAO();
+            request.setAttribute("authors", bookDAO.getAllAuthors());
+            request.setAttribute("translators", bookDAO.getAllTranslators());
+            request.setAttribute("publishers", bookDAO.getAllPublishers());
+
             request.getRequestDispatcher("/WEB-INF/view/admin/book/add.jsp").forward(request, response);
         }
     }
+
 }

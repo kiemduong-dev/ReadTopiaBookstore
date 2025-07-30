@@ -37,21 +37,39 @@
             </div>
 
             <div class="form-row">
+                <!-- Dropdown cho tác giả -->
                 <div class="form-group">
                     <label class="form-label required">Author</label>
-                    <input type="text" name="author" class="form-input" required />
+                    <select name="author" class="form-select" required>
+                        <option value="">-- Select Author --</option>
+                        <c:forEach var="author" items="${authors}">
+                            <option value="${author}">${author}</option>
+                        </c:forEach>
+                    </select>
                 </div>
 
+                <!-- Dropdown cho người phiên dịch -->
                 <div class="form-group">
                     <label class="form-label">Translator</label>
-                    <input type="text" name="translator" class="form-input" />
+                    <select name="translator" class="form-select">
+                        <option value="">-- Select Translator --</option>
+                        <c:forEach var="translator" items="${translators}">
+                            <option value="${translator}">${translator}</option>
+                        </c:forEach>
+                    </select>
                 </div>
             </div>
 
             <div class="form-row">
+                <!-- Dropdown cho nhà xuất bản -->
                 <div class="form-group">
                     <label class="form-label">Publisher</label>
-                    <input type="text" name="publisher" class="form-input" />
+                    <select name="publisher" class="form-select">
+                        <option value="">-- Select Publisher --</option>
+                        <c:forEach var="publisher" items="${publishers}">
+                            <option value="${publisher}">${publisher}</option>
+                        </c:forEach>
+                    </select>
                 </div>
 
                 <div class="form-group">

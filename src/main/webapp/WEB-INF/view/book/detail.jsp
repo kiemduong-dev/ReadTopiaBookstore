@@ -5,18 +5,17 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <%
+    // Initialize the formatter for currency with space grouping separator
     DecimalFormatSymbols symbols = new DecimalFormatSymbols();
     symbols.setGroupingSeparator(' ');
     DecimalFormat formatter = new DecimalFormat("###,###,###", symbols);
     request.setAttribute("formatter", formatter);
 %>
+
+<!-- Check for the 'insufficient_stock' error to display Toast -->
 <c:if test="${param.error == 'insufficient_stock'}">
-    <div aria-live="polite" aria-atomic="true"
-         class="position-fixed top-0 end-0 p-3"
-         style="z-index: 9999;">
-        <div id="stockToast" class="toast align-items-center text-bg-danger border-0"
-             role="alert" aria-live="assertive" aria-atomic="true"
-             data-bs-delay="5000" data-bs-autohide="true">
+    <div aria-live="polite" aria-atomic="true" class="position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+        <div id="stockToast" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000" data-bs-autohide="true">
             <div class="d-flex">
                 <div class="toast-body">
                     The quantity you requested exceeds the available inventory.
@@ -27,14 +26,10 @@
     </div>
 </c:if>
 
-
-
-
 <div class="container py-5">
     <div class="row">
         <div class="col-md-5">
-            <img src="${book.image}" alt="${book.bookTitle}" class="img-fluid rounded shadow-sm"
-                 onerror="this.src='https://via.placeholder.com/300x400?text=No+Image'">
+            <img src="${book.image}" alt="${book.bookTitle}" class="img-fluid rounded shadow-sm" onerror="this.src='https://via.placeholder.com/300x400?text=No+Image'">
         </div>
         <div class="col-md-7">
             <h2 class="mb-3">${book.bookTitle}</h2>
@@ -49,6 +44,7 @@
             <p><strong>In Stock:</strong> ${book.bookQuantity}</p>
             <p class="text-danger fs-4 fw-bold">Price: <c:out value="${formatter.format(book.bookPrice)}"/> VND</p>
 
+            <!-- Add to Cart or Buy Now -->
             <form action="${pageContext.request.contextPath}/cart/add" method="post" class="mt-3 d-flex">
                 <input type="hidden" name="bookID" value="${book.bookID}" />
                 <input type="number" name="quantity" value="1" min="1" max="${book.bookQuantity}" class="form-control w-25 me-2" />
@@ -63,7 +59,7 @@
     </div>
 </div>
 
-<%-- ✅ MODAL for Add to Cart Confirmation --%>
+<!-- ✅ Modal for Add to Cart Confirmation -->
 <c:if test="${param.added == 'true'}">
     <div class="modal fade show" id="addedModal" tabindex="-1" style="display: block; background-color: rgba(0,0,0,0.5);">
         <div class="modal-dialog">
@@ -73,8 +69,7 @@
                     <button type="button" class="btn-close" aria-label="Close" onclick="document.getElementById('addedModal').style.display = 'none';"></button>
                 </div>
                 <div class="modal-body d-flex">
-                    <img src="${book.image}" alt="${book.bookTitle}" class="me-3 rounded" style="width: 80px; height: 100px; object-fit: cover;"
-                         onerror="this.src='https://via.placeholder.com/80x100?text=No+Image'">
+                    <img src="${book.image}" alt="${book.bookTitle}" class="me-3 rounded" style="width: 80px; height: 100px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/80x100?text=No+Image'">
                     <div>
                         <p><strong>${book.bookTitle}</strong></p>
                         <p class="text-muted">Author: ${book.author}</p>
@@ -92,27 +87,23 @@
         setTimeout(() => {
             document.getElementById("addedModal").style.display = 'none';
         }, 10000);
-
     </script>
-
 </c:if>
+
+<!-- Script to show toast if 'insufficient_stock' error occurs -->
 <c:if test="${param.error == 'insufficient_stock'}">
     <script>
         window.addEventListener('DOMContentLoaded', () => {
-            console.log("⚠️ Attempting to show toast for insufficient_stock...");
             const toastEl = document.getElementById("stockToast");
             if (toastEl) {
                 const toast = new bootstrap.Toast(toastEl, {
-                    delay: 5000, // tự động ẩn sau 5 giây
+                    delay: 5000, // auto hide after 5 seconds
                     autohide: true
                 });
                 toast.show();
-            } else {
-                console.warn("⚠️ stockToast not found");
             }
         });
     </script>
 </c:if>
-
 
 <jsp:include page="/WEB-INF/includes/footer.jsp" />

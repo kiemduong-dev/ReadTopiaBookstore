@@ -4,17 +4,18 @@
 <jsp:include page="/WEB-INF/includes/head.jsp" />
 <jsp:include page="/WEB-INF/includes/header.jsp" />
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 <%
+    // Setup the number format for displaying prices
     DecimalFormatSymbols symbols = new DecimalFormatSymbols();
     symbols.setGroupingSeparator(' ');
     DecimalFormat formatter = new DecimalFormat("###,###,###", symbols);
     request.setAttribute("formatter", formatter);
-    request.setAttribute("formatter", formatter);
 %>
 
 <div class="container py-4">
-
-    <h2 class="mb-4">📚 All Books</h2>
+    <h2 class="mb-4">All Books</h2>
 
     <!-- Toolbar -->
     <form class="row g-3 mb-4" method="get" action="${pageContext.request.contextPath}/customer/book/list">
@@ -41,7 +42,7 @@
             </select>
         </div>
         <div class="col-md-3">
-            <button class="btn btn-primary w-100" type="submit">🔍 Search</button>
+            <button class="btn btn-primary w-100" type="submit">Search</button>
         </div>
     </form>
 
@@ -67,6 +68,15 @@
                 </a>
             </div>
         </c:forEach>
+
+        <!-- If no books are found -->
+        <c:if test="${empty bookList}">
+            <div class="col-12">
+                <div class="alert alert-warning text-center">
+                    No books found based on your search criteria.
+                </div>
+            </div>
+        </c:if>
     </div>
 </div>
 

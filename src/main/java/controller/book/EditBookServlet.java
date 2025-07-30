@@ -1,7 +1,9 @@
 package controller.book;
 
 import dao.BookDAO;
+import dao.CategoryDAO;
 import dto.BookDTO;
+import dto.CategoryDTO;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -10,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Edit Book Servlet - Handles displaying and updating book details for Admin.
@@ -27,9 +30,11 @@ public class EditBookServlet extends HttpServlet {
     /**
      * Handles the HTTP GET request to load book data into the edit form.
      *
-     * Steps: 1. Retrieve "id" from request parameters. 2. Fetch the book by ID
-     * using BookDAO. 3. Forward to the edit JSP view if found. 4. Redirect to
-     * the book list page if not found or invalid ID.
+     * Steps: 
+     * 1. Retrieve "id" from request parameters. 
+     * 2. Fetch the book by ID using BookDAO.
+     * 3. Forward to the edit JSP view if found.
+     * 4. Redirect to the book list page if not found or invalid ID.
      *
      * @param request the HttpServletRequest object
      * @param response the HttpServletResponse object
@@ -53,7 +58,23 @@ public class EditBookServlet extends HttpServlet {
             BookDTO book = bookDAO.getBookByID(bookId);
 
             if (book != null) {
+                // Load the list of categories, authors, translators, and publishers
+                CategoryDAO categoryDAO = new CategoryDAO();
+                List<CategoryDTO> categories = categoryDAO.getAllCategories();
+                request.setAttribute("categoryList", categories);
+
+                BookDAO bookDAOList = new BookDAO();
+                List<String> authors = bookDAOList.getAllAuthors();
+                List<String> translators = bookDAOList.getAllTranslators();
+                List<String> publishers = bookDAOList.getAllPublishers();
+                
+                // Set the attributes to the request to send to JSP
                 request.setAttribute("book", book);
+                request.setAttribute("authors", authors);
+                request.setAttribute("translators", translators);
+                request.setAttribute("publishers", publishers);
+                
+                // Forward to the edit page
                 request.getRequestDispatcher("/WEB-INF/view/admin/book/edit.jsp").forward(request, response);
             } else {
                 request.getSession().setAttribute("error", "Book not found.");
@@ -69,10 +90,11 @@ public class EditBookServlet extends HttpServlet {
     /**
      * Handles the HTTP POST request to update book details.
      *
-     * Steps: 1. Parse form parameters and populate a BookDTO object. 2. Update
-     * the book in the database using BookDAO. 3. Redirect to the book list page
-     * on success. 4. Forward back to the edit form with an error message on
-     * failure.
+     * Steps: 
+     * 1. Parse form parameters and populate a BookDTO object. 
+     * 2. Update the book in the database using BookDAO. 
+     * 3. Redirect to the book list page on success. 
+     * 4. Forward back to the edit form with an error message on failure.
      *
      * @param request the HttpServletRequest object
      * @param response the HttpServletResponse object

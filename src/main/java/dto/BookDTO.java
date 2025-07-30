@@ -23,6 +23,7 @@ public class BookDTO {
     private double bookPrice;
     private int bookQuantity;
     private int bookStatus;
+    private int categoryID;
 
     /**
      * Default constructor. Creates an empty BookDTO object.
@@ -77,6 +78,15 @@ public class BookDTO {
      */
     public int getBookID() {
         return bookID;
+    }
+
+    // Getter và Setter cho categoryID
+    public int getCategoryID() {
+        return categoryID;
+    }
+
+    public void setCategoryID(int categoryID) {
+        this.categoryID = categoryID;
     }
 
     /**

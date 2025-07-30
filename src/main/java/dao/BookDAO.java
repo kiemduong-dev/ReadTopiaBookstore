@@ -1,9 +1,3 @@
-/**
- * BookDAO - Data Access Object for managing Book records in the database.
- * Provides CRUD operations and search/filter capabilities.
- *
- * @author Vuong Chi Bao
- */
 package dao;
 
 import dto.BookDTO;
@@ -69,13 +63,14 @@ public class BookDAO {
      */
     public List<BookDTO> searchBooksByTitleOrAuthor(String keyword) {
         List<BookDTO> list = new ArrayList<>();
-        String sql = "SELECT * FROM Book WHERE bookStatus = 1 AND (bookTitle LIKE ? OR author LIKE ?)";
+        String sql = "SELECT * FROM Book WHERE bookStatus = 1 AND (bookTitle LIKE ? OR author LIKE ? OR publisher LIKE ?)";
 
         try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
 
             String pattern = "%" + keyword + "%";
             ps.setString(1, pattern);
             ps.setString(2, pattern);
+            ps.setString(3, pattern);
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -100,6 +95,10 @@ public class BookDAO {
         List<BookDTO> list = new ArrayList<>();
         String sql = "SELECT * FROM Book WHERE bookStatus = 1 ";
 
+        if (sortBy == null || sortBy.isEmpty()) {
+            sortBy = "title_asc";  // Default sort if no sort criteria is passed
+        }
+
         switch (sortBy) {
             case "price_asc":
                 sql += "ORDER BY bookPrice ASC";
@@ -114,7 +113,7 @@ public class BookDAO {
                 sql += "ORDER BY bookTitle DESC";
                 break;
             default:
-                sql += "ORDER BY bookID DESC";
+                sql += "ORDER BY bookID DESC"; // Default sorting by book ID
         }
 
         try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
@@ -263,16 +262,56 @@ public class BookDAO {
         return false;
     }
 
-    // --------------------------------------
-    // Helper Methods
-    // --------------------------------------
-    /**
-     * Extracts a BookDTO from a ResultSet.
-     *
-     * @param rs the ResultSet
-     * @return a BookDTO object
-     * @throws SQLException if SQL error occurs
-     */
+    // Methods to retrieve authors, translators, and publishers
+    public List<String> getAllAuthors() {
+        List<String> authors = new ArrayList<>();
+        String sql = "SELECT DISTINCT author FROM Book WHERE bookStatus = 1";
+
+        try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                authors.add(rs.getString("author"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return authors;
+    }
+
+    public List<String> getAllTranslators() {
+        List<String> translators = new ArrayList<>();
+        String sql = "SELECT DISTINCT translator FROM Book WHERE bookStatus = 1";
+
+        try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                translators.add(rs.getString("translator"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return translators;
+    }
+
+    public List<String> getAllPublishers() {
+        List<String> publishers = new ArrayList<>();
+        String sql = "SELECT DISTINCT publisher FROM Book WHERE bookStatus = 1";
+
+        try ( Connection conn = new DBContext().getConnection();  PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                publishers.add(rs.getString("publisher"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return publishers;
+    }
+
+    // Helper Methods to map results to BookDTO
     private BookDTO extractBookFromResultSet(ResultSet rs) throws SQLException {
         return new BookDTO(
                 rs.getInt("bookID"),
@@ -293,13 +332,6 @@ public class BookDAO {
         );
     }
 
-    /**
-     * Sets parameters for PreparedStatement from BookDTO.
-     *
-     * @param ps the PreparedStatement
-     * @param book the BookDTO object
-     * @throws SQLException if SQL error occurs
-     */
     private void setBookParams(PreparedStatement ps, BookDTO book) throws SQLException {
         ps.setString(1, book.getBookTitle());
         ps.setString(2, book.getAuthor());
