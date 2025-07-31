@@ -48,7 +48,7 @@ public class LoginServlet extends HttpServlet {
 
             int role = account.getRole();
             if (role == 0 || role == 4) {
-                response.sendRedirect(request.getContextPath() + "/customer/book/list");
+                response.sendRedirect(request.getContextPath() + "/homepage/book/list");
             } else if (role == 1) {
                 response.sendRedirect(request.getContextPath() + "/admin/dashboard");
             } else if (role == 2 || role == 3) {

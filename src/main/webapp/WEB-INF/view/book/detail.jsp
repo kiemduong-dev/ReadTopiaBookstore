@@ -53,7 +53,7 @@
             </form>
 
             <div class="mt-4">
-                <a href="${pageContext.request.contextPath}/customer/book/list" class="btn btn-outline-secondary">⬅ Back to List</a>
+                <a href="${pageContext.request.contextPath}/homepage/book/list" class="btn btn-outline-secondary">⬅ Back to List</a>
             </div>
         </div>
     </div>

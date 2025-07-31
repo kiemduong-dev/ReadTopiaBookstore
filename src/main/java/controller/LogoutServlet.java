@@ -44,7 +44,7 @@ public class LogoutServlet extends HttpServlet {
         }
 
         // Step 3: Redirect to home page
-        response.sendRedirect(request.getContextPath() + "/customer/book/list");
+        response.sendRedirect(request.getContextPath() + "/homepage/book/list");
     }
 
     /**

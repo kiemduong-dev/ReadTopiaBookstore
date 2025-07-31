@@ -18,7 +18,7 @@
     <h2 class="mb-4">All Books</h2>
 
     <!-- Toolbar -->
-    <form class="row g-3 mb-4" method="get" action="${pageContext.request.contextPath}/customer/book/list">
+    <form class="row g-3 mb-4" method="get" action="${pageContext.request.contextPath}/homepage/book/list">
         <div class="col-md-3">
             <input type="text" class="form-control" name="keyword" placeholder="Search by title or author" value="${param.keyword}"/>
         </div>
@@ -50,7 +50,7 @@
     <div class="row row-cols-1 row-cols-md-4 g-4">
         <c:forEach var="book" items="${bookList}">
             <div class="col">
-                <a href="${pageContext.request.contextPath}/customer/book/detail?id=${book.bookID}" class="text-decoration-none text-dark">
+                <a href="${pageContext.request.contextPath}/homepage/book/detail?id=${book.bookID}" class="text-decoration-none text-dark">
                     <div class="card h-100 shadow-sm book-card" style="transition: all 0.3s;">
                         <div class="position-relative">
                             <img src="${book.image}" class="card-img-top" alt="${book.bookTitle}"

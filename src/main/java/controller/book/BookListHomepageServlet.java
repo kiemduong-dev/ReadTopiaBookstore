@@ -2,38 +2,48 @@ package controller.book;
 
 import dao.BookDAO;
 import dao.CategoryDAO;
+import dao.NotificationDAO;
 import dto.BookDTO;
 import dto.CategoryDTO;
+import dto.NotificationDTO;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import util.DBContext;
 
 /**
- * Book List Homepage - Displays a list of books for customers.
+ * Book List Customer - Displays the list of books for customers.
  *
- * Supports: - Search by keyword (title or author) - Filter by category - Sort
- * by title or price
+ * Retrieves books from the database with optional filtering, sorting, and
+ * category selection. Also loads user notifications if the customer is logged
+ * in.
  *
- * URL: /book/home
+ * URL: /customer/book/list
  *
  * Author: CE182018 Vuong Chi Bao
  */
-@WebServlet("/book/home")
+@WebServlet("/homepage/book/list")
 public class BookListHomepageServlet extends HttpServlet {
 
     /**
-     * Handles the HTTP GET request to display books with optional filters.
+     * Handles HTTP GET requests to display the book list for customers.
      *
-     * Steps: 1. Retrieve optional query parameters: keyword, category ID, sort
-     * option. 2. Fetch books based on the provided filters. 3. Retrieve all
-     * categories for the filter dropdown. 4. Set attributes for rendering in
-     * the JSP view. 5. Forward to the homepage JSP.
+     * Steps: 1. Check for logged-in user and load notifications (if any). 2.
+     * Retrieve optional filters: keyword, sort option, category ID. 3. Fetch
+     * the list of books based on filters. 4. Load all categories for the filter
+     * dropdown. 5. Set data as request attributes and forward to the homepage
+     * JSP.
      *
      * @param request the HttpServletRequest object
      * @param response the HttpServletResponse object
@@ -45,33 +55,33 @@ public class BookListHomepageServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String keyword = request.getParameter("keyword");
+        String sortOption = request.getParameter("sort");
         String categoryIdParam = request.getParameter("catID");
-        String sortOption = request.getParameter("sortBy");
-
-        int categoryId = 0;
-        try {
-            if (categoryIdParam != null && !categoryIdParam.isEmpty()) {
-                categoryId = Integer.parseInt(categoryIdParam);
-            }
-        } catch (NumberFormatException e) {
-            // Invalid category ID, ignore and continue without filter
-        }
 
         BookDAO bookDAO = new BookDAO();
         List<BookDTO> books;
 
-        // Determine which books to fetch based on filters
-        if (keyword != null && !keyword.trim().isEmpty()) {
-            books = bookDAO.searchBooksByTitleOrAuthor(keyword.trim());
-        } else if (categoryId > 0) {
-            books = bookDAO.getBooksByCategory(categoryId);
+        HttpSession session = request.getSession();
+
+        // Determine books to display based on filters
+        if (categoryIdParam != null && !categoryIdParam.isEmpty()) {
+            try {
+                int categoryId = Integer.parseInt(categoryIdParam);
+                books = bookDAO.getBooksByCategory(categoryId);
+            } catch (NumberFormatException e) {
+                Logger.getLogger(BookListHomepageServlet.class.getName())
+                        .log(Level.WARNING, "Invalid category ID format", e);
+                books = bookDAO.getAllBooks();
+            }
+        } else if (keyword != null && !keyword.isEmpty()) {
+            books = bookDAO.searchBooksByTitleOrAuthor(keyword);
         } else if (sortOption != null && !sortOption.isEmpty()) {
             books = bookDAO.getBooksSortedBy(sortOption);
         } else {
             books = bookDAO.getAllBooks();
         }
 
-        // Retrieve all categories for the filter dropdown
+        // Load all categories for filtering
         CategoryDAO categoryDAO = new CategoryDAO();
         List<CategoryDTO> categories = categoryDAO.getAllCategories();
 
@@ -79,10 +89,10 @@ public class BookListHomepageServlet extends HttpServlet {
         request.setAttribute("bookList", books);
         request.setAttribute("categoryList", categories);
         request.setAttribute("keyword", keyword);
-        request.setAttribute("selectedCatID", categoryId);
-        request.setAttribute("sortBy", sortOption);
+        request.setAttribute("sort", sortOption);
+        request.setAttribute("catID", categoryIdParam);
 
-        // Forward to the homepage JSP view
+        // Forward to homepage view
         request.getRequestDispatcher("/WEB-INF/view/book/homepage.jsp").forward(request, response);
     }
 }

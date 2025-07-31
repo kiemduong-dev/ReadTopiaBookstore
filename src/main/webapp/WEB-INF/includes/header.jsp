@@ -6,7 +6,7 @@
 
         <!-- Logo dạng hình ảnh -->
         <div class="logo">
-            <a href="${pageContext.request.contextPath}/customer/book/list" class="logo-link">
+            <a href="${pageContext.request.contextPath}/homepage/book/list" class="logo-link">
                 <img src="${pageContext.request.contextPath}/assets/img/logo.png" alt="ReadTopia Logo" style="height: 40px;">
             </a>
             <span style="font-size: 22px; font-weight: bold; margin-left: 10px;">ReadTopia</span>
@@ -19,7 +19,7 @@
             <div class="header-icons">
                 <jsp:include page="/WEB-INF/view/customer/notification/notification-widget.jsp" />
 
-                <a href="${pageContext.request.contextPath}/customer/voucher/list" class="header-icon" title="Promotion">
+                <a href="${pageContext.request.contextPath}/customer/promotion/list" class="header-icon" title="Promotion">
                     <i class="fas fa-tags"></i>
                 </a>
 

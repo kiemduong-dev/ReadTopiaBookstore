@@ -1,6 +1,6 @@
-controller\book\BookDetailCustomerServlet.class
 dao\OrderDAO.class
 controller\VerifyOTPRegisterServlet.class
+controller\book\BookDetailHomepageServlet.class
 dao\SupplierDAO.class
 dao\CategoryDAO.class
 controller\ForgotPasswordServlet.class
@@ -59,7 +59,6 @@ util\MailUtil$2.class
 controller\order\OrderHistoryServlet.class
 dto\OrderDetailDTO.class
 dao\PaymentDAO.class
-controller\book\BookListCustomerServlet.class
 controller\admin\AccountAddServlet.class
 controller\admin\AccountListServlet.class
 controller\admin\AccountDetailServlet.class
@@ -83,7 +82,6 @@ controller\EditProfileServlet.class
 controller\notification\NotificationFilter.class
 util\DBContext.class
 controller\supplier\SupplierEditServlet.class
-controller\book\BookDetailServlet.class
 controller\order\OrderManagementServlet.class
 controller\cart\CartAddServlet.class
 util\ValidationUtil.class

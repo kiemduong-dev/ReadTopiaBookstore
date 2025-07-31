@@ -6,7 +6,7 @@
 
 <div class="main-content">
     <div class="content-area">
-        <h1 class="mb-4">📖 Book Detail</h1>
+        <h1 class="mb-4"> Book Detail</h1>
 
         <div class="row">
             <!-- Ảnh sách -->
@@ -29,7 +29,7 @@
                         <td>
                             <c:choose>
                                 <c:when test="${book.hardcover == 1}">✔ Yes</c:when>
-                                <c:otherwise>❌ No</c:otherwise>
+                                <c:otherwise> No</c:otherwise>
                             </c:choose>
                         </td>
                     </tr>

@@ -10,7 +10,7 @@
 
             <!-- Logo + Slogan -->
             <div class="col-md-4 mb-4">
-                <a href="${pageContext.request.contextPath}/customer/book/list" class="d-flex align-items-center text-white text-decoration-none mb-2">
+                <a href="${pageContext.request.contextPath}/homepage/book/list" class="d-flex align-items-center text-white text-decoration-none mb-2">
                     <img src="${pageContext.request.contextPath}/assets/img/logo.png" alt="ReadTopia Logo" style="height: 50px; margin-right: 10px;">
                     <span style="font-size: 20px; font-weight: bold;">ReadTopia</span>
                 </a>
@@ -23,8 +23,8 @@
             <div class="col-md-2 mb-4">
                 <h6 class="fw-bold text-uppercase mb-3">Links</h6>
                 <ul class="list-unstyled small">
-                    <li><a href="${pageContext.request.contextPath}/customer/book/list" class="text-white text-decoration-none">Home</a></li>
-                    <li><a href="${pageContext.request.contextPath}/customer/book/list" class="text-white text-decoration-none">Books</a></li>
+                    <li><a href="${pageContext.request.contextPath}/homepage/book/list" class="text-white text-decoration-none">Home</a></li>
+                    <li><a href="${pageContext.request.contextPath}/homepage/book/list" class="text-white text-decoration-none">Books</a></li>
                     <li><a href="#" class="text-white text-decoration-none">About Us</a></li>
                     <li><a href="#" class="text-white text-decoration-none">Contact</a></li>
                     <li><a href="#" class="text-white text-decoration-none">Privacy Policy</a></li>
