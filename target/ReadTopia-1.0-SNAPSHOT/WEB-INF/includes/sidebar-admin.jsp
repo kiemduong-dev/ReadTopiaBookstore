@@ -62,7 +62,7 @@
                 <i class="fas fa-bell"></i> Notification Management
             </a>
             <!-- Nút quay về trang sách -->
-            <a href="${pageContext.request.contextPath}/customer/book/list" class="menu-item">
+            <a href="${pageContext.request.contextPath}/homepage/book/list" class="menu-item">
                 <i class="fas fa-book-open"></i> Book List
             </a>
         </c:if>

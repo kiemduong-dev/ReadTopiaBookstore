@@ -13,7 +13,7 @@ import java.util.Date;
 public class OrderDTO {
 
     private int orderID;
-    private Integer proID;
+    private Integer vouID;
     private String username;
     private Integer staffID;
     private Date orderDate;
@@ -25,9 +25,9 @@ public class OrderDTO {
     public OrderDTO() {
     }
 
-    public OrderDTO(int orderID, Integer proID, String username, Integer staffID, Date orderDate, String orderAddress, int orderStatus) {
+    public OrderDTO(int orderID, Integer vouID, String username, Integer staffID, Date orderDate, String orderAddress, int orderStatus) {
         this.orderID = orderID;
-        this.proID = proID;
+        this.vouID = vouID;
         this.username = username;
         this.staffID = staffID;
         this.orderDate = orderDate;
@@ -43,12 +43,12 @@ public class OrderDTO {
         this.orderID = orderID;
     }
 
-    public Integer getProID() {
-        return proID;
+    public Integer getVouID() {
+        return vouID;
     }
 
-    public void setProID(Integer proID) {
-        this.proID = proID;
+    public void setVouID(Integer vouID) {
+        this.vouID = vouID;
     }
 
     public String getUsername() {

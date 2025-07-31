@@ -46,6 +46,7 @@
                         <p><strong>Transfer Note:</strong>
                             <span class="text-primary fw-bold">${transferCode}</span>
                         </p>
+
                         <!-- Confirm Payment Form -->
                         <form method="post" action="${pageContext.request.contextPath}/payment/confirm">
                             <input type="hidden" name="amount" value="${amount}" />
@@ -53,7 +54,7 @@
                             <input type="hidden" name="type" value="${type}" />
                             <input type="hidden" name="bookId" value="${bookId}" />
                             <input type="hidden" name="quantity" value="${quantity}" />
-                            <input type="hidden" name="promotionID" value="${proID}" />
+                            <input type="hidden" name="voucherID" value="${vouID}" />
                             <input type="hidden" name="orderAddress" value="${orderAddress}" />
                             <input type="hidden" name="paymentMethod" value="${paymentMethod}" />
                             <input type="hidden" name="transferCode" value="${transferCode}" />

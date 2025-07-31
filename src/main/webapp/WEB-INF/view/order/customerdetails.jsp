@@ -1,5 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="dao.BookDAO, dao.PromotionDAO, dto.BookDTO, dto.OrderDetailDTO, dto.OrderDTO, dto.PromotionDTO" %>
+<%@ page import="dao.BookDAO, dao.VoucherDAO, dto.BookDTO, dto.OrderDetailDTO, dto.OrderDTO, dto.VoucherDTO" %>
 <%@ page import="java.text.DecimalFormat, java.text.DecimalFormatSymbols" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -8,7 +8,7 @@
 
 <%
     BookDAO bookDAO = new BookDAO();
-    PromotionDAO promoDAO = new PromotionDAO();
+    VoucherDAO voucherDAO = new VoucherDAO();
 
     OrderDTO order = (OrderDTO) request.getAttribute("order");
 
@@ -17,9 +17,9 @@
     DecimalFormat formatter = new DecimalFormat("###,###", symbols);
     request.setAttribute("formatter", formatter);
 
-    PromotionDTO promo = null;
-    if (order.getProID() != null) {
-        promo = promoDAO.getPromotionByID(order.getProID());
+    VoucherDTO voucher = null;
+    if (order.getVouID() != null) {
+        voucher = voucherDAO.getVoucherByID(order.getVouID());
     }
 %>
 
@@ -141,10 +141,10 @@
                 </table>
             </div>
 
-            <!-- Thông tin khuyến mãi -->
+            <!-- Thông tin voucher -->
             <p><strong>Voucher:</strong>
-                <% if (promo != null) { %>
-                    <%= promo.getProName() %> - Discount <%= (int) promo.getDiscount() %>%
+                <% if (voucher != null) { %>
+                    <%= voucher.getVouName() %> - Discount <%= (int) voucher.getDiscount() %>%
                 <% } else { %>
                     None
                 <% } %>

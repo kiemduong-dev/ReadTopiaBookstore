@@ -59,7 +59,7 @@ public class CartAddServlet extends HttpServlet {
         // ➤ Nếu là Buy Now → chuyển hướng đến trang thanh toán trực tiếp (không thêm vào giỏ)
         if ("buyNow".equals(action)) {
             if (quantity > book.getBookQuantity()) {
-                response.sendRedirect(request.getContextPath() + "/customer/book/detail?id=" + bookID + "&error=outofstock");
+                response.sendRedirect(request.getContextPath() + "/homepage/book/detail?id=" + bookID + "&error=outofstock");
                 return;
             }
 
@@ -83,7 +83,7 @@ public class CartAddServlet extends HttpServlet {
 
         if (!cartDAO.isStockAvailable(bookID, totalQuantity)) {
             response.sendRedirect(request.getContextPath()
-                    + "/customer/book/detail?id=" + bookID + "&error=insufficient_stock");
+                    + "/homepage/book/detail?id=" + bookID + "&error=insufficient_stock");
 
             return;
         }
@@ -99,10 +99,10 @@ public class CartAddServlet extends HttpServlet {
 
         if (success) {
             response.sendRedirect(request.getContextPath()
-                    + "/customer/book/detail?id=" + bookID + "&added=true");
+                    + "/homepage/book/detail?id=" + bookID + "&added=true");
         } else {
             response.sendRedirect(request.getContextPath()
-                    + "/customer/book/detail?id=" + bookID + "&added=false");
+                    + "/homepage/book/detail?id=" + bookID + "&added=false");
         }
     }
 

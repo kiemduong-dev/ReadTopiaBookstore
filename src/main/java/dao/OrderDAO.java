@@ -24,14 +24,14 @@ public class OrderDAO {
 
     // Tạo đơn hàng mới
     public int createOrder(OrderDTO order) {
-        String sql = "INSERT INTO [Order] (proID, username, staffID, orderDate, orderAddress, orderStatus, totalAmount) "
+        String sql = "INSERT INTO [Order] (VouID, username, staffID, orderDate, orderAddress, orderStatus, totalAmount) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try ( Connection conn = DBContext.getConnection();  PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
-            // 1. proID (nullable)
-            if (order.getProID() != null) {
-                ps.setInt(1, order.getProID());
+            // 1. vouID (nullable)
+            if (order.getVouID() != null) {
+                ps.setInt(1, order.getVouID());
             } else {
                 ps.setNull(1, java.sql.Types.INTEGER);
             }
@@ -340,7 +340,7 @@ public class OrderDAO {
     private OrderDTO extractOrderFromResultSet(ResultSet rs) throws Exception {
         OrderDTO order = new OrderDTO();
         order.setOrderID(rs.getInt("orderID"));
-        order.setProID(rs.getInt("proID"));
+        order.setVouID(rs.getInt("VouID"));
         order.setUsername(rs.getString("username"));
         order.setStaffID(rs.getInt("staffID"));
         order.setOrderDate(rs.getTimestamp("orderDate"));

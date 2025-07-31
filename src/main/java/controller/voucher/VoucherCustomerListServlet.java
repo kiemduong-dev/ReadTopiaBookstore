@@ -33,7 +33,7 @@ public class VoucherCustomerListServlet extends HttpServlet {
             VoucherDAO dao = new VoucherDAO();
 
             // Lấy danh sách voucher đã duyệt (status = 1)
-            List<VoucherDTO> list = dao.getListVoucher(1, 5); // hoặc tạo method riêng getApprovedVouchers()
+            List<VoucherDTO> list = dao.getListVoucher(0, 5); // hoặc tạo method riêng getApprovedVouchers()
             List<VoucherDTO> approvedList = new ArrayList<>();
 
             for (VoucherDTO v : list) {

@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.text.DecimalFormat, java.text.DecimalFormatSymbols" %>
-<%@ page import="dao.BookDAO, dto.BookDTO, dto.OrderDetailDTO, dto.OrderDTO, dto.PromotionDTO" %>
+<%@ page import="dao.BookDAO, dto.BookDTO, dto.OrderDetailDTO, dto.OrderDTO, dto.VoucherDTO" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <jsp:include page="/WEB-INF/includes/head-admin.jsp" />
 <jsp:include page="/WEB-INF/includes/sidebar-admin.jsp" />
@@ -14,7 +14,7 @@
     BookDAO bookDAO = new BookDAO();
     double totalAmount = 0;
     OrderDTO currentOrder = (OrderDTO) request.getAttribute("order");
-    PromotionDTO promo = (PromotionDTO) request.getAttribute("promo");
+    VoucherDTO voucher = (VoucherDTO) request.getAttribute("voucher");
 %>
 
 <div class="main-content">
@@ -48,7 +48,7 @@
                                         <tr>
                                             <th class="text-muted" style="width: 160px;">Order Date</th>
                                             <td><%= new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(currentOrder.getOrderDate())%></td>
-                                        </tr>                                     
+                                        </tr>
                                         <%
                                             int status = currentOrder.getOrderStatus();
                                             String statusClass = "";
@@ -152,8 +152,8 @@
                                                 <tr class="bg-light">
                                                     <td colspan="4" class="text-end pe-4 fw-bold">Voucher:</td>
                                                     <td class="text-end pe-4">
-                                                        <% if (promo != null) {%>
-                                                        <span class="text-primary"><%= promo.getProName()%> - Discount <%= (int) promo.getDiscount()%>%</span>
+                                                        <% if (voucher != null) {%>
+                                                        <span class="text-primary"><%= voucher.getVouName()%> - Discount <%= (int) voucher.getDiscount()%>%</span>
                                                         <% } else { %>
                                                         <span class="text-muted">None</span>
                                                         <% }%>
@@ -182,3 +182,5 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>

@@ -77,24 +77,25 @@
                             </c:otherwise>
                         </c:choose>
 
-                        <!-- Promotion select -->
+                        <!-- Voucher select -->
                         <div class="mt-3">
-                            <label for="promotionSelect" class="form-label">Voucher:</label>
-                            <select class="form-select" id="promotionSelect">
-                                <option value="0" data-discount="0" <c:if test="${promotionID == 0}">selected</c:if>>
-                                        -- No Voucher --
-                                    </option>
-                                <c:forEach var="promo" items="${promotions}">
-                                    <option value="${promo.proID}" data-discount="${promo.discount}" <c:if test="${promo.proID == promotionID}">selected</c:if>>
-                                        ${promo.proCode} - ${promo.proName} (-${promo.discount}%)
+                            <label for="voucherSelect" class="form-label">Voucher:</label>
+                            <select class="form-select" id="voucherSelect">
+                                <option value="0" data-discount="0" <c:if test="${voucherID == 0}">selected</c:if>>
+                                    -- No Voucher --
+                                </option>
+                                <c:forEach var="voucher" items="${vouchers}">
+                                    <option value="${voucher.vouID}" data-discount="${voucher.discount}"
+                                            <c:if test="${voucher.vouID == voucherID}">selected</c:if>>
+                                        ${voucher.vouCode} - ${voucher.vouName} (-${voucher.discount}%)
                                     </option>
                                 </c:forEach>
                             </select>
                         </div>
 
-                        <!-- Applied Promotion Info -->
+                        <!-- Applied Voucher Info -->
                         <c:if test="${true}">
-                            <div id="promotionInfoDisplay" class="mt-3 p-3 border rounded bg-light">
+                            <div id="voucherInfoDisplay" class="mt-3 p-3 border rounded bg-light">
                                 <p><strong>Discount Amount:</strong> 
                                     <span class="text-danger fw-bold" id="discountAmountDisplay">
                                         - <fmt:formatNumber value="${discountAmount}" pattern="#,##0" /> VND
@@ -115,7 +116,7 @@
                             <input type="hidden" name="type" value="${type}" />
                             <input type="hidden" name="bookId" value="${bookId}" />
                             <input type="hidden" name="quantity" value="${quantity}" />
-                            <input type="hidden" name="promotionID" id="selectedPromotionHidden" value="${promotionID}" />
+                            <input type="hidden" name="voucherID" id="selectedVoucherHidden" value="${voucherID}" />
                             <input type="hidden" name="discountAmount" value="${discountAmount}" />
                             <input type="hidden" name="finalAmount" value="${finalAmount}" />
 
@@ -159,26 +160,25 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const promoSelect = document.getElementById("promotionSelect");
+        const voucherSelect = document.getElementById("voucherSelect");
 
         const originalAmount = parseFloat("${amountRaw}");
         const discountAmountInput = document.querySelector("input[name='discountAmount']");
         const finalAmountInput = document.querySelector("input[name='finalAmount']");
-        const promotionHiddenInput = document.getElementById("selectedPromotionHidden");
+        const voucherHiddenInput = document.getElementById("selectedVoucherHidden");
 
         const discountAmountDisplay = document.getElementById("discountAmountDisplay");
         const finalAmountDisplay = document.getElementById("finalAmountDisplay");
 
-        // ✅ Hàm cập nhật discount và finalAmount
         function updateDiscountValues() {
-            const selectedOption = promoSelect.options[promoSelect.selectedIndex];
+            const selectedOption = voucherSelect.options[voucherSelect.selectedIndex];
             const discountPercent = parseFloat(selectedOption.getAttribute("data-discount")) || 0;
-            const selectedPromotionID = selectedOption.value;
+            const selectedVoucherID = selectedOption.value;
 
             const discountAmount = Math.round(originalAmount * discountPercent / 100);
             const finalAmount = originalAmount - discountAmount;
 
-            promotionHiddenInput.value = selectedPromotionID;
+            voucherHiddenInput.value = selectedVoucherID;
             discountAmountInput.value = discountAmount;
             finalAmountInput.value = finalAmount;
 
@@ -186,13 +186,10 @@
             finalAmountDisplay.textContent = finalAmount.toLocaleString("vi-VN") + " VND";
         }
 
-        // ✅ Cập nhật ban đầu
         updateDiscountValues();
 
-        // ✅ Khi chọn khuyến mãi khác
-        promoSelect.addEventListener("change", updateDiscountValues);
+        voucherSelect.addEventListener("change", updateDiscountValues);
 
-        // ✅ Khi nhấn thanh toán
         const form = document.getElementById("checkoutForm");
         form.addEventListener("submit", function (e) {
             const method = form.querySelector("input[name='paymentMethod']:checked").value;
