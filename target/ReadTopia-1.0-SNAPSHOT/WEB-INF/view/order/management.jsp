@@ -16,13 +16,12 @@
         <c:if test="${param.msg == 'success'}">
             <div class="alert alert-success alert-dismissible fade show">
                 Order status updated successfully!
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         </c:if>
+
         <c:if test="${param.msg == 'error'}">
             <div class="alert alert-danger alert-dismissible fade show">
                 Failed to update order status!
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         </c:if>
 
@@ -264,3 +263,17 @@
         background-color: #f8f9fa;
     }
 </style>
+<script>
+    window.addEventListener("DOMContentLoaded", () => {
+        const alerts = document.querySelectorAll(".alert");
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                if (alert.classList.contains("show")) {
+                    alert.classList.remove("show");
+                    alert.classList.add("fade");
+                    alert.style.opacity = "0";
+                }
+            }, 5000);
+        });
+    });
+</script>

@@ -275,7 +275,7 @@ public class OrderDAO {
     }
 
     // Cập nhật trạng thái đơn hàng
-    public boolean updateOrderStatus(int orderID, int newStatus) {
+    public boolean updateOrderStatusForCus(int orderID, int newStatus) {
         String sql = "UPDATE [Order] SET orderStatus = ? WHERE orderID = ?";
         try ( Connection conn = DBContext.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -289,6 +289,20 @@ public class OrderDAO {
             return result;
         } catch (Exception e) {
             System.err.println("❌ updateOrderStatus error: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
+    }
+     public boolean updateOrderStatus(int orderID, int newStatus, int staffID) {
+        String sql = "UPDATE [Order] SET orderStatus = ?, staffID = ? WHERE orderID = ?";
+        try ( Connection conn = DBContext.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, newStatus);
+            ps.setInt(2, staffID);
+            ps.setInt(3, orderID);
+
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return false;

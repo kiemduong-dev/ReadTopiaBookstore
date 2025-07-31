@@ -1,23 +1,16 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controller.order;
 
 import dao.OrderDAO;
+import dao.StaffDAO;
+import dto.AccountDTO;
 import dto.OrderDTO;
+import dto.StaffDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.*;
+
 import java.io.IOException;
 
-/**
- *
- * @author NGUYEN THAI ANH
- */
 @WebServlet("/order/edit")
 public class OrderEditServlet extends HttpServlet {
 
@@ -26,16 +19,17 @@ public class OrderEditServlet extends HttpServlet {
 
         response.setContentType("text/html;charset=UTF-8");
 
-       HttpSession session = request.getSession();
+        HttpSession session = request.getSession();
         String username = (String) session.getAttribute("username");
         Integer role = (Integer) session.getAttribute("role");
 
+        // Chỉ cho phép role 2 (staff)
         if (username == null || role == null || role != 2) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
 
-        if ("POST".equals(request.getMethod())) {
+        if ("POST".equalsIgnoreCase(request.getMethod())) {
             // Handle status update
             String orderIDStr = request.getParameter("orderID");
             String newStatusStr = request.getParameter("newStatus");
@@ -45,21 +39,45 @@ public class OrderEditServlet extends HttpServlet {
                 int newStatus = Integer.parseInt(newStatusStr);
 
                 OrderDAO dao = new OrderDAO();
-                boolean success = dao.updateOrderStatus(orderID, newStatus);
+                OrderDTO currentOrder = dao.getOrderByID(orderID);
+
+                if (currentOrder == null) {
+                    response.sendError(HttpServletResponse.SC_NOT_FOUND, "Order not found");
+                    return;
+                }
+
+                // Nếu trạng thái giống nhau thì không cập nhật
+                if (currentOrder.getOrderStatus() == newStatus) {
+                    response.sendRedirect(request.getContextPath() + "/order/management?msg=same");
+                    return;
+                }
+
+                // Lấy account từ session
+                AccountDTO account = (AccountDTO) session.getAttribute("account");
+                int staffID = account.getStaffID();
+
+                // Nếu staffID chưa gán trong AccountDTO, thì lấy từ DAO
+                if (staffID == 0) {
+                    StaffDAO staffDAO = new StaffDAO();
+                    staffID = staffDAO.getStaffIDByUsername(username);
+                }
+
+                boolean success = dao.updateOrderStatus(orderID, newStatus, staffID);
 
                 if (success) {
-                    response.sendRedirect(request.getContextPath()
-                            + "/order/management?msg=success");
+                    response.sendRedirect(request.getContextPath() + "/order/management?msg=success");
                 } else {
-                    response.sendRedirect(request.getContextPath()
-                            + "/order/management?msg=error");
+                    response.sendRedirect(request.getContextPath() + "/order/management?msg=error");
                 }
+
             } catch (NumberFormatException e) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid parameters");
             }
+
         } else {
-            // Show edit form
+            // Hiển thị form chỉnh sửa
             String orderIDStr = request.getParameter("orderID");
+
             try {
                 int orderID = Integer.parseInt(orderIDStr);
                 OrderDAO dao = new OrderDAO();
@@ -67,18 +85,32 @@ public class OrderEditServlet extends HttpServlet {
 
                 if (order != null) {
                     request.setAttribute("order", order);
+
+                    // Lấy username từ staffID nếu có
+                    String staffUsername = null;
+                    if (order.getStaffID() > 0) {
+                        StaffDAO staffDAO = new StaffDAO();
+                        StaffDTO staff = staffDAO.getStaffByID(order.getStaffID());
+                        if (staff != null) {
+                            staffUsername = staff.getUsername();
+                        }
+                    }
+
+                    request.setAttribute("staffUsername", staffUsername);
                     request.getRequestDispatcher("/WEB-INF/view/order/edit.jsp").forward(request, response);
                 } else {
                     response.sendError(HttpServletResponse.SC_NOT_FOUND, "Order not found");
                 }
+
             } catch (NumberFormatException e) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid order ID");
             }
         }
+        
     }
+    
 
     @Override
-
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);

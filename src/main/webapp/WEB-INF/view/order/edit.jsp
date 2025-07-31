@@ -10,17 +10,20 @@
         <div class="form-container bg-white shadow p-5 rounded mx-auto" style="max-width: 600px; margin-top: 60px;">
             <h2 class="fw-bold text-center mb-4">Edit Order Status</h2>
 
-            <!-- Alert Messages -->
+            <!-- Alert messages -->
             <c:if test="${param.msg == 'success'}">
                 <div class="alert alert-success alert-dismissible fade show">
                     Order status updated successfully!
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             </c:if>
             <c:if test="${param.msg == 'error'}">
                 <div class="alert alert-danger alert-dismissible fade show">
                     Failed to update order status!
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            </c:if>
+            <c:if test="${param.msg == 'same'}">
+                <div class="alert alert-warning alert-dismissible fade show">
+                    No changes were made. Status is already set.
                 </div>
             </c:if>
 
@@ -62,6 +65,19 @@
                         </c:choose>
                     </td>
                 </tr>
+                <tr>
+                    <th>Updated by (Staff)</th>
+                    <td>
+                        <c:choose>
+                            <c:when test="${not empty staffUsername}">
+                                ${staffUsername}
+                            </c:when>
+                            <c:otherwise>
+                                N/A
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
+                </tr>
             </table>
 
             <!-- Conditional form -->
@@ -73,12 +89,18 @@
                         <label class="form-label fw-bold">New Status</label>
                         <select name="newStatus" class="form-select" required>
                             <option value="">-- Select Status --</option>
-                            <option value="0">Processing</option>
-                            <option value="1">Delivering</option>
-                            <option value="2">Delivered</option>
-                            <option value="3">Cancelled</option>
-                            <option value="4">Returned</option>
-                            <option value="5">Payment</option>
+                            <c:if test="${order.orderStatus != 0}">
+                                <option value="0">Processing</option>
+                            </c:if>
+                            <c:if test="${order.orderStatus != 1}">
+                                <option value="1">Delivering</option>
+                            </c:if>
+                            <c:if test="${order.orderStatus != 2}">
+                                <option value="2">Delivered</option>
+                            </c:if>
+                            <c:if test="${order.orderStatus != 5}">
+                                <option value="5">Payment</option>
+                            </c:if>
                         </select>
                     </div>
 

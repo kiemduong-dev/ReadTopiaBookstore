@@ -1,9 +1,12 @@
-    package controller.order;
+package controller.order;
+
 import dao.OrderDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @WebServlet("/order/update-status")
 public class OrderCustomerUpdateStatusServlet extends HttpServlet {
@@ -33,7 +36,7 @@ public class OrderCustomerUpdateStatusServlet extends HttpServlet {
             if (newStatus == 3 || newStatus == 4) {
                 success = dao.updateStatusAndRestoreStock(orderID, newStatus);
             } else {
-                success = dao.updateOrderStatus(orderID, newStatus);
+                success = dao.updateOrderStatusForCus(orderID, newStatus);
             }
 
             if (success) {
