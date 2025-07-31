@@ -4,6 +4,7 @@ import dao.BookDAO;
 import dao.CartDAO;
 import dao.OrderDAO;
 import dao.OrderDetailDAO;
+import dao.PromotionDAO;
 import dto.BookDTO;
 import dto.CartDTO;
 import dto.OrderDTO;
@@ -48,6 +49,7 @@ public class PaymentProcessServlet extends HttpServlet {
             BookDAO bookDAO = new BookDAO();
             OrderDAO orderDAO = new OrderDAO();
             OrderDetailDAO orderDetailDAO = new OrderDetailDAO();
+            PromotionDAO promotionDAO = new PromotionDAO(); // ✅ Thêm dòng này
 
             List<CartDTO> cartItems = new ArrayList<>();
             List<Integer> selectedCartIDs = new ArrayList<>();
@@ -81,7 +83,6 @@ public class PaymentProcessServlet extends HttpServlet {
                         if (cartItem != null) {
                             BookDTO book = bookDAO.getBookByID(cartItem.getBookID());
                             if (book != null) {
-                                // Check tồn kho
                                 if (cartItem.getQuantity() > book.getBookQuantity()) {
                                     request.setAttribute("error", "Not enough stock for " + book.getBookTitle() + ".");
                                     request.getRequestDispatcher("/WEB-INF/view/order/checkout.jsp").forward(request, response);
@@ -103,7 +104,6 @@ public class PaymentProcessServlet extends HttpServlet {
                 return;
             }
 
-            // Xử lý giảm giá
             double discountAmount = 0;
             String discountRaw = request.getParameter("discountAmount");
             if (discountRaw != null && !discountRaw.trim().isEmpty()) {
@@ -115,29 +115,32 @@ public class PaymentProcessServlet extends HttpServlet {
                 finalAmount = 0;
             }
 
-            // Tạo order
             OrderDTO order = new OrderDTO();
             order.setUsername(username);
             order.setOrderDate(new Timestamp(new Date().getTime()));
             order.setTotalAmount(finalAmount);
             order.setOrderStatus("CASH".equalsIgnoreCase(paymentMethod) ? 0 : 5);
             order.setOrderAddress(orderAddress);
-            // Lưu mã khuyến mãi nếu có
+
             String promotionIdRaw = request.getParameter("promotionID");
             if (promotionIdRaw != null && !promotionIdRaw.trim().isEmpty()) {
                 try {
                     int promotionID = Integer.parseInt(promotionIdRaw.trim());
                     if (promotionID != 0) {
-                        order.setProID(promotionID);  // Sử dụng proID như đã định nghĩa trong OrderDTO
+                        order.setProID(promotionID);
                     }
                 } catch (NumberFormatException e) {
-                    // Có thể ghi log nếu cần, hoặc bỏ qua yên lặng
+                    // Ignore invalid promotion ID
                 }
             }
 
             int orderID = orderDAO.createOrder(order);
 
-            // Lưu chi tiết đơn hàng và trừ kho
+            // ✅ Nếu có mã khuyến mãi, trừ số lượng
+            if (order.getProID() != null) {
+                promotionDAO.decreasePromotionQuantity(order.getProID());
+            }
+
             for (CartDTO cart : cartItems) {
                 BookDTO book = bookDAO.getBookByID(cart.getBookID());
                 if (book != null) {
@@ -153,7 +156,6 @@ public class PaymentProcessServlet extends HttpServlet {
                 }
             }
 
-            // Xóa giỏ nếu không phải buynow
             if (!"buynow".equals(type)) {
                 cartDAO.deleteMultipleFromCart(selectedCartIDs, username);
             }

@@ -94,8 +94,15 @@
                                     </c:choose>
                                 </td>
                                 <td>
-                                    <a href="${pageContext.request.contextPath}/order/details?orderID=${order.orderID}" class="action-btn btn-view"><i class="fas fa-eye"></i></a>
-                                    <a href="${pageContext.request.contextPath}/order/edit?orderID=${order.orderID}" class="action-btn btn-edit"><i class="fas fa-edit"></i></a>
+                                    <a href="${pageContext.request.contextPath}/order/details?orderID=${order.orderID}" class="action-btn btn-view">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+
+                                    <c:if test="${sessionScope.role == 2}">
+                                        <a href="${pageContext.request.contextPath}/order/edit?orderID=${order.orderID}" class="action-btn btn-edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </c:if>
                                 </td>
                             </tr>
                         </c:forEach>
@@ -120,20 +127,20 @@
                             <c:set var="dotAfter" value="false" />
                             <c:forEach var="i" begin="1" end="${totalPages}">
                                 <c:choose>
-                                   
+
                                     <c:when test="${i <= 3 || i > totalPages - 3 || (i >= currentPage - 1 && i <= currentPage + 1)}">
                                         <li class="page-item ${i == currentPage ? 'active' : ''}">
                                             <a class="page-link" href="?page=${i}">${i}</a>
                                         </li>
                                     </c:when>
 
-                                   
+
                                     <c:when test="${i == 4 && !dotBefore && currentPage > 5}">
                                         <c:set var="dotBefore" value="true" />
                                         <li class="page-item disabled"><span class="page-link">...</span></li>
                                         </c:when>
 
-                                   
+
                                     <c:when test="${i == totalPages - 3 && !dotAfter && currentPage < totalPages - 4}">
                                         <c:set var="dotAfter" value="true" />
                                         <li class="page-item disabled"><span class="page-link">...</span></li>

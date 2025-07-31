@@ -90,6 +90,9 @@ public class PaymentConfirmServlet extends HttpServlet {
             order.setProID(proID); // ✅ Gán mã khuyến mãi
 
             int orderID = orderDAO.createOrder(order);
+            if (proID != null) {
+                new dao.PromotionDAO().decreasePromotionQuantity(proID);
+            }
 
             for (CartDTO cart : selectedItems) {
                 BookDTO book = bookDAO.getBookByID(cart.getBookID());

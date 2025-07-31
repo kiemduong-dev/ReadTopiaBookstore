@@ -341,5 +341,17 @@ public class PromotionDAO {
         }
         return null;
     }
+    public boolean decreasePromotionQuantity(int proID) {
+    String sql = "UPDATE Promotion SET quantity = quantity - 1 WHERE proID = ? AND quantity > 0";
+    try (Connection conn = DBContext.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, proID);
+        return ps.executeUpdate() > 0;
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+
 
 }

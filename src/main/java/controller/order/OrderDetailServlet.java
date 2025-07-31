@@ -33,7 +33,7 @@ public class OrderDetailServlet extends HttpServlet {
         Integer role = (Integer) session.getAttribute("role");
 
         // Giả sử role của nhân viên là 0 (theo code bạn gửi)
-        if (username == null || role == null || role != 0) {
+        if (username == null || role == null || role != 0 && role != 2) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }

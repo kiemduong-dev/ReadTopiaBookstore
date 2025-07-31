@@ -31,7 +31,7 @@ public class OrderHistoryServlet extends HttpServlet {
         String username = (String) session.getAttribute("username");
         Integer role = (Integer) session.getAttribute("role");
 
-        if (username == null || role == null || role != 4) {
+        if (username == null || role == null || role != 4 && role != 2) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }

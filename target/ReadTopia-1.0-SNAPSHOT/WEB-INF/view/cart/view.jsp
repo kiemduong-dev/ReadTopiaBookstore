@@ -130,10 +130,12 @@
                                             <select class="form-select" id="promotionSelect">
                                                 <option value="0" data-discount="0">-- Select Voucher --</option>
                                                 <c:forEach var="promo" items="${promotions}">
-                                                    <option value="${promo.proID}" data-discount="${promo.discount}">
+                                                    <option value="${promo.proID}" data-discount="${promo.discount}" data-quantity="${promo.quantity}">
                                                         ${promo.proCode} - ${promo.discount}% off
-                                                    </option>
+                                                        <c:if test="${promo.quantity == 0}"> (Out of stock)</c:if>
+                                                        </option>
                                                 </c:forEach>
+
                                             </select>
                                         </div>
 
@@ -168,109 +170,113 @@
 
     <!-- ✅ Scripts -->
     <script>
-    const originalTotal = ${totalAmount};
-    const discountedTotalEl = document.getElementById("discountedTotal");
-    const promotionIDInput = document.getElementById("promotionID");
-    const promotions = [
+        const originalTotal = ${totalAmount};
+        const discountedTotalEl = document.getElementById("discountedTotal");
+        const promotionIDInput = document.getElementById("promotionID");
+        const promotions = [
         <c:forEach var="promo" items="${promotions}" varStatus="loop">
-    {
-    proID: '${promo.proID}',
-            proCode: '${promo.proCode}',
-            discount: ${promo.discount},
-            proName: '${promo.proName}'
-    }<c:if test="${!loop.last}">,</c:if>
+        {
+        proID: '${promo.proID}',
+                proCode: '${promo.proCode}',
+                discount: ${promo.discount},
+                proName: '${promo.proName}',
+                quantity: ${promo.quantity}
+        }<c:if test="${!loop.last}">,</c:if>
         </c:forEach>
-    ];
-    document.getElementById("checkoutBtn").addEventListener("click", function (e) {
-        const selected = [...document.querySelectorAll('.select-item:checked')].map(cb => cb.value);
-        if (selected.length === 0) {
-            e.preventDefault();
-            alert("Please select at least one product to checkout.");
-            return;
-        }
-        document.getElementById("selectedCheckoutIds").value = selected.join(",");
-    });
-    document.getElementById('selectAll').addEventListener('change', function () {
-        const checked = this.checked;
-        document.querySelectorAll('.select-item').forEach(cb => cb.checked = checked);
-    });
-    document.getElementById('deleteSelectedBtn').addEventListener('click', function () {
-        const selected = [...document.querySelectorAll('.select-item:checked')].map(cb => cb.value);
-        if (selected.length === 0) {
-            alert("Please select at least one item to remove.");
-            return;
-        }
-        if (confirm("Are you sure you want to remove selected items?")) {
-            window.location.href = contextPath + "/cart/delete?ids=" + selected.join(",") + "&msg=deleted";
-        }
-    });
-    document.querySelectorAll('.quantity-input').forEach(input => {
-        input.addEventListener('change', function () {
-            const cartID = this.dataset.cartId;
-            const newQuantity = parseInt(this.value);
-            if (!cartID || isNaN(newQuantity) || newQuantity < 1) {
-                alert("Invalid quantity.");
-                this.value = 1;
+        ];
+        document.getElementById("checkoutBtn").addEventListener("click", function (e) {
+            const selected = [...document.querySelectorAll('.select-item:checked')].map(cb => cb.value);
+            if (selected.length === 0) {
+                e.preventDefault();
+                alert("Please select at least one product to checkout.");
                 return;
             }
-            document.getElementById('form-cartID').value = cartID;
-            document.getElementById('form-quantity').value = newQuantity;
-            document.getElementById('updateForm').submit();
+            document.getElementById("selectedCheckoutIds").value = selected.join(",");
         });
-    });
-    window.addEventListener('DOMContentLoaded', function () {
-        const alertBox = document.getElementById('deleteSuccessAlert');
-        if (alertBox) {
-            setTimeout(() => {
-                const alertInstance = bootstrap.Alert.getOrCreateInstance(alertBox);
-                alertInstance.close();
-            }, 10000);
-        }
-    });
-    document.getElementById("applyPromotionBtn").addEventListener("click", function () {
-        const codeInput = document.getElementById("promotionCodeInput");
-        const code = codeInput.value.trim();
-        if (!code) {
-            alert("Please enter a Voucher code.");
-            return;
-        }
+        document.getElementById('selectAll').addEventListener('change', function () {
+            const checked = this.checked;
+            document.querySelectorAll('.select-item').forEach(cb => cb.checked = checked);
+        });
+        document.getElementById('deleteSelectedBtn').addEventListener('click', function () {
+            const selected = [...document.querySelectorAll('.select-item:checked')].map(cb => cb.value);
+            if (selected.length === 0) {
+                alert("Please select at least one item to remove.");
+                return;
+            }
+            if (confirm("Are you sure you want to remove selected items?")) {
+                window.location.href = contextPath + "/cart/delete?ids=" + selected.join(",") + "&msg=deleted";
+            }
+        });
+        document.querySelectorAll('.quantity-input').forEach(input => {
+            input.addEventListener('change', function () {
+                const cartID = this.dataset.cartId;
+                const newQuantity = parseInt(this.value);
+                if (!cartID || isNaN(newQuantity) || newQuantity < 1) {
+                    alert("Invalid quantity.");
+                    this.value = 1;
+                    return;
+                }
+                document.getElementById('form-cartID').value = cartID;
+                document.getElementById('form-quantity').value = newQuantity;
+                document.getElementById('updateForm').submit();
+            });
+        });
+        window.addEventListener('DOMContentLoaded', function () {
+            const alertBox = document.getElementById('deleteSuccessAlert');
+            if (alertBox) {
+                setTimeout(() => {
+                    const alertInstance = bootstrap.Alert.getOrCreateInstance(alertBox);
+                    alertInstance.close();
+                }, 10000);
+            }
+        });
+        document.getElementById("applyPromotionBtn").addEventListener("click", function () {
+            const codeInput = document.getElementById("promotionCodeInput");
+            const code = codeInput.value.trim();
+            if (!code) {
+                alert("Please enter a Voucher code.");
+                return;
+            }
 
-        const promo = promotions.find(p => p.proCode === code);
-        if (!promo) {
-            alert("Invalid Voucher code.");
-            return;
-        }
+            const promo = promotions.find(p => p.proCode === code);
+            if (!promo) {
+                alert("Invalid Voucher code.");
+                return;
+            }
+            if (promo.quantity <= 0) {
+                alert("This voucher is no longer available.");
+                return;
+            }
+            const discount = parseFloat(promo.discount);
+            const newTotal = originalTotal * (1 - discount / 100);
+            const formatted = Math.round(newTotal).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 
-        const discount = parseFloat(promo.discount);
-        const newTotal = originalTotal * (1 - discount / 100);
-        const formatted = Math.round(newTotal).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+            discountedTotalEl.textContent = formatted + " VND";
+            // ✅ Gán giá trị vào các hidden input
+            promotionIDInput.value = promo.proID;
+            document.getElementById("discountAmountInput").value = Math.round(originalTotal * discount / 100);
+            document.getElementById("finalAmountInput").value = Math.round(newTotal);
+            // ✅ Cập nhật lại input và dropdown
+            codeInput.value = promo.proCode; // hiển thị lại mã đúng
+            document.querySelector(`#promotionSelect option[value="${promo.proID}"]`).selected = true;
+            document.getElementById("promotionStatus").textContent = `Voucher Applied: ${promo.proName}`;
 
-        discountedTotalEl.textContent = formatted + " VND";
-        // ✅ Gán giá trị vào các hidden input
-        promotionIDInput.value = promo.proID;
-        document.getElementById("discountAmountInput").value = Math.round(originalTotal * discount / 100);
-        document.getElementById("finalAmountInput").value = Math.round(newTotal);
-        // ✅ Cập nhật lại input và dropdown
-        codeInput.value = promo.proCode; // hiển thị lại mã đúng
-        document.querySelector(`#promotionSelect option[value="${promo.proID}"]`).selected = true;
-        document.getElementById("promotionStatus").textContent = `Voucher Applied: ${promo.proName}`;
+        });
+        document.getElementById("promotionSelect").addEventListener("change", function () {
+            const selectedOption = this.options[this.selectedIndex];
+            const discount = parseFloat(selectedOption.getAttribute("data-discount"));
+            const promoID = this.value;
+            let newTotal = originalTotal;
+            if (!isNaN(discount) && discount > 0) {
+                newTotal = originalTotal * (1 - discount / 100);
+            }
 
-    });
-    document.getElementById("promotionSelect").addEventListener("change", function () {
-        const selectedOption = this.options[this.selectedIndex];
-        const discount = parseFloat(selectedOption.getAttribute("data-discount"));
-        const promoID = this.value;
-        let newTotal = originalTotal;
-        if (!isNaN(discount) && discount > 0) {
-            newTotal = originalTotal * (1 - discount / 100);
-        }
-
-        const formatted = Math.round(newTotal).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-        discountedTotalEl.textContent = formatted + " VND";
-        promotionIDInput.value = promoID;
-        document.getElementById("discountAmountInput").value = Math.round(originalTotal * discount / 100);
-        document.getElementById("finalAmountInput").value = Math.round(newTotal);
-    });
+            const formatted = Math.round(newTotal).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+            discountedTotalEl.textContent = formatted + " VND";
+            promotionIDInput.value = promoID;
+            document.getElementById("discountAmountInput").value = Math.round(originalTotal * discount / 100);
+            document.getElementById("finalAmountInput").value = Math.round(newTotal);
+        });
 
     </script>
 

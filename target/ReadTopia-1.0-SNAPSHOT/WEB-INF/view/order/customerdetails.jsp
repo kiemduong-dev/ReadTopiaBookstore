@@ -12,13 +12,11 @@
 
     OrderDTO order = (OrderDTO) request.getAttribute("order");
 
-    // Format tiền tệ
     DecimalFormatSymbols symbols = new DecimalFormatSymbols();
     symbols.setGroupingSeparator(' ');
     DecimalFormat formatter = new DecimalFormat("###,###", symbols);
     request.setAttribute("formatter", formatter);
 
-    // Lấy thông tin mã khuyến mãi từ proID
     PromotionDTO promo = null;
     if (order.getProID() != null) {
         promo = promoDAO.getPromotionByID(order.getProID());
@@ -30,8 +28,8 @@
         <div class="card-header text-white d-flex justify-content-between align-items-center" style="background-color: #0d84e9;">
             <div>
                 <h5 class="mb-0">Order Details</h5>
-                <small>Order #<%= order.getOrderID()%> -
-                    <fmt:formatDate value="<%= order.getOrderDate()%>" pattern="dd/MM/yyyy HH:mm" />
+                <small>Order #<%= order.getOrderID() %> -
+                    <fmt:formatDate value="<%= order.getOrderDate() %>" pattern="dd/MM/yyyy HH:mm" />
                 </small>
             </div>
             <a href="${pageContext.request.contextPath}/order/history" class="btn btn-light btn-sm">Back to History</a>
@@ -48,7 +46,7 @@
                             statusClass = "warning";
                             break;
                         case 1:
-                            statusText = "Shipping";
+                            statusText = "Delivering";
                             statusClass = "info";
                             break;
                         case 2:
@@ -73,11 +71,11 @@
                             break;
                     }
                 %>
-                <span class="badge bg-<%= statusClass%>"><%= statusText%></span>
+                <span class="badge bg-<%= statusClass %>"><%= statusText %></span>
             </h6>
 
             <!-- Địa chỉ giao hàng -->
-            <p><strong>Shipping Address:</strong> <%= order.getOrderAddress() != null ? order.getOrderAddress() : "Not provided"%></p>
+            <p><strong>Shipping Address:</strong> <%= order.getOrderAddress() != null ? order.getOrderAddress() : "Not provided" %></p>
 
             <!-- Nút hành động -->
             <div class="mb-3">
@@ -87,6 +85,10 @@
                         <c:when test="${order.orderStatus == 0 || order.orderStatus == 5}">
                             <input type="hidden" name="newStatus" value="3" />
                             <button type="submit" class="btn btn-danger">Cancel Order</button>
+                        </c:when>
+                        <c:when test="${order.orderStatus == 1}">
+                            <input type="hidden" name="newStatus" value="2" />
+                            <button type="submit" class="btn btn-success">Confirm Delivery</button>
                         </c:when>
                         <c:when test="${order.orderStatus == 2}">
                             <input type="hidden" name="newStatus" value="4" />
@@ -117,46 +119,46 @@
                             <tr>
                                 <td>${loop.index + 1}</td>
                                 <td>
-                                    <% if (book != null) {%>
-                                    <div><strong><%= book.getBookTitle()%></strong></div>
-                                    <small class="text-muted">Author: <%= book.getAuthor()%></small>
+                                    <% if (book != null) { %>
+                                        <div><strong><%= book.getBookTitle() %></strong></div>
+                                        <small class="text-muted">Author: <%= book.getAuthor() %></small>
                                     <% } else { %>
-                                    <span class="text-danger">Book not found</span>
+                                        <span class="text-danger">Book not found</span>
                                     <% } %>
                                 </td>
                                 <td>${detail.quantity}</td>
                                 <td>
-                                    <% if (book != null) {%>
-                                    <%= formatter.format(book.getBookPrice())%> VND
+                                    <% if (book != null) { %>
+                                        <%= formatter.format(book.getBookPrice()) %> VND
                                     <% } else { %>
-                                    N/A
-                                    <% }%>
+                                        N/A
+                                    <% } %>
                                 </td>
-                                <td>
-                                    <%= formatter.format(detail.getTotalPrice())%> VND
-                                </td>
+                                <td><%= formatter.format(detail.getTotalPrice()) %> VND</td>
                             </tr>
                         </c:forEach>
                     </tbody>
                 </table>
             </div>
+
+            <!-- Thông tin khuyến mãi -->
             <p><strong>Voucher:</strong>
-                <% if (promo != null) {%>
-                <%= promo.getProName()%> - Discount <%= (int) (promo.getDiscount())%>%
+                <% if (promo != null) { %>
+                    <%= promo.getProName() %> - Discount <%= (int) promo.getDiscount() %>%
                 <% } else { %>
-                None
-                <% }%>
-            </p>    
+                    None
+                <% } %>
+            </p>
 
             <!-- Tổng tiền -->
             <div class="text-end mt-3">
-                <h5>Total: <%= formatter.format(order.getTotalAmount())%> VND</h5>
+                <h5>Total: <%= formatter.format(order.getTotalAmount()) %> VND</h5>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Xác nhận khi hủy/hoàn trả đơn -->
+<!-- Xác nhận khi cập nhật trạng thái -->
 <script>
     function confirmAction(form) {
         const newStatus = form.querySelector('input[name="newStatus"]').value;
@@ -166,6 +168,8 @@
             message = "Are you sure you want to cancel this order?";
         } else if (newStatus === "4") {
             message = "Are you sure you want to return this order?";
+        } else if (newStatus === "2") {
+            message = "Are you sure this order has been delivered?";
         } else {
             return true;
         }
