@@ -19,7 +19,7 @@
             <div class="header-icons">
                 <jsp:include page="/WEB-INF/view/customer/notification/notification-widget.jsp" />
 
-                <a href="${pageContext.request.contextPath}/customer/promotion/list" class="header-icon" title="Promotion">
+                <a href="${pageContext.request.contextPath}/customer/voucher/list" class="header-icon" title="Promotion">
                     <i class="fas fa-tags"></i>
                 </a>
 

@@ -500,54 +500,43 @@ body {
 .hidden {
     display: none;
 }
+/*Pagging*/
 .pagination-wrapper {
     display: flex;
-    justify-content: center;
-    margin-top: 30px;
+    justify-content: flex-start;
+    margin-top: 20px;
 }
 
 .pagination {
     list-style: none;
-    display: flex; /* Hiển thị ngang */
-    gap: 8px;
-    padding-left: 0;
-    margin: 0;
-}
-
-.pagination li {
-    list-style: none; /* Xóa dấu chấm */
-}
-
-.page-btn {
-    padding: 8px 16px;
-    font-size: 14px;
-    font-weight: 600;
-    border: none;
-    border-radius: 8px;
-    background: #f8f9fa;
-    color: #333;
-    cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    transition: all 0.3s;
-}
-
-.page-btn:hover:not(:disabled) {
-    background-color: #1e88e5;
-    color: white;
-}
-
-.page-btn.active {
-    background-color: #1e88e5;
-    color: white;
-}
-
-.page-btn:disabled {
-    background-color: #ddd;
-    color: #999;
-    cursor: not-allowed;
-}
-.admin-main-content-pagination {
+    padding: 0;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    gap: 5px;
+}
+
+.pagination .page-btn {
+    display: inline-block;
+    padding: 6px 12px;
+    border: 1px solid #007bff;
+    color: #007bff;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination .page-btn:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+.pagination .page-btn.active {
+    background-color: #007bff;
+    color: white;
+    pointer-events: none;
+}
+
+.pagination .page-btn.disabled {
+    color: #ccc;
+    border-color: #ccc;
+    pointer-events: none;
 }

@@ -5,7 +5,6 @@
 package controller.notification;
 
 import dao.NotificationDAO;
-import util.DBContext;
 import dto.NotificationDTO;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
@@ -13,7 +12,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.sql.Connection;
 import java.util.List;
 
 /**
@@ -23,23 +21,36 @@ import java.util.List;
 @WebServlet(name = "NotificationListServlet", urlPatterns = {"/admin/notification/list"})
 public class NotificationListServlet extends HttpServlet {
 
+    private final int PAGE_SIZE = 5;
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try ( Connection conn = DBContext.getConnection()) {
-            NotificationDAO dao = new NotificationDAO(conn);
+        try {
+            NotificationDAO dao = new NotificationDAO();
 
             String search = request.getParameter("search");
+            String pageParam = request.getParameter("page");
+            int page = 1;
+            if (pageParam != null && pageParam.matches("\\d+")) {
+                page = Integer.parseInt(pageParam);
+            }
 
             List<NotificationDTO> notifications;
+            int totalNotifications = dao.countNotifications();
+            int totalPages = (int) Math.ceil((double) totalNotifications / PAGE_SIZE);
 
             if (search != null && !search.trim().isEmpty()) {
+                // Nếu có search, không phân trang
                 notifications = dao.searchByTitle(search.trim());
             } else {
-                notifications = dao.getAllNotifications();
+                int offset = (page - 1) * PAGE_SIZE;
+                notifications = dao.getAllNotifications(offset, PAGE_SIZE);
             }
 
             request.setAttribute("notifications", notifications);
+            request.setAttribute("currentPage", page);
+            request.setAttribute("totalPages", totalPages);
             request.setAttribute("search", search);
 
             request.getRequestDispatcher("/WEB-INF/view/admin/notification/list.jsp").forward(request, response);
@@ -48,5 +59,4 @@ public class NotificationListServlet extends HttpServlet {
             request.getRequestDispatcher("/WEB-INF/view/admin/notification/list.jsp").forward(request, response);
         }
     }
-
 }

@@ -4,6 +4,9 @@
  */
 package dto;
 
+import java.sql.Date;
+import java.sql.Timestamp;
+
 public class NotificationDTO {
 
     private int notID;
@@ -11,18 +14,18 @@ public class NotificationDTO {
     private String notTitle;
     private int receiver;
     private String notDescription;
-    private int notStatus;
+    private Timestamp notCreatedDate;
 
     public NotificationDTO() {
     }
 
-    public NotificationDTO(int notID, int staffID, String notTitle, int receiver, String notDescription, int notStatus) {
+    public NotificationDTO(int notID, int staffID, String notTitle, int receiver, String notDescription, Timestamp  notCreatedDate) {
         this.notID = notID;
         this.staffID = staffID;
         this.notTitle = notTitle;
         this.receiver = receiver;
         this.notDescription = notDescription;
-        this.notStatus = notStatus;
+        this.notCreatedDate = notCreatedDate;
     }
 
     public int getNotID() {
@@ -65,11 +68,11 @@ public class NotificationDTO {
         this.notDescription = notDescription;
     }
 
-    public int getNotStatus() {
-        return notStatus;
+    public Timestamp getNotCreatedDate() {
+        return notCreatedDate;
     }
 
-    public void setNotStatus(int notStatus) {
-        this.notStatus = notStatus;
+    public void setNotCreatedDate(Timestamp notCreatedDate) {
+        this.notCreatedDate = notCreatedDate;
     }
 }

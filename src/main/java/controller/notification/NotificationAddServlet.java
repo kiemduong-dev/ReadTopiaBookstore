@@ -5,7 +5,6 @@
 package controller.notification;
 
 import dao.NotificationDAO;
-import util.DBContext;
 import dto.NotificationDTO;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
@@ -13,8 +12,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import java.sql.Connection;
+import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  *
@@ -32,16 +31,17 @@ public class NotificationAddServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try (Connection conn = new DBContext().getConnection()) {
+        try {
             request.setCharacterEncoding("UTF-8");
             String title = request.getParameter("title");
             int receiver = Integer.parseInt(request.getParameter("receiver"));
             String description = request.getParameter("description");
 
-            int staffID = 1; // Tạm thời gán cố định
+            int staffID = 1;
+            Timestamp sqlTimestamp = new Timestamp(new Date().getTime()); // ✅ chứa ngày + giờ
 
-            NotificationDTO noti = new NotificationDTO(0, staffID, title, receiver, description, 0);
-            NotificationDAO dao = new NotificationDAO(conn);
+            NotificationDTO noti = new NotificationDTO(0, staffID, title, receiver, description, sqlTimestamp);
+            NotificationDAO dao = new NotificationDAO();
             dao.addNotification(noti);
 
             response.sendRedirect(request.getContextPath() + "/admin/notification/list");

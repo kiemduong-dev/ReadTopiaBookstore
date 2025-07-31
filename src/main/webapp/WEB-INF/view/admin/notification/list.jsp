@@ -41,7 +41,7 @@
                         <tr>
                             <th>ID</th>
                             <th>Title</th>
-                            <th>Receiver (ID)</th>
+                            <th>Receiver</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -82,6 +82,33 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+
+        <div class="pagination-wrapper">
+            <ul class="pagination">
+                <li>
+                    <a class="page-btn ${currentPage == 1 ? 'disabled' : ''}"
+                       href="?page=${currentPage - 1}&search=${search}">
+                        &laquo;
+                    </a>
+                </li>
+
+                <c:forEach begin="1" end="${totalPages}" var="i">
+                    <li>
+                        <a class="page-btn ${i == currentPage ? 'active' : ''}"
+                           href="?page=${i}&search=${search}">
+                            ${i}
+                        </a>
+                    </li>
+                </c:forEach>
+
+                <li>
+                    <a class="page-btn ${currentPage == totalPages ? 'disabled' : ''}"
+                       href="?page=${currentPage + 1}&search=${search}">
+                        &raquo;
+                    </a>
+                </li>
+            </ul>
         </div>
 
         <!-- Delete Notification Modal -->

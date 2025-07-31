@@ -46,8 +46,8 @@
             <a href="${pageContext.request.contextPath}/order/management" class="menu-item">
                 <i class="fas fa-shopping-cart"></i> Order Management
             </a>
-            <a href="${pageContext.request.contextPath}/admin/promotion/list" class="menu-item">
-                <i class="fas fa-tags"></i> Promotion Management
+            <a href="${pageContext.request.contextPath}/admin/voucher/list" class="menu-item">
+                <i class="fas fa-tags"></i> Voucher Management
             </a>
             <a href="${pageContext.request.contextPath}/admin/supplier/list" class="menu-item">
                 <i class="fas fa-truck"></i> Supplier Management
@@ -94,11 +94,8 @@
             <a href="${pageContext.request.contextPath}/order/management" class="menu-item">
                 <i class="fas fa-shopping-cart"></i> Order Management
             </a>
-            <a href="${pageContext.request.contextPath}/admin/promotion/list" class="menu-item">
-                <i class="fas fa-tags"></i> Promotion Management
-            </a>
-            <a href="${pageContext.request.contextPath}/admin/notification/list" class="menu-item">
-                <i class="fas fa-bell"></i> Notification Management
+            <a href="${pageContext.request.contextPath}/admin/voucher/list" class="menu-item">
+                <i class="fas fa-tags"></i> Voucher Management
             </a>
         </c:if>
 

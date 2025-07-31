@@ -31,17 +31,17 @@ import util.DBContext;
  */
 @WebFilter(filterName = "NotificationFilter", urlPatterns = {"/*"}, dispatcherTypes = {DispatcherType.REQUEST})
 public class NotificationFilter implements Filter {
-    
+
     private static final boolean debug = true;
 
     // The filter configuration object we are associated with.  If
     // this value is null, this filter instance is not currently
     // configured. 
     private FilterConfig filterConfig = null;
-    
+
     public NotificationFilter() {
-    }    
-    
+    }
+
     private void doBeforeProcessing(ServletRequest request, ServletResponse response)
             throws IOException, ServletException {
         if (debug) {
@@ -68,8 +68,8 @@ public class NotificationFilter implements Filter {
 	    log(buf.toString());
 	}
          */
-    }    
-    
+    }
+
     private void doAfterProcessing(ServletRequest request, ServletResponse response)
             throws IOException, ServletException {
         if (debug) {
@@ -108,25 +108,19 @@ public class NotificationFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain)
             throws IOException, ServletException {
-HttpServletRequest req = (HttpServletRequest) request;
+        HttpServletRequest req = (HttpServletRequest) request;
         HttpSession session = req.getSession(false);
 
         try {
             if (session != null) {
                 AccountDTO acc = (AccountDTO) session.getAttribute("account");
-                if (acc != null && session.getAttribute("notifications") == null) {
-                    // Lấy role để lọc theo getNotificationsForRole(role)
-                    int role = acc.getRole(); // Đảm bảo bạn có getRole() trong Account
-
-                    // Kết nối DB
-                    Connection conn = new DBContext().getConnection();
-                    NotificationDAO dao = new NotificationDAO(conn);
+                if (acc != null) {
+                    int role = acc.getRole();
+                    NotificationDAO dao = new NotificationDAO();
                     List<NotificationDTO> notis = dao.getNotificationsForRole(role);
-
-                    session.setAttribute("notifications", notis);
-
-                    conn.close();
+                    session.setAttribute("notifications", notis); // luôn cập nhật mỗi lần có request
                 }
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -136,7 +130,6 @@ HttpServletRequest req = (HttpServletRequest) request;
         chain.doFilter(request, response);
         System.out.println("🔔 NotificationFilter triggered for: " + req.getRequestURI());
     }
-    
 
     /**
      * Return the filter configuration object for this filter.
@@ -157,16 +150,16 @@ HttpServletRequest req = (HttpServletRequest) request;
     /**
      * Destroy method for this filter
      */
-    public void destroy() {        
+    public void destroy() {
     }
 
     /**
      * Init method for this filter
      */
-    public void init(FilterConfig filterConfig) {        
+    public void init(FilterConfig filterConfig) {
         this.filterConfig = filterConfig;
         if (filterConfig != null) {
-            if (debug) {                
+            if (debug) {
                 log("NotificationFilter:Initializing filter");
             }
         }
@@ -185,20 +178,20 @@ HttpServletRequest req = (HttpServletRequest) request;
         sb.append(")");
         return (sb.toString());
     }
-    
+
     private void sendProcessingError(Throwable t, ServletResponse response) {
-        String stackTrace = getStackTrace(t);        
-        
+        String stackTrace = getStackTrace(t);
+
         if (stackTrace != null && !stackTrace.equals("")) {
             try {
                 response.setContentType("text/html");
                 PrintStream ps = new PrintStream(response.getOutputStream());
-                PrintWriter pw = new PrintWriter(ps);                
+                PrintWriter pw = new PrintWriter(ps);
                 pw.print("<html>\n<head>\n<title>Error</title>\n</head>\n<body>\n"); //NOI18N
 
                 // PENDING! Localize this for next official release
-                pw.print("<h1>The resource did not process correctly</h1>\n<pre>\n");                
-                pw.print(stackTrace);                
+                pw.print("<h1>The resource did not process correctly</h1>\n<pre>\n");
+                pw.print(stackTrace);
                 pw.print("</pre></body>\n</html>"); //NOI18N
                 pw.close();
                 ps.close();
@@ -215,7 +208,7 @@ HttpServletRequest req = (HttpServletRequest) request;
             }
         }
     }
-    
+
     public static String getStackTrace(Throwable t) {
         String stackTrace = null;
         try {
@@ -229,9 +222,9 @@ HttpServletRequest req = (HttpServletRequest) request;
         }
         return stackTrace;
     }
-    
+
     public void log(String msg) {
-        filterConfig.getServletContext().log(msg);        
+        filterConfig.getServletContext().log(msg);
     }
-    
+
 }

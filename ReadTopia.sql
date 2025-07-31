@@ -72,23 +72,22 @@
 	)
 	GO
 			
-	CREATE TABLE Promotion(
-		proID INT IDENTITY(1,1),
-		proName NVARCHAR(255),
-		proCode VARCHAR(255),
-		discount FLOAT,
-		startDate DATE,
-		endDate DATE,
-		quantity INT,
-		proStatus INT,
-		createdBy INT,
-		approvedBy INT,
-		CONSTRAINT PK_Promotion PRIMARY KEY (proID),
-		CONSTRAINT FK_Promotion_Staff_staffID FOREIGN KEY (createdBy) REFERENCES Staff(staffID),
-		CONSTRAINT FK_Promotion_Staff_managerID FOREIGN KEY (approvedBy) REFERENCES Staff(staffID)
-	)
-	GO
-	ALTER TABLE Promotion ALTER COLUMN approvedBy INT NULL;
+CREATE TABLE Voucher (
+    vouID INT IDENTITY(1,1) PRIMARY KEY,
+    vouName NVARCHAR(255),
+    vouCode VARCHAR(255),
+    discount FLOAT,
+    startDate DATE,
+    endDate DATE,
+    quantity INT,
+    newQuantity INT,
+    vouStatus INT,
+    createdBy VARCHAR(255),
+    approvedBy VARCHAR(255),
+    CONSTRAINT FK_Voucher_Creator FOREIGN KEY (createdBy) REFERENCES Account(username),
+    CONSTRAINT FK_Voucher_Approver FOREIGN KEY (approvedBy) REFERENCES Account(username)
+)
+GO
 
 	CREATE TABLE Supplier (
     supID INT IDENTITY(1,1),
@@ -162,7 +161,7 @@ GO
 		notTitle NVARCHAR(255),
 		receiver INT,
 		notDescription NTEXT,
-		notStatus INT,
+		notCreateDay DATETIME,
 		CONSTRAINT PK_Notification PRIMARY KEY (notID),
 		CONSTRAINT FK_Notification_Staff FOREIGN KEY (staffID) REFERENCES Staff(staffID)
 	)
@@ -170,7 +169,7 @@ GO
 
 	CREATE TABLE [Order](
 		orderID INT IDENTITY(1,1),
-		proID INT,
+		vouID INT,
 		username VARCHAR(255),
 		staffID INT,
 		orderDate DATETIME,
@@ -178,7 +177,7 @@ GO
 		orderStatus INT,
 		totalAmount FLOAT,
 		CONSTRAINT PK_Order PRIMARY KEY (orderID),
-		CONSTRAINT FK_Order_Promotion FOREIGN KEY (proID) REFERENCES Promotion(proID),
+		CONSTRAINT FK_Order_Voucher FOREIGN KEY (vouID) REFERENCES Voucher(vouID),
 		CONSTRAINT FK_Order_Account FOREIGN KEY (username) REFERENCES Account(username),
 		CONSTRAINT FK_Order_Staff FOREIGN KEY (staffID) REFERENCES Staff(staffID)
 	)
@@ -229,16 +228,16 @@ GO
 	)
 	GO
 
-	CREATE TABLE promotion_log(
-		pro_log_id INT IDENTITY(1,1),
-		pro_id INT,
-		staff_id INT,
-		pro_action INT,
-		pro_log_date DATE,
-		CONSTRAINT PK_promotion_log PRIMARY KEY (pro_log_id),
-		CONSTRAINT FK_promotion_log_staff FOREIGN KEY (staff_id) REFERENCES Staff(staffID)
-	)
-	GO
+	CREATE TABLE voucher_log (
+    vou_log_id INT IDENTITY(1,1),
+    vou_id INT,
+    username VARCHAR(255),
+    vou_action INT,
+    vou_log_date DATE,
+    CONSTRAINT PK_voucher_log PRIMARY KEY (vou_log_id),
+    CONSTRAINT FK_voucher_log_account FOREIGN KEY (username) REFERENCES Account(username)
+)
+GO
 
 	/*******************************************************************************
 	   Insert data into tables
@@ -347,24 +346,6 @@ WHERE role IN (1, 2, 3) AND accStatus = 1
 	('Technology', 'Books on technology and innovation', 1),
 	('Education', 'Educational books for students', 1);
 
-	--Insert Notification
-	INSERT INTO Notification (staffID, notTitle, receiver, notDescription, notStatus)
-VALUES 
-(1, 'Promotion Approved', 2, 'The promotion "Summer Sale 2025" has been approved successfully.', 1),
-(2, 'New Promotion Created', 3, 'A new promotion "Back to School" is now available in the system.', 0),
-(3, 'Promotion Expiring Soon', 1, 'The "Black Friday Deal" promotion will expire in 2 days.', 1);
-    --Insert Promotion
-INSERT INTO Promotion (proName, proCode, discount, startDate, endDate, quantity, proStatus, createdBy, approvedBy)
-VALUES 
-('Summer Sale 2025', 'SUMMER25', 20.0, '2025-07-01', '2025-07-15', 100, 1, 1, 2),
-('Back to School', 'SCHOOL10', 10.0, '2025-08-01', '2025-08-31', 200, 1, 2, 3),
-('Black Friday Deal', 'BLACK50', 50.0, '2025-11-25', '2025-11-30', 50, 0, 1, 3);
-
-INSERT INTO promotion_log (pro_id, staff_id, pro_action, pro_log_date)
-VALUES 
-    (101, 1, 1, '2025-07-01'),  
-    (102, 2, 2, '2025-07-10'),  
-    (103, 3, 3, '2025-07-15');  
 
 
 
@@ -538,7 +519,7 @@ END;
 			SET @OrderStatus = ABS(CHECKSUM(NEWID())) % 5; -- Từ 0 đến 4
 
 			-- Thêm đơn hàng
-			INSERT INTO [Order] (proID, username, staffID, orderDate, orderAddress, orderStatus)
+			INSERT INTO [Order] (vouID, username, staffID, orderDate, orderAddress, orderStatus)
 			VALUES (
 				NULL, 
 				@CustomerID, 
