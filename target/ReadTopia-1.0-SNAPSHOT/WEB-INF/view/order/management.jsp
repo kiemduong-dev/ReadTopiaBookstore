@@ -58,7 +58,8 @@
         <c:set var="pageSize" value="10" />
         <c:set var="currentPage" value="${param.page != null ? param.page : 1}" />
         <c:set var="totalOrders" value="${fn:length(orders)}" />
-        <c:set var="totalPages" value="${(totalOrders + pageSize - 1) / pageSize}" />
+        <c:set var="totalPages" value="${(totalOrders + pageSize - 1) div pageSize}" scope="page" />
+        <fmt:formatNumber value="${totalPages}" maxFractionDigits="0" var="totalPagesInt" />
         <c:set var="startIndex" value="${(currentPage - 1) * pageSize}" />
         <c:set var="endIndex" value="${currentPage * pageSize > totalOrders ? totalOrders : currentPage * pageSize}" />
 
@@ -118,7 +119,8 @@
                         <ul class="pagination mb-0">
                             <!-- Previous -->
                             <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
-                                <a class="page-link" href="?page=${currentPage - 1}">&lt;</a>
+                                <a class="page-link" 
+                                   href="${currentPage == 1 ? '#' : '?page='}${currentPage - 1}">&lt;</a>
                             </li>
 
                             <!-- Smart pagination -->
@@ -126,19 +128,16 @@
                             <c:set var="dotAfter" value="false" />
                             <c:forEach var="i" begin="1" end="${totalPages}">
                                 <c:choose>
-
                                     <c:when test="${i <= 3 || i > totalPages - 3 || (i >= currentPage - 1 && i <= currentPage + 1)}">
                                         <li class="page-item ${i == currentPage ? 'active' : ''}">
                                             <a class="page-link" href="?page=${i}">${i}</a>
                                         </li>
                                     </c:when>
 
-
                                     <c:when test="${i == 4 && !dotBefore && currentPage > 5}">
                                         <c:set var="dotBefore" value="true" />
                                         <li class="page-item disabled"><span class="page-link">...</span></li>
                                         </c:when>
-
 
                                     <c:when test="${i == totalPages - 3 && !dotAfter && currentPage < totalPages - 4}">
                                         <c:set var="dotAfter" value="true" />
@@ -149,131 +148,176 @@
 
                             <!-- Next -->
                             <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
-                                <a class="page-link" href="?page=${currentPage + 1}">&gt;</a>
+                                <a class="page-link" 
+                                   href="${currentPage == totalPages ? '#' : '?page='}${currentPage + 1}">&gt;</a>
                             </li>
-                        </ul>
-                    </nav>
 
-                    <!-- Go to page form -->
-                    <form method="get" action="${pageContext.request.contextPath}/order/management" class="d-flex align-items-center gap-2">
-                        <input type="number" name="page" min="1" max="${totalPages}" class="form-control form-control-sm"
-                               style="width: 80px;" placeholder="Page" value="${param.page}" />
-                        <c:if test="${not empty param.orderID}">
-                            <input type="hidden" name="orderID" value="${param.orderID}" />
+
+                            <!-- Go to page form -->
+                            <form method="get" action="${pageContext.request.contextPath}/order/management" class="d-flex align-items-center gap-2">
+                                <input type="number" name="page" min="1" max="${totalPagesInt}" class="form-control form-control-sm"
+                                       style="width: 80px;" placeholder="Page" value="${param.page}" />
+                                <c:if test="${not empty param.orderID}">
+                                    <input type="hidden" name="orderID" value="${param.orderID}" />
+                                </c:if>
+                                <c:if test="${not empty param.startDate}">
+                                    <input type="hidden" name="startDate" value="${param.startDate}" />
+                                </c:if>
+                                <c:if test="${not empty param.endDate}">
+                                    <input type="hidden" name="endDate" value="${param.endDate}" />
+                                </c:if>
+                                <c:if test="${not empty param.action}">
+                                    <input type="hidden" name="action" value="${param.action}" />
+                                </c:if>
+                                <button class="btn btn-sm btn-outline-secondary" type="submit">Go</button>
+                            </form>
+                            </div>
                         </c:if>
-                        <c:if test="${not empty param.startDate}">
-                            <input type="hidden" name="startDate" value="${param.startDate}" />
-                        </c:if>
-                        <c:if test="${not empty param.endDate}">
-                            <input type="hidden" name="endDate" value="${param.endDate}" />
-                        </c:if>
-                        <c:if test="${not empty param.action}">
-                            <input type="hidden" name="action" value="${param.action}" />
-                        </c:if>
-                        <button class="btn btn-sm btn-outline-secondary" type="submit">Go</button>
-                    </form>
-                </div>
-            </c:if>
-        </c:if>
+                    </c:if>
 
-        <c:if test="${empty orders}">
-            <div class="alert alert-info text-center py-4">
-                <i class="bi bi-inbox fs-1 text-muted"></i>
-                <p class="mt-2 mb-0">No orders found. Try another search or come back later.</p>
-            </div>
-        </c:if>
-    </div>
-</div>
+                    <c:if test="${empty orders}">
+                        <div class="alert alert-info text-center py-4">
+                            <i class="bi bi-inbox fs-1 text-muted"></i>
+                            <p class="mt-2 mb-0">No orders found. Try another search or come back later.</p>
+                        </div>
+                    </c:if>
+                    </div>
+                    </div>
 
-<style>
-    .status-badge {
-        display: inline-block;
-        padding: 4px 8px;
-        border-radius: 5px;
-        font-weight: bold;
-        font-size: 0.85rem;
-    }
+                    <style>
+                        .status-badge {
+                            display: inline-block;
+                            padding: 4px 8px;
+                            border-radius: 5px;
+                            font-weight: bold;
+                            font-size: 0.85rem;
+                        }
 
-    .processing {
-        background-color: #fff3cd;
-        color: #856404;
-    }
-    .delivering {
-        background-color: #d1ecf1;
-        color: #0c5460;
-    }
-    .delivered  {
-        background-color: #d4edda;
-        color: #155724;
-    }
-    .cancelled  {
-        background-color: #f8d7da;
-        color: #721c24;
-    }
-    .returned   {
-        background-color: #e2e3e5;
-        color: #6c757d;
-    }
-    .payment    {
-        background-color: #d1e7dd;
-        color: #0f5132;
-    }
-    .unknown    {
-        background-color: #fefefe;
-        color: #6c757d;
-    }
+                        .processing {
+                            background-color: #fff3cd;
+                            color: #856404;
+                        }
+                        .delivering {
+                            background-color: #d1ecf1;
+                            color: #0c5460;
+                        }
+                        .delivered  {
+                            background-color: #d4edda;
+                            color: #155724;
+                        }
+                        .cancelled  {
+                            background-color: #f8d7da;
+                            color: #721c24;
+                        }
+                        .returned   {
+                            background-color: #e2e3e5;
+                            color: #6c757d;
+                        }
+                        .payment    {
+                            background-color: #d1e7dd;
+                            color: #0f5132;
+                        }
+                        .unknown    {
+                            background-color: #fefefe;
+                            color: #6c757d;
+                        }
 
-    .action-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        color: #fff;
-        font-size: 16px;
-        text-decoration: none;
-        margin: 2px;
-    }
+                        .action-btn {
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            width: 36px;
+                            height: 36px;
+                            border-radius: 50%;
+                            color: #fff;
+                            font-size: 16px;
+                            text-decoration: none;
+                            margin: 2px;
+                        }
 
-    .btn-view {
-        background-color: #2196f3;
-    }
-    .btn-edit {
-        background-color: #ff9800;
-    }
-    .action-btn:hover {
-        opacity: 0.85;
-    }
+                        .btn-view {
+                            background-color: #2196f3;
+                        }
+                        .btn-edit {
+                            background-color: #ff9800;
+                        }
+                        .action-btn:hover {
+                            opacity: 0.85;
+                        }
 
-    .pagination .page-item .page-link {
-        border-radius: 6px;
-        margin: 0 2px;
-    }
+                        .pagination .page-item .page-link {
+                            border-radius: 6px;
+                            margin: 0 2px;
+                        }
 
-    .pagination .page-item.active .page-link {
-        background-color: #0d6efd;
-        border-color: #0d6efd;
-        color: #fff;
-    }
+                        .pagination .page-item.active .page-link {
+                            background-color: #0d6efd;
+                            border-color: #0d6efd;
+                            color: #fff;
+                        }
 
-    .pagination .page-item.disabled .page-link {
-        color: #ccc;
-        pointer-events: none;
-        background-color: #f8f9fa;
-    }
-</style>
-<script>
-    window.addEventListener("DOMContentLoaded", () => {
-        const alerts = document.querySelectorAll(".alert");
-        alerts.forEach(alert => {
-            setTimeout(() => {
-                if (alert.classList.contains("show")) {
-                    alert.classList.remove("show");
-                    alert.classList.add("fade");
-                    alert.style.opacity = "0";
-                }
-            }, 5000);
-        });
-    });
-</script>
+                        .pagination .page-item.disabled .page-link {
+                            color: #ccc;
+                            pointer-events: none;
+                            background-color: #f8f9fa;
+                        }
+                    </style>
+                    <script>
+                        window.addEventListener("DOMContentLoaded", () => {
+                            const alerts = document.querySelectorAll(".alert");
+                            alerts.forEach(alert => {
+                                setTimeout(() => {
+                                    if (alert.classList.contains("show")) {
+                                        alert.classList.remove("show");
+                                        alert.classList.add("fade");
+                                        alert.style.opacity = "0";
+                                    }
+                                }, 5000);
+                            });
+                        });
+                        document.addEventListener("DOMContentLoaded", () => {
+                            const alerts = document.querySelectorAll(".alert");
+                            alerts.forEach(alert => {
+                                setTimeout(() => {
+                                    if (alert.classList.contains("show")) {
+                                        alert.classList.remove("show");
+                                        alert.classList.add("fade");
+                                        alert.style.opacity = "0";
+                                    }
+                                }, 5000);
+                            });
+
+                            const maxPage = parseInt("${totalPages}", 10);
+                            const minPage = 1;
+
+                            // ✅ Kiểm tra form Go to page
+                            const goToPageForm = document.querySelector('form[action$="/order/management"]');
+                            if (goToPageForm) {
+                                goToPageForm.addEventListener("submit", function (e) {
+                                    const pageInput = this.querySelector('input[name="page"]');
+                                    let pageValue = parseInt(pageInput.value, 10);
+
+                                    if (isNaN(pageValue) || pageValue < minPage || pageValue > maxPage) {
+                                        e.preventDefault();
+                                        alert(`Please enter from ${minPage} to ${maxPage}.`);
+                                        pageInput.focus();
+                                    }
+                                });
+                            }
+
+                            // ✅ Giới hạn nút Previous/Next
+                            document.querySelectorAll(".pagination .page-link").forEach(link => {
+                                link.addEventListener("click", function (e) {
+                                    const url = new URL(this.href, window.location.origin);
+                                    const pageParam = url.searchParams.get("page");
+
+                                    if (pageParam) {
+                                        const pageNum = parseInt(pageParam, 10);
+                                        if (isNaN(pageNum) || pageNum < minPage || pageNum > maxPage) {
+                                            e.preventDefault();
+                                        }
+                                    }
+                                });
+                            });
+                        });
+                    </script>
