@@ -27,7 +27,7 @@
                     <i class="fas fa-shopping-cart"></i>
                 </a>
 
-                <c:if test="${sessionScope.account.role == 0}">
+                <c:if test="${sessionScope.account.role == 0 || sessionScope.account.role == 1 || sessionScope.account.role == 2 || sessionScope.account.role == 3}">
                     <a href="${pageContext.request.contextPath}/admin/dashboard" class="header-icon btn-admin-dashboard" title="Admin Dashboard">
                         <i class="fas fa-tools"></i>
                     </a>

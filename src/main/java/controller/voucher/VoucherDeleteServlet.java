@@ -7,14 +7,12 @@ package controller.voucher;
 import dao.VoucherDAO;
 import dao.VoucherLogDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Connection;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import util.DBContext;
+import jakarta.servlet.http.HttpSession;
 
 /**
  *
@@ -32,7 +30,6 @@ public class VoucherDeleteServlet extends HttpServlet {
         try {
             int vouID = Integer.parseInt(idParam);
 
-            // Gán staffID tạm (hoặc lấy từ session)
             int staffID = 1;
 
             VoucherDAO dao = new VoucherDAO();
@@ -40,16 +37,18 @@ public class VoucherDeleteServlet extends HttpServlet {
 
             if (deleted) {
                 VoucherLogDAO logDAO = new VoucherLogDAO();
-                logDAO.insertLog(vouID, idParam, 3); // 3 = xóa
+                logDAO.insertLog(vouID, idParam, 3); //
 
+                HttpSession session = request.getSession();
+                session.setAttribute("successMessage", "Notification added successfully.");
                 response.sendRedirect(request.getContextPath() + "/admin/voucher/list");
             } else {
-                response.getWriter().println("Xóa voucher thất bại.");
+                response.getWriter().println("Delete voucher failed!");
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            response.getWriter().println("Lỗi khi xóa voucher: " + e.getMessage());
+            response.getWriter().println("Error when deleting voucher: " + e.getMessage());
         }
     }
 }

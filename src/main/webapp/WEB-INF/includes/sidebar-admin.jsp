@@ -78,6 +78,9 @@
             <a href="${pageContext.request.contextPath}/admin/notification/list" class="menu-item">
                 <i class="fas fa-bell"></i> Notification Management
             </a>
+            <a href="${pageContext.request.contextPath}/homepage/book/list" class="menu-item">
+                <i class="fas fa-book-open"></i> Book List
+            </a>
         </c:if>
 
         <!-- Seller Staff -->
@@ -96,6 +99,12 @@
             </a>
             <a href="${pageContext.request.contextPath}/admin/voucher/list" class="menu-item">
                 <i class="fas fa-tags"></i> Voucher Management
+            </a>
+            <a href="${pageContext.request.contextPath}/admin/notification/list" class="menu-item">
+                <i class="fas fa-bell"></i> Notification Management
+            </a>
+            <a href="${pageContext.request.contextPath}/homepage/book/list" class="menu-item">
+                <i class="fas fa-book-open"></i> Book List
             </a>
         </c:if>
 
@@ -118,6 +127,9 @@
             </a>
             <a href="${pageContext.request.contextPath}/admin/notification/list" class="menu-item">
                 <i class="fas fa-bell"></i> Notification Management
+            </a>
+            <a href="${pageContext.request.contextPath}/homepage/book/list" class="menu-item">
+                <i class="fas fa-book-open"></i> Book List
             </a>
         </c:if>
 

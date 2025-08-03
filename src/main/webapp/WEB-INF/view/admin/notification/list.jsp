@@ -14,12 +14,39 @@
             <div class="page-title">Notification List</div>
             <div class="page-subtitle">All system notifications</div>
         </div>
+        <c:if test="${not empty sessionScope.successMessage}">
+            <div id="successAlert" style="
+                 background-color: #d4edda;
+                 color: #155724;
+                 padding: 10px 20px;
+                 border: 1px solid #c3e6cb;
+                 border-radius: 5px;
+                 margin-bottom: 15px;
+                 transition: opacity 0.5s ease-in-out;
+                 ">
+                <i class="fas fa-check-circle"></i> ${sessionScope.successMessage}
+            </div>
+            <script>             
+                setTimeout(function () {
+                    const alertBox = document.getElementById('successAlert');
+                    if (alertBox) {
+                        alertBox.style.opacity = '0';
+                        setTimeout(() => alertBox.remove(), 500); 
+                    }
+                }, 2000);
+            </script>
+            <c:remove var="successMessage" scope="session" />
+        </c:if>
 
         <!-- Search and Add Form -->
         <form action="${pageContext.request.contextPath}/admin/notification/list" method="get" class="toolbar">
-            <input type="text" name="search" class="search-box" placeholder="Search by title..." value="${param.search}" />
-            <div class="btn-group">
-                <button type="submit" class="btn btn-primary">Search</button>
+            
+            <div style="display: flex; gap: 10px;">
+                     <input type="text" name="search" class="search-box" placeholder="Search by title..." value="${param.search}" />
+            <button type="submit" class="btn btn-primary">Search</button>
+            </div
+            
+            <div class="btn-group">             
                 <a href="${pageContext.request.contextPath}/admin/notification/add" class="btn btn-primary">+ Add New</a>
             </div>
         </form>
@@ -31,6 +58,7 @@
                 ${error}
             </div>
         </c:if>
+
 
         <!-- Notification Table -->
         <div class="card">
@@ -52,11 +80,11 @@
                                 <td>${noti.notTitle}</td>
                                 <td>
                                     <c:choose>
-                                        <c:when test="${noti.receiver == 0}">Admin</c:when>
-                                        <c:when test="${noti.receiver == 1}">Customer</c:when>
+                                        <c:when test="${noti.receiver == 0}">Admin</c:when>                                        
                                         <c:when test="${noti.receiver == 2}">Seller Staff</c:when>
                                         <c:when test="${noti.receiver == 3}">Warehouse Staff</c:when>
-                                        <c:when test="${noti.receiver == 4}">All</c:when>
+                                        <c:when test="${noti.receiver == 4}">Customer</c:when>
+                                        <c:when test="${noti.receiver == 5}">All</c:when>
                                         <c:otherwise>Unknown</c:otherwise>
                                     </c:choose>
                                 </td>
@@ -111,88 +139,49 @@
             </ul>
         </div>
 
-        <!-- Delete Notification Modal -->
-        <div class="modal" id="confirmDeleteModal">
-            <div class="modal-content confirmation-dialog">
-                <div class="modal-header">
-                    <h3>Confirm Deletion</h3>
-                    <button class="close" onclick="closeModal()">&times;</button>
+        <!-- Custom CSS Modal -->
+        <div id="confirmDeleteModal" class="custom-modal">
+            <div class="custom-modal-content">
+                <div class="custom-modal-header">
+                    <h5>Confirm Deletion</h5>
+                    <span class="close-button" onclick="hideDeleteModal()">&times;</span>
                 </div>
-                <div class="modal-body">
-                    <p>Are you sure you want to delete notification "<span id="notificationTitleText"></span>"?</p>
-                    <form id="deleteForm" method="post" action="${pageContext.request.contextPath}/admin/notification/delete">
-                        <input type="hidden" name="notID" id="deleteNotID" />
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-secondary" onclick="closeModal()">No</button>
-                            <button type="submit" class="btn btn-danger">Yes</button>
-                        </div>
+                <div class="custom-modal-body">
+                    Are you sure you want to delete notification "<span id="notificationTitleText"></span>"?
+                    <input type="hidden" name="notID" id="deleteNotID" />
+                </div>
+                <div class="custom-modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="hideDeleteModal()">No</button>
+                    <form id="deleteForm" method="post" action="${pageContext.request.contextPath}/admin/notification/delete" style="display:inline;">
+                        <input type="hidden" name="notID" id="hiddenDeleteID" />
+                        <button type="submit" class="btn btn-danger">Yes</button>
                     </form>
                 </div>
             </div>
         </div>
 
-        <!-- Modal Script -->
+
+
         <script>
             function showDeleteModal(notID, notTitle) {
                 document.getElementById("notificationTitleText").innerText = notTitle;
-                document.getElementById("deleteNotID").value = notID;
+                document.getElementById("hiddenDeleteID").value = notID;
                 document.getElementById("confirmDeleteModal").style.display = "block";
             }
 
-            function closeModal() {
+            function hideDeleteModal() {
                 document.getElementById("confirmDeleteModal").style.display = "none";
             }
 
+            // Optional: Close modal when clicking outside
             window.onclick = function (event) {
                 const modal = document.getElementById("confirmDeleteModal");
                 if (event.target == modal) {
-                    modal.style.display = "none";
+                    hideDeleteModal();
                 }
-            };
+            }
         </script>
 
-        <!-- Modal Style -->
-        <style>
-            .modal {
-                display: none;
-                position: fixed;
-                z-index: 1000;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: 100%;
-                background-color: rgba(0, 0, 0, 0.4);
-            }
-            .modal-content {
-                background-color: #fff;
-                margin: 15% auto;
-                width: 400px;
-                border-radius: 8px;
-                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-                overflow: hidden;
-            }
-            .modal-header {
-                background-color: #f44336;
-                color: white;
-                padding: 12px 16px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-            .modal-body {
-                padding: 16px;
-            }
-            .modal-footer, .btn-group {
-                text-align: right;
-                padding: 12px 16px;
-            }
-            .close {
-                cursor: pointer;
-                font-size: 20px;
-                border: none;
-                background: none;
-            }
-        </style>
     </div>
 </div>
 

@@ -71,10 +71,11 @@
                         <label class="form-label">Receiver:</label>
                         <p>
                             <c:choose>
-                                <c:when test="${notification.receiver == 0}">All</c:when>
-                                <c:when test="${notification.receiver == 1}">Admin</c:when>
-                                <c:when test="${notification.receiver == 2}">Staff</c:when>
-                                <c:when test="${notification.receiver == 3}">Customer</c:when>
+                                <c:when test="${notification.receiver == 0}">Admin</c:when>                               
+                                <c:when test="${notification.receiver == 2}">Seller Staff</c:when>
+                                <c:when test="${notification.receiver == 3}">Warehouse Staff</c:when>
+                                <c:when test="${notification.receiver == 4}">Customer</c:when>
+                                <c:when test="${notification.receiver == 5}">All</c:when>
                                 <c:otherwise>Unknown</c:otherwise>
                             </c:choose>
                         </p>

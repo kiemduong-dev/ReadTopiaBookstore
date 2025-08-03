@@ -33,11 +33,11 @@
                     <div class="form-group">
                         <label for="receiver" class="form-label">Receiver: <span style="color:red">*</span></label>
                         <select name="receiver" id="receiver" class="form-select" required>
-                            <option value="0">Admin</option>
-                            <option value="1">Customer</option>
+                            <option value="0">Admin</option>                            
                             <option value="2">Seller Staff</option>
                             <option value="3">Warehouse Staff</option>
-                            <option value="4">All</option>
+                            <option value="4">Customer</option>
+                            <option value="5">--All--</option>
                         </select>
                     </div>
 

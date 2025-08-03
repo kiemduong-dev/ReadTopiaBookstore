@@ -21,7 +21,7 @@ public class NotificationDAO {
             ps.setString(2, noti.getNotTitle());
             ps.setInt(3, noti.getReceiver());
             ps.setString(4, noti.getNotDescription());
-            ps.setTimestamp(5, noti.getNotCreatedDate()); // ✅ đã là Timestamp
+            ps.setTimestamp(5, noti.getNotCreatedDate()); 
             ps.executeUpdate();
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(NotificationDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -42,7 +42,7 @@ public class NotificationDAO {
                     noti.setNotTitle(rs.getString("notTitle"));
                     noti.setReceiver(rs.getInt("receiver"));
                     noti.setNotDescription(rs.getString("notDescription"));
-                    noti.setNotCreatedDate(rs.getTimestamp("notCreateDay")); // ✅
+                    noti.setNotCreatedDate(rs.getTimestamp("notCreateDay")); 
                     list.add(noti);
                 }
             }
@@ -87,7 +87,7 @@ public class NotificationDAO {
                     noti.setNotTitle(rs.getString("notTitle"));
                     noti.setReceiver(rs.getInt("receiver"));
                     noti.setNotDescription(rs.getString("notDescription"));
-                    noti.setNotCreatedDate(rs.getTimestamp("notCreateDay")); // ✅
+                    noti.setNotCreatedDate(rs.getTimestamp("notCreateDay")); 
                     list.add(noti);
                 }
             }
@@ -109,7 +109,7 @@ public class NotificationDAO {
                     noti.setNotTitle(rs.getString("notTitle"));
                     noti.setReceiver(rs.getInt("receiver"));
                     noti.setNotDescription(rs.getString("notDescription"));
-                    noti.setNotCreatedDate(rs.getTimestamp("notCreateDay")); // ✅
+                    noti.setNotCreatedDate(rs.getTimestamp("notCreateDay")); 
                     return noti;
                 }
             }
@@ -121,7 +121,7 @@ public class NotificationDAO {
 
     public List<NotificationDTO> getNotificationsForRole(int role) throws SQLException {
         List<NotificationDTO> list = new ArrayList<>();
-        String sql = "SELECT * FROM Notification WHERE receiver = ? OR receiver = 4 ORDER BY notID DESC";
+        String sql = "SELECT * FROM Notification WHERE receiver = ? OR receiver = 5 ORDER BY notID DESC";
         try ( Connection conn = DBContext.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, role);
             try ( ResultSet rs = ps.executeQuery()) {
@@ -132,7 +132,7 @@ public class NotificationDAO {
                     noti.setNotTitle(rs.getString("notTitle"));
                     noti.setReceiver(rs.getInt("receiver"));
                     noti.setNotDescription(rs.getString("notDescription"));
-                    noti.setNotCreatedDate(rs.getTimestamp("notCreateDay")); // ✅
+                    noti.setNotCreatedDate(rs.getTimestamp("notCreateDay"));
                     list.add(noti);
                 }
             }

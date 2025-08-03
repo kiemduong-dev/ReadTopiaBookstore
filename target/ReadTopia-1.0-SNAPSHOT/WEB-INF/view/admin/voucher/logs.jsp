@@ -70,11 +70,14 @@
                         <td><%= log.getVouLogDate()%></td>
                     </tr>
                     <% }
-            } else { %>
+                    } else { %>
                     <tr>
                         <td colspan="2">No logs found.</td>
                     </tr>
                     <% }%>
                 </tbody>
             </table>
+            <a href="list" class="btn btn-secondary" style="display: flex">
+                <i class="fas fa-arrow-left"></i> Back to List
+            </a>
         </div>

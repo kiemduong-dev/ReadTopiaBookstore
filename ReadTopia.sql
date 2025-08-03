@@ -347,7 +347,31 @@ WHERE role IN (1, 2, 3) AND accStatus = 1
 	('Education', 'Educational books for students', 1);
 
 
+	-- Insert vouchers
+	INSERT INTO Voucher (vouName, vouCode, discount, startDate, endDate, quantity, newQuantity, vouStatus, createdBy, approvedBy)
+	VALUES 
+	(N'10% Off', 'DISCOUNT10', 10, '2025-08-01', '2025-08-31', 100, 100, 1, 'admin1', 'admin2'),
+	(N'20% Off', 'DISCOUNT20', 20, '2025-08-01', '2025-08-15', 50, 50, 1, 'admin1', 'admin2'),
+	(N'Summer Deal', 'SUMMER25', 25, '2025-08-05', '2025-09-05', 30, 30, 0, 'admin1', NULL),
+	(N'Holiday Promo', 'HOLIDAY29', 15, '2025-08-20', '2025-09-10', 80, 80, 0, 'admin1', NULL),
+	(N'₫50K Discount', 'VOUCHER50K', 50, '2025-08-01', '2025-08-31', 200, 200, 1, 'admin1', 'admin1');
 
+	-- Insert notifications
+	INSERT INTO [Notification] (staffID, notTitle, receiver, notDescription, notCreateDay)
+	VALUES
+	(1, N'Weekly Report Reminder', 0, N'Please submit your weekly performance report by Friday.', GETDATE()),
+	(1, N'System Configuration Update', 0, N'A new configuration patch has been applied to the admin panel.', GETDATE()),
+	(1, N'New Voucher Available', 4, N'Use code DISCOUNT20 to get 20% off on your next purchase.', GETDATE()),
+	(1, N'Order Shipped', 4, N'Your recent order has been shipped. Track it in your account.', GETDATE()),
+	(1, N'Maintenance Notice', 5, N'The system will undergo maintenance on August 5th, from 1 AM to 3 AM.', GETDATE());
+
+	INSERT INTO voucher_log (vou_id, username, vou_action, vou_log_date)
+	VALUES 
+	(1, 'admin1', 1, '2025-08-01'),
+	(2, 'admin1', 1, '2025-08-01'),
+	(3, 'admin1', 2, '2025-08-02'),
+	(4, 'admin1', 2, '2025-08-03'),
+	(5, 'admin1', 3, '2025-08-04');
 
 	-- Randomly assign categories to books
 	DECLARE @BookCount INT

@@ -54,8 +54,7 @@ public class VoucherDAO {
                     int initial = rs.getInt("quantity");
 
                     int remaining = rs.getInt("newQuantity");
-                    if (rs.wasNull()) {
-                        // Nếu newQuantity NULL thì hiểu là chưa có người dùng, nên remaining = initial
+                    if (rs.wasNull()) {                       
                         remaining = initial;
                     }
 

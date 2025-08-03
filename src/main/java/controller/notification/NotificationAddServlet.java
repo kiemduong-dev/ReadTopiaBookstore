@@ -12,6 +12,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.sql.Timestamp;
 import java.util.Date;
 
@@ -38,13 +39,16 @@ public class NotificationAddServlet extends HttpServlet {
             String description = request.getParameter("description");
 
             int staffID = 1;
-            Timestamp sqlTimestamp = new Timestamp(new Date().getTime()); // ✅ chứa ngày + giờ
+            Timestamp sqlTimestamp = new Timestamp(new Date().getTime());
 
             NotificationDTO noti = new NotificationDTO(0, staffID, title, receiver, description, sqlTimestamp);
             NotificationDAO dao = new NotificationDAO();
             dao.addNotification(noti);
 
+            HttpSession session = request.getSession();
+            session.setAttribute("successMessage", "Notification added successfully.");
             response.sendRedirect(request.getContextPath() + "/admin/notification/list");
+
         } catch (Exception e) {
             request.setAttribute("error", "Thêm thông báo thất bại: " + e.getMessage());
             request.getRequestDispatcher("/WEB-INF/view/admin/notification/add.jsp").forward(request, response);

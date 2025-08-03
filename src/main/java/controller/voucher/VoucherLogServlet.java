@@ -7,15 +7,12 @@ package controller.voucher;
 import dao.VoucherLogDAO;
 import dto.VoucherLogDTO;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Connection;
 import java.util.List;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import util.DBContext;
 
 /**
  *
@@ -49,7 +46,7 @@ public class VoucherLogServlet extends HttpServlet {
 
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Lỗi khi truy vấn dữ liệu logs.");
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error querying logs data!");
         }
     }
 }

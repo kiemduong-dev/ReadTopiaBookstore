@@ -21,7 +21,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  *
  * @author default
@@ -38,6 +37,9 @@ public class VoucherEditServlet extends HttpServlet {
             VoucherDAO dao = new VoucherDAO();
             VoucherDTO voucher = dao.getVoucherByID(vouID);
             request.setAttribute("voucher", voucher);
+
+            HttpSession session = request.getSession();
+            session.setAttribute("successMessage", "Notification added successfully.");
             request.getRequestDispatcher("/WEB-INF/view/admin/voucher/edit.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();

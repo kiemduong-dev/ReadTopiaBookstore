@@ -7,7 +7,6 @@ package controller.voucher;
 import dao.VoucherDAO;
 import dto.VoucherDTO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.Connection;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
