@@ -29,6 +29,7 @@ dto\PaymentDTO.class
 controller\supplier\SupplierListServlet.class
 controller\admin\StaffAddServlet.class
 controller\LogoutServlet.class
+controller\book\BookListHomepageServlet$2.class
 controller\admin\AccountDeleteServlet.class
 dao\NotificationDAO.class
 controller\RegisterServlet.class
@@ -36,6 +37,7 @@ controller\order\OrderDetailServlet.class
 controller\payment\PaymentOnlineServlet.class
 controller\voucher\VoucherDetailServlet.class
 controller\book\FilterBookServlet.class
+controller\book\BookListHomepageServlet$3.class
 controller\voucher\VoucherCustomerListServlet.class
 controller\admin\StaffEditServlet.class
 dao\CartDAO.class
@@ -55,6 +57,7 @@ controller\order\OrderCustomerUpdateStatusServlet.class
 controller\LoginServlet.class
 dto\Data.class
 controller\supplier\SupplierDetailServlet.class
+controller\book\BookListHomepageServlet$4.class
 controller\notification\NotificationAddServlet.class
 controller\book\DeleteBookServlet.class
 util\MailUtil$2.class
@@ -74,6 +77,7 @@ controller\category\CategoryEditServlet.class
 controller\notification\NotificationDetailServlet.class
 controller\voucher\VoucherAddServlet.class
 controller\cart\CartViewServlet.class
+controller\book\BookListHomepageServlet$1.class
 controller\notification\NotificationListServlet.class
 dao\VoucherLogDAO.class
 controller\book\BookListDashboardServlet.class

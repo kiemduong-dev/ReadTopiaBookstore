@@ -17,6 +17,9 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -56,36 +59,70 @@ public class BookListHomepageServlet extends HttpServlet {
 
         String keyword = request.getParameter("keyword");
         String sortOption = request.getParameter("sort");
-        String categoryIdParam = request.getParameter("catID");
+        String categoryIdParam = request.getParameter("categoryID"); // đồng bộ với form
 
         BookDAO bookDAO = new BookDAO();
         List<BookDTO> books;
 
-        HttpSession session = request.getSession();
-
-        // Determine books to display based on filters
+        // ====== FILTER BY CATEGORY ======
         if (categoryIdParam != null && !categoryIdParam.isEmpty()) {
             try {
                 int categoryId = Integer.parseInt(categoryIdParam);
                 books = bookDAO.getBooksByCategory(categoryId);
             } catch (NumberFormatException e) {
-                Logger.getLogger(BookListHomepageServlet.class.getName())
-                        .log(Level.WARNING, "Invalid category ID format", e);
                 books = bookDAO.getAllBooks();
             }
-        } else if (keyword != null && !keyword.isEmpty()) {
-            books = bookDAO.searchBooksByTitleOrAuthor(keyword);
-        } else if (sortOption != null && !sortOption.isEmpty()) {
-            books = bookDAO.getBooksSortedBy(sortOption);
         } else {
             books = bookDAO.getAllBooks();
         }
 
-        // Load all categories for filtering
+        // ====== FILTER BY KEYWORD ======
+        if (keyword != null && !keyword.isEmpty()) {
+            String kwLower = keyword.toLowerCase();
+            List<BookDTO> filtered = new ArrayList<BookDTO>();
+            for (BookDTO b : books) {
+                if (b.getBookTitle().toLowerCase().contains(kwLower)
+                        || b.getAuthor().toLowerCase().contains(kwLower)) {
+                    filtered.add(b);
+                }
+            }
+            books = filtered;
+        }
+
+        // ====== SORT ======
+        if (sortOption != null && !sortOption.isEmpty()) {
+            if ("price_asc".equals(sortOption)) {
+                Collections.sort(books, new Comparator<BookDTO>() {
+                    public int compare(BookDTO o1, BookDTO o2) {
+                        return Double.compare(o1.getBookPrice(), o2.getBookPrice());
+                    }
+                });
+            } else if ("price_desc".equals(sortOption)) {
+                Collections.sort(books, new Comparator<BookDTO>() {
+                    public int compare(BookDTO o1, BookDTO o2) {
+                        return Double.compare(o2.getBookPrice(), o1.getBookPrice());
+                    }
+                });
+            } else if ("title_asc".equals(sortOption)) {
+                Collections.sort(books, new Comparator<BookDTO>() {
+                    public int compare(BookDTO o1, BookDTO o2) {
+                        return o1.getBookTitle().compareToIgnoreCase(o2.getBookTitle());
+                    }
+                });
+            } else if ("title_desc".equals(sortOption)) {
+                Collections.sort(books, new Comparator<BookDTO>() {
+                    public int compare(BookDTO o1, BookDTO o2) {
+                        return o2.getBookTitle().compareToIgnoreCase(o1.getBookTitle());
+                    }
+                });
+            }
+        }
+
+        // ====== LOAD CATEGORY LIST ======
         CategoryDAO categoryDAO = new CategoryDAO();
         List<CategoryDTO> categories = categoryDAO.getAllCategories();
 
-        // ====== PAGINATION LOGIC ======
+        // ====== PAGINATION ======
         int pageSize = 8; // 8 books per page
         int currentPage = 1;
 
@@ -101,27 +138,28 @@ public class BookListHomepageServlet extends HttpServlet {
         int totalBooks = books.size();
         int totalPages = (int) Math.ceil((double) totalBooks / pageSize);
 
-        // Fix out-of-range page numbers
-        if (currentPage < 1) currentPage = 1;
-        if (totalPages > 0 && currentPage > totalPages) currentPage = totalPages;
+        if (currentPage < 1) {
+            currentPage = 1;
+        }
+        if (totalPages > 0 && currentPage > totalPages) {
+            currentPage = totalPages;
+        }
 
         int startIndex = (currentPage - 1) * pageSize;
         int endIndex = Math.min(currentPage * pageSize, totalBooks);
 
         List<BookDTO> pageBooks = books.subList(startIndex, endIndex);
 
-        // Set attributes for JSP rendering
-        request.setAttribute("bookList", pageBooks); // only current page books
+        // ====== SET ATTRIBUTES ======
+        request.setAttribute("bookList", pageBooks);
         request.setAttribute("categoryList", categories);
         request.setAttribute("keyword", keyword);
         request.setAttribute("sort", sortOption);
-        request.setAttribute("catID", categoryIdParam);
-
-        // Paging info
+        request.setAttribute("categoryID", categoryIdParam); // để giữ lại khi load lại form
         request.setAttribute("totalPages", totalPages);
         request.setAttribute("currentPage", currentPage);
 
-        // Forward to homepage view
+        // ====== FORWARD ======
         request.getRequestDispatcher("/WEB-INF/view/book/homepage.jsp").forward(request, response);
     }
 }

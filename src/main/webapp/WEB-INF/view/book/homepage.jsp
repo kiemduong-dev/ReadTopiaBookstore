@@ -41,10 +41,11 @@
             <select name="categoryID" class="form-select">
                 <option value="">-- Category --</option>
                 <c:forEach var="cat" items="${categoryList}">
-                    <option value="${cat.categoryID}" ${param.categoryID == cat.categoryID ? 'selected' : ''}>
+                    <option value="${cat.categoryID}" 
+                            <c:if test="${param.categoryID eq cat.categoryID.toString()}">selected</c:if>>
                         ${cat.categoryName}
                     </option>
-                </c:forEach>
+                </c:forEach>s
             </select>
         </div>
         <div class="col-md-3">
