@@ -85,12 +85,41 @@ public class BookListHomepageServlet extends HttpServlet {
         CategoryDAO categoryDAO = new CategoryDAO();
         List<CategoryDTO> categories = categoryDAO.getAllCategories();
 
+        // ====== PAGINATION LOGIC ======
+        int pageSize = 8; // 8 books per page
+        int currentPage = 1;
+
+        String pageParam = request.getParameter("page");
+        if (pageParam != null) {
+            try {
+                currentPage = Integer.parseInt(pageParam);
+            } catch (NumberFormatException e) {
+                currentPage = 1;
+            }
+        }
+
+        int totalBooks = books.size();
+        int totalPages = (int) Math.ceil((double) totalBooks / pageSize);
+
+        // Fix out-of-range page numbers
+        if (currentPage < 1) currentPage = 1;
+        if (totalPages > 0 && currentPage > totalPages) currentPage = totalPages;
+
+        int startIndex = (currentPage - 1) * pageSize;
+        int endIndex = Math.min(currentPage * pageSize, totalBooks);
+
+        List<BookDTO> pageBooks = books.subList(startIndex, endIndex);
+
         // Set attributes for JSP rendering
-        request.setAttribute("bookList", books);
+        request.setAttribute("bookList", pageBooks); // only current page books
         request.setAttribute("categoryList", categories);
         request.setAttribute("keyword", keyword);
         request.setAttribute("sort", sortOption);
         request.setAttribute("catID", categoryIdParam);
+
+        // Paging info
+        request.setAttribute("totalPages", totalPages);
+        request.setAttribute("currentPage", currentPage);
 
         // Forward to homepage view
         request.getRequestDispatcher("/WEB-INF/view/book/homepage.jsp").forward(request, response);

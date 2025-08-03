@@ -1,6 +1,8 @@
 <%@page import="java.text.DecimalFormatSymbols"%>
+<%@ page import="java.net.URLEncoder" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" import="java.text.DecimalFormat" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <jsp:include page="/WEB-INF/includes/head.jsp" />
 <jsp:include page="/WEB-INF/includes/header.jsp" />
 
@@ -12,6 +14,19 @@
     symbols.setGroupingSeparator(' ');
     DecimalFormat formatter = new DecimalFormat("###,###,###", symbols);
     request.setAttribute("formatter", formatter);
+
+    // Build query string for pagination
+    StringBuilder qs = new StringBuilder();
+    if (request.getParameter("keyword") != null && !request.getParameter("keyword").isEmpty()) {
+        qs.append("&keyword=").append(URLEncoder.encode(request.getParameter("keyword"), "UTF-8"));
+    }
+    if (request.getParameter("categoryID") != null && !request.getParameter("categoryID").isEmpty()) {
+        qs.append("&categoryID=").append(URLEncoder.encode(request.getParameter("categoryID"), "UTF-8"));
+    }
+    if (request.getParameter("sort") != null && !request.getParameter("sort").isEmpty()) {
+        qs.append("&sort=").append(URLEncoder.encode(request.getParameter("sort"), "UTF-8"));
+    }
+    request.setAttribute("queryString", qs.toString());
 %>
 
 <div class="container py-4">
@@ -55,7 +70,8 @@
                         <div class="position-relative">
                             <img src="${book.image}" class="card-img-top" alt="${book.bookTitle}"
                                  onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
-                            <div class="hover-overlay position-absolute top-0 start-0 w-100 h-100" style="background: rgba(0, 0, 0, 0.15); opacity: 0; transition: opacity 0.3s;"></div>
+                            <div class="hover-overlay position-absolute top-0 start-0 w-100 h-100" 
+                                 style="background: rgba(0, 0, 0, 0.15); opacity: 0; transition: opacity 0.3s;"></div>
                         </div>
                         <div class="card-body">
                             <h5 class="card-title">${book.bookTitle}</h5>
@@ -78,6 +94,32 @@
             </div>
         </c:if>
     </div>
+
+    <!-- Pagination -->
+    <c:if test="${totalPages > 1}">
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+
+                <!-- Previous -->
+                <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="?page=${currentPage - 1}${queryString}">&lt;</a>
+                </li>
+
+                <!-- Page numbers -->
+                <c:forEach var="i" begin="1" end="${totalPages}">
+                    <li class="page-item ${i == currentPage ? 'active' : ''}">
+                        <a class="page-link" href="?page=${i}${queryString}">${i}</a>
+                    </li>
+                </c:forEach>
+
+                <!-- Next -->
+                <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
+                    <a class="page-link" href="?page=${currentPage + 1}${queryString}">&gt;</a>
+                </li>
+
+            </ul>
+        </nav>
+    </c:if>
 </div>
 
 <jsp:include page="/WEB-INF/includes/footer.jsp" />
