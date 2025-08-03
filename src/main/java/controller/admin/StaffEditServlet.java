@@ -21,7 +21,7 @@ import java.util.Map;
  * role 2/3. Cannot edit Admin or Customer.
  *
  * URL: /admin/staff/edit
- *
+ * 
  * @author CE181518 Dương An Kiếm
  */
 @WebServlet(name = "StaffEditServlet", urlPatterns = {"/admin/staff/edit"})
@@ -168,6 +168,7 @@ public class StaffEditServlet extends HttpServlet {
             boolean success = staffDAO.updateStaff(updated);
 
             if (success) {
+                  session.setAttribute("message", "Staff \"" + username + "\" updated successfully.");
                 response.sendRedirect("list");
             } else {
                 request.setAttribute("error", "Failed to update staff.");

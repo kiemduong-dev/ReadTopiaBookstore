@@ -114,7 +114,7 @@ public class AccountAddServlet extends HttpServlet {
             if (accountDAO.addAccountByAdmin(account)) {
                 try {
                     MailUtil.sendPassword(email, username, rawPassword);
-                    session.setAttribute("message", "Account added successfully.");
+                    session.setAttribute("message", "Account \"" + username + "\" has been added successfully.");
                 } catch (Exception e) {
                     session.setAttribute("message", "Account added, but failed to send email.");
                     e.printStackTrace();

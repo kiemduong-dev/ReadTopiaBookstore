@@ -122,7 +122,7 @@ public class StaffAddServlet extends HttpServlet {
             if (staffDAO.addStaff(staff)) {
                 try {
                     MailUtil.sendPassword(email, username, rawPassword);
-                    session.setAttribute("message", "Staff added and password sent successfully.");
+                     session.setAttribute("message", "Account \"" + username + "\" has been added successfully.");
                 } catch (Exception e) {
                     e.printStackTrace();
                     session.setAttribute("message", "Staff added, but failed to send password email.");

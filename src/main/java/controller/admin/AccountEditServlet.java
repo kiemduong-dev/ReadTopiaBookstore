@@ -128,7 +128,7 @@ public class AccountEditServlet extends HttpServlet {
             boolean success = dao.updateAccountByAdmin(updated);
 
             if (success) {
-                session.setAttribute("message", "Account updated successfully.");
+                 session.setAttribute("message", "Account \"" + username + "\" updated successfully.");
                 response.sendRedirect("list");
             } else {
                 request.setAttribute("error", "Failed to update account.");

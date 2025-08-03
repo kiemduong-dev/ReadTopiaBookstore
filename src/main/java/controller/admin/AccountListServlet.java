@@ -41,10 +41,11 @@ public class AccountListServlet extends HttpServlet {
 
             // Message (if redirected from create/update/delete)
             String message = (String) session.getAttribute("message");
-            if (message != null) {
-                request.setAttribute("message", message);
-                session.removeAttribute("message");
-            }
+if (message != null) {
+    request.setAttribute("flashMessage", message); // 🔁 Đổi tên tránh xung đột
+    session.removeAttribute("message");
+}
+
 
             request.getRequestDispatcher("/WEB-INF/view/admin/account/list.jsp").forward(request, response);
 
