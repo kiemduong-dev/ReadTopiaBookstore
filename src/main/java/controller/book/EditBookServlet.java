@@ -30,11 +30,12 @@ public class EditBookServlet extends HttpServlet {
     /**
      * Handles the HTTP GET request to load book data into the edit form.
      *
-     * Steps: 
-     * 1. Retrieve "id" from request parameters. 
-     * 2. Fetch the book by ID using BookDAO.
-     * 3. Forward to the edit JSP view if found.
-     * 4. Redirect to the book list page if not found or invalid ID.
+     * Steps: 1. Retrieve "id" from request parameters. 2. Validate and parse
+     * book ID. 3. Fetch book by ID from database. 4. If found: - Load current
+     * category ID of the book. - Load lists of categories, authors,
+     * translators, and publishers. - Set attributes to request and forward to
+     * edit.jsp. 5. If book not found or ID is invalid: - Redirect to book list
+     * page with error message.
      *
      * @param request the HttpServletRequest object
      * @param response the HttpServletResponse object
@@ -58,23 +59,25 @@ public class EditBookServlet extends HttpServlet {
             BookDTO book = bookDAO.getBookByID(bookId);
 
             if (book != null) {
-                // Load the list of categories, authors, translators, and publishers
+                // Lấy danh mục hiện tại của sách
+                int selectedCategoryID = bookDAO.getCategoryIDByBookID(bookId);
+                request.setAttribute("selectedCategoryID", selectedCategoryID);
+
+                // Danh sách category, author, publisher, translator
                 CategoryDAO categoryDAO = new CategoryDAO();
                 List<CategoryDTO> categories = categoryDAO.getAllCategories();
                 request.setAttribute("categoryList", categories);
 
-                BookDAO bookDAOList = new BookDAO();
-                List<String> authors = bookDAOList.getAllAuthors();
-                List<String> translators = bookDAOList.getAllTranslators();
-                List<String> publishers = bookDAOList.getAllPublishers();
-                
-                // Set the attributes to the request to send to JSP
+                List<String> authors = bookDAO.getAllAuthors();
+                List<String> translators = bookDAO.getAllTranslators();
+                List<String> publishers = bookDAO.getAllPublishers();
+
                 request.setAttribute("book", book);
                 request.setAttribute("authors", authors);
                 request.setAttribute("translators", translators);
                 request.setAttribute("publishers", publishers);
-                
-                // Forward to the edit page
+
+                // Forward to edit page
                 request.getRequestDispatcher("/WEB-INF/view/admin/book/edit.jsp").forward(request, response);
             } else {
                 request.getSession().setAttribute("error", "Book not found.");
@@ -90,11 +93,12 @@ public class EditBookServlet extends HttpServlet {
     /**
      * Handles the HTTP POST request to update book details.
      *
-     * Steps: 
-     * 1. Parse form parameters and populate a BookDTO object. 
-     * 2. Update the book in the database using BookDAO. 
-     * 3. Redirect to the book list page on success. 
-     * 4. Forward back to the edit form with an error message on failure.
+     * Steps: 1. Parse and validate form inputs (book ID, category ID, numeric
+     * fields). 2. Create a BookDTO object and set all properties from form
+     * data. 3. Call DAO to: - Update book info in Book table. - Update book's
+     * category in Book_Category table. 4. On success: redirect to book list
+     * with success message. 5. On failure: redirect back to edit form with
+     * error message.
      *
      * @param request the HttpServletRequest object
      * @param response the HttpServletResponse object
@@ -107,6 +111,15 @@ public class EditBookServlet extends HttpServlet {
 
         try {
             int bookId = Integer.parseInt(request.getParameter("id"));
+
+            // Lấy categoryID và kiểm tra nếu không chọn
+            String categoryParam = request.getParameter("categoryID");
+            if (categoryParam == null || categoryParam.isEmpty()) {
+                request.getSession().setAttribute("error", "Vui lòng chọn danh mục cho sách.");
+                response.sendRedirect(request.getContextPath() + "/admin/book/edit?id=" + bookId);
+                return;
+            }
+            int categoryId = Integer.parseInt(categoryParam);
 
             BookDTO book = new BookDTO();
             book.setBookID(bookId);
@@ -127,6 +140,7 @@ public class EditBookServlet extends HttpServlet {
 
             BookDAO bookDAO = new BookDAO();
             bookDAO.updateBook(book);
+            bookDAO.updateBookCategory(bookId, categoryId); // ✅ Cập nhật danh mục
 
             request.getSession().setAttribute("success", "Book updated successfully.");
             response.sendRedirect(request.getContextPath() + "/admin/book/list");
@@ -135,6 +149,7 @@ public class EditBookServlet extends HttpServlet {
             request.getSession().setAttribute("error", "Invalid data format. Please check your inputs.");
             response.sendRedirect(request.getContextPath() + "/admin/book/edit?id=" + request.getParameter("id"));
         } catch (Exception e) {
+            e.printStackTrace(); // để dễ debug
             request.getSession().setAttribute("error", "Failed to update the book. Please try again.");
             response.sendRedirect(request.getContextPath() + "/admin/book/edit?id=" + request.getParameter("id"));
         }

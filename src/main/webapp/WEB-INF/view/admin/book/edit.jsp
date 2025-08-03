@@ -17,7 +17,13 @@
             </div>
         </c:if>
 
-        <!-- Form chỉnh sửa sách -->
+        <!-- Thông báo thành công -->
+        <c:if test="${not empty success}">
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle"></i> ${success}
+            </div>
+        </c:if>
+
         <form action="${pageContext.request.contextPath}/admin/book/edit" method="post">
             <input type="hidden" name="id" value="${book.bookID}"/>
 
@@ -32,14 +38,16 @@
                     <select name="categoryID" class="form-select" required>
                         <option value="">-- Select category --</option>
                         <c:forEach var="cat" items="${categoryList}">
-                            <option value="${cat.categoryID}" <c:if test="${cat.categoryID == book.categoryID}">selected</c:if>>${cat.categoryName}</option>
+                            <option value="${cat.categoryID}"
+                                <c:if test="${cat.categoryID == selectedCategoryID}">selected</c:if>>
+                                ${cat.categoryName}
+                            </option>
                         </c:forEach>
                     </select>
                 </div>
             </div>
 
             <div class="form-row">
-                <!-- Dropdown cho tác giả -->
                 <div class="form-group">
                     <label class="form-label required">Author</label>
                     <select name="author" class="form-select" required>
@@ -50,7 +58,6 @@
                     </select>
                 </div>
 
-                <!-- Dropdown cho người phiên dịch -->
                 <div class="form-group">
                     <label class="form-label">Translator</label>
                     <select name="translator" class="form-select">
@@ -63,7 +70,6 @@
             </div>
 
             <div class="form-row">
-                <!-- Dropdown cho nhà xuất bản -->
                 <div class="form-group">
                     <label class="form-label">Publisher</label>
                     <select name="publisher" class="form-select">
@@ -95,12 +101,12 @@
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">Weight (gram)</label>
-                    <input type="number" name="weight" class="form-input" value="${book.weight}" />
+                    <input type="number" step="0.01" name="weight" class="form-input" value="${book.weight}" />
                 </div>
 
                 <div class="form-group">
                     <label class="form-label required">Price (VND)</label>
-                    <input type="number" name="price" class="form-input" value="${book.bookPrice}" required />
+                    <input type="number" step="0.01" name="price" class="form-input" value="${book.bookPrice}" required />
                 </div>
             </div>
 
@@ -115,18 +121,23 @@
                     <select name="hardcover" class="form-select">
                         <option value="1" <c:if test="${book.hardcover == 1}">selected</c:if>>Yes</option>
                         <option value="0" <c:if test="${book.hardcover == 0}">selected</c:if>>No</option>
-                        </select>
-                    </div>
+                    </select>
                 </div>
+            </div>
 
-                <div class="form-group">
-                    <label class="form-label">Image URL</label>
-                    <input type="text" name="image" class="form-input" value="${book.image}" />
+            <div class="form-group">
+                <label class="form-label">Image URL</label>
+                <input type="text" name="image" class="form-input" value="${book.image}" />
             </div>
 
             <div class="form-group">
                 <label class="form-label">Description</label>
                 <textarea name="description" class="form-textarea" rows="3">${book.bookDescription}</textarea>
+            </div>
+
+            <div class="form-group" style="display: none;">
+                <!-- Hidden status field (default to 1) -->
+                <input type="hidden" name="status" value="${book.bookStatus}" />
             </div>
 
             <div class="btn-group">
