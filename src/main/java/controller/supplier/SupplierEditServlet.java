@@ -127,6 +127,8 @@ public class SupplierEditServlet extends HttpServlet {
             }
 
             supplierDAO.editSupplier(supplier);
+             HttpSession session = request.getSession();
+            session.setAttribute("successMessage", " Supplier Edit successfully!");
             response.sendRedirect(request.getContextPath() + "/admin/supplier/list");
 
         } catch (Exception e) {

@@ -6,6 +6,13 @@
 <div class="main-content">
     <div class="content-area">
         <h1 class="page-title">Supplier Management</h1>
+        <c:if test="${not empty sessionScope.successMessage}">
+            <div id="successMessage" class="alert-success-custom">
+                ${sessionScope.successMessage}
+            </div>
+            <c:remove var="successMessage" scope="session" />
+        </c:if>
+
 
         <div class="toolbar">
             <a href="${pageContext.request.contextPath}/admin/supplier/add" class="btn btn-primary">
@@ -64,7 +71,7 @@
             <ul class="pagination">
                 <li>
                     <button class="page-btn" onclick="pagingSupplierPage(${currentPage - 1})" data-page="${currentPage - 1}" <c:if test="${currentPage == 1}">disabled</c:if>> &lt; </button>
-                </li>
+                    </li>
                 <c:forEach begin="1" end="${totalPages}" var="i">
                     <li>
                         <button class="page-btn ${i == currentPage ? 'active' : ''}" onclick="pagingSupplierPage(${i})" data-page="${i}">${i}</button>
@@ -72,10 +79,21 @@
                 </c:forEach>
                 <li>
                     <button class="page-btn" onclick="pagingSupplierPage(${currentPage + 1})" data-page="${currentPage + 1}" <c:if test="${currentPage == totalPages}">disabled</c:if>> &gt; </button>
-                </li>
-            </ul>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
-</div>
 
-<script src="${pageContext.request.contextPath}/assets/js/paging-supplier.js"></script>
+    <script src="${pageContext.request.contextPath}/assets/js/paging-supplier.js"></script>
+<script>
+                        window.addEventListener("DOMContentLoaded", function () {
+                            const msg = document.getElementById("successMessage");
+                            if (msg) {
+                                setTimeout(() => {
+                                    msg.style.display = "none";
+                                }, 3000); 
+                            }
+                        });
+</script>
+

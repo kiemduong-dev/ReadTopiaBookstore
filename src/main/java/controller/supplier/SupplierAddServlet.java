@@ -98,6 +98,10 @@ public class SupplierAddServlet extends HttpServlet {
             SupplierDAO dao = new SupplierDAO();
             dao.addSupplier(name, password, email, phone, address, status, imagePath);
 
+            
+            HttpSession session = request.getSession();
+            session.setAttribute("successMessage", " Supplier added successfully!");
+
             response.sendRedirect(request.getContextPath() + "/admin/supplier/list");
         } catch (Exception e) {
             request.setAttribute("error", "Upload failed: " + e.getMessage());

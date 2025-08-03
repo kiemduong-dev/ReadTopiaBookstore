@@ -15,14 +15,9 @@
         <div id="importTab" class="card">
             <div class="card-title">Import Stock List</div>
 
-            <c:if test="${not empty successMessage}">
-                <div class="success-message">
-                    <i class="fas fa-check-circle"></i> ${successMessage}
-                </div>
-            </c:if>
-            <c:if test="${not empty errorMessage}">
-                <div class="success-message" style="background: #fdecea; color: #c0392b;">
-                    <i class="fas fa-exclamation-circle"></i> ${errorMessage}
+            <c:if test="${not empty sessionScope.successMessage}">
+                <div id="successMessage" class="alert-success-custom">
+                    <i class="fas fa-check-circle"></i> ${sessionScope.successMessage}
                 </div>
             </c:if>
 
@@ -59,15 +54,16 @@
                                     </span>
                                 </td>
                                 <td>
-                                   <a href="${pageContext.request.contextPath}/admin/stock/ImportStockDetailServlet?isid=${s.id}"
-   class="btn btn-info"><i class="fas fa-eye"></i></a>
-
+                                    <a href="${pageContext.request.contextPath}/admin/stock/ImportStockDetailServlet?isid=${s.id}" class="btn btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
                                 </td>
                             </tr>
                         </c:forEach>
                     </tbody>
                 </table>
             </div>
+
             <div class="pagination-wrapper">
                 <ul class="pagination">
                     <li>
@@ -99,10 +95,18 @@
                     </li>
                 </ul>
             </div>
-
-
         </div>
     </div>
 </div>
 
 <script src="${pageContext.request.contextPath}/assets/js/paging-stock.js"></script>
+<script>
+    window.addEventListener("DOMContentLoaded", function () {
+        const success = document.getElementById("successMessage");
+        if (success) {
+            setTimeout(() => {
+                success.style.display = "none";
+            }, 3000);
+        }
+    });
+</script>

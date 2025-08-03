@@ -24,8 +24,8 @@ public class SupplierDeleteServlet extends HttpServlet {
                 System.out.println("Invalid ID: " + e.getMessage());
             }
         }
-
-        // Redirect về danh sách sau khi xóa
+  HttpSession session = request.getSession();
+            session.setAttribute("successMessage", " Supplier Delete successfully!");
         response.sendRedirect(request.getContextPath() + "/admin/supplier/list");
     }
 }
