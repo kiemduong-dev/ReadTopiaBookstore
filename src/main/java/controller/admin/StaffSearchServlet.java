@@ -11,9 +11,9 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * StaffSearchServlet – Handles search requests for staff accounts.
- * Allows Admin (0), Staff Manager (1), Seller Staff (2), and Warehouse Staff (3)
- * to search staff accounts based on keyword.
+ * StaffSearchServlet – Handles search requests for staff accounts. Allows Admin
+ * (0), Staff Manager (1), Seller Staff (2), and Warehouse Staff (3) to search
+ * staff accounts based on keyword.
  *
  * URL: /admin/staff/search?keyword=...
  *
@@ -28,10 +28,10 @@ public class StaffSearchServlet extends HttpServlet {
     /**
      * Handles GET requests for staff search.
      *
-     * @param request  HTTP request
+     * @param request HTTP request
      * @param response HTTP response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

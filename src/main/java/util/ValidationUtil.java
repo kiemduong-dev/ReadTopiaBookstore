@@ -33,16 +33,17 @@ public static boolean isValidName(String name) {
     return name != null && name.matches("^[\\p{L}]+( [\\p{L}]+)*$");
 }
 
-    /**
-     * Validate email format
-     *
-     * @param email input email
-     * @return true if valid
-     */
-    public static boolean isValidEmail(String email) {
-        return email != null
-                && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$");
-    }
+/**
+ * Validate email format
+ *
+ * @param email input email
+ * @return true if valid
+ */
+public static boolean isValidEmail(String email) {
+    if (email == null) return false;
+    String regex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}(\\.[a-zA-Z]{2,})*$";
+    return email.matches(regex);
+}
 
     /**
      * Validate strong password: min 8 chars, must include Aa#1

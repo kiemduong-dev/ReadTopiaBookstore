@@ -27,11 +27,12 @@ public class EditProfileServlet extends HttpServlet {
     private static final DateTimeFormatter DOB_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     /**
-     * Handles GET request to show edit profile form.
+     * Show profile edit form (GET)
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         HttpSession session = request.getSession(false);
         AccountDTO account = (session != null) ? (AccountDTO) session.getAttribute("account") : null;
 
@@ -45,7 +46,7 @@ public class EditProfileServlet extends HttpServlet {
     }
 
     /**
-     * Handles POST request to update profile information.
+     * Handle profile update (POST)
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -60,17 +61,18 @@ public class EditProfileServlet extends HttpServlet {
         }
 
         try {
+            // Get input
             String firstName = request.getParameter("firstName");
             String lastName = request.getParameter("lastName");
-            String email = request.getParameter("email");
-            String phone = request.getParameter("phone");
+            String email = request.getParameter("email"); // hidden input
+            String phone = request.getParameter("phone"); // hidden input
             String address = request.getParameter("address");
-            String dobStr = request.getParameter("dob"); // Expected format: dd/MM/yyyy
+            String dobStr = request.getParameter("dob"); // Expected: dd/MM/yyyy
             String gender = request.getParameter("sex");
 
             int sex = Integer.parseInt(gender);
 
-            // Validate input
+            // Validate
             if (!ValidationUtil.isValidName(firstName)) {
                 request.setAttribute("error", "Invalid first name.");
             } else if (!ValidationUtil.isValidName(lastName)) {
@@ -86,7 +88,7 @@ public class EditProfileServlet extends HttpServlet {
             } else if (!ValidationUtil.isValidAddress(address)) {
                 request.setAttribute("error", "Address is required.");
             } else {
-                // Parse date using dd/MM/yyyy
+                // Parse and update
                 LocalDate parsedDob = LocalDate.parse(dobStr, DOB_FORMATTER);
                 Date dob = Date.valueOf(parsedDob);
 

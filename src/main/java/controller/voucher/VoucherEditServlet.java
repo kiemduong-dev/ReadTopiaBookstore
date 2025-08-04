@@ -81,7 +81,7 @@ public class VoucherEditServlet extends HttpServlet {
                 errors.add("The end date must be after the start date!");
             }
 
-            if (quantity < 0) {
+            if (quantity <= 0) {
                 errors.add("The quantity cannot be negative!");
             }
 

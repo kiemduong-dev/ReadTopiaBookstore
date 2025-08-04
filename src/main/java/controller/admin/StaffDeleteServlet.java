@@ -10,11 +10,11 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 
 /**
- * StaffDeleteServlet – Handles deletion of seller and warehouse staff accounts by Staff role (1).
- * Only Staff role (1) can delete staff with role 2 or 3.
- * Admin cannot delete any staff.
- * Staff cannot delete staff role 1 (including themselves).
- * 
+ * StaffDeleteServlet – Handles deletion of seller and warehouse staff accounts
+ * by Staff role (1). Only Staff role (1) can delete staff with role 2 or 3.
+ * Admin cannot delete any staff. Staff cannot delete staff role 1 (including
+ * themselves).
+ *
  * @author CE181518 Dương An Kiếm
  */
 @WebServlet(name = "StaffDeleteServlet", urlPatterns = {"/admin/staff/delete"})

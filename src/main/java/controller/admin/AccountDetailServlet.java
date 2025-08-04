@@ -11,9 +11,9 @@ import java.io.IOException;
 /**
  * AccountDetailServlet – Displays detailed information of a specific account.
  * Only accessible by Admin (role = 0).
- * 
+ *
  * URL: /admin/account/detail?username={username}
- * 
+ *
  * @author CE181518
  */
 @WebServlet(name = "AccountDetailServlet", urlPatterns = {"/admin/account/detail"})

@@ -11,9 +11,9 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * StaffListServlet – Displays the list of all active staff accounts based on role.
- * Admin (0), Staff Manager (1): Can view all (roles 1, 2, 3)
- * Seller Staff (2), Warehouse Staff (3): Can only view staff with roles 2 & 3.
+ * StaffListServlet – Displays the list of all active staff accounts based on
+ * role. Admin (0), Staff Manager (1): Can view all (roles 1, 2, 3) Seller Staff
+ * (2), Warehouse Staff (3): Can only view staff with roles 2 & 3.
  *
  * URL: /admin/staff/list
  *
@@ -28,7 +28,7 @@ public class StaffListServlet extends HttpServlet {
     /**
      * Handles GET request to show staff list by role.
      *
-     * @param request  HttpServletRequest
+     * @param request HttpServletRequest
      * @param response HttpServletResponse
      * @throws ServletException
      * @throws IOException

@@ -10,10 +10,10 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 
 /**
- * AccountDeleteServlet – Handles soft deletion of accounts by Admin.
- * Admin can only delete Staff Manager (role = 1) and Customer (role = 4).
- * Cannot delete Admin (role = 0), Seller Staff (2), Warehouse Staff (3), or self.
- * 
+ * AccountDeleteServlet – Handles soft deletion of accounts by Admin. Admin can
+ * only delete Staff Manager (role = 1) and Customer (role = 4). Cannot delete
+ * Admin (role = 0), Seller Staff (2), Warehouse Staff (3), or self.
+ *
  * @author CE181518 Dương An Kiếm
  */
 @WebServlet(name = "AccountDeleteServlet", urlPatterns = {"/admin/account/delete"})

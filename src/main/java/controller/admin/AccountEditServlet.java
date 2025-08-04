@@ -12,12 +12,12 @@ import java.sql.Date;
 import java.text.SimpleDateFormat;
 
 /**
- * AccountEditServlet – Handles editing of user accounts by admin.
- * Only Admin can edit roles 1 (Staff Manager) and 4 (Customer).
- * Cannot edit Admins or roles 2/3 (Seller/Warehouse).
+ * AccountEditServlet – Handles editing of user accounts by admin. Only Admin
+ * can edit roles 1 (Staff Manager) and 4 (Customer). Cannot edit Admins or
+ * roles 2/3 (Seller/Warehouse).
  *
  * URL: /admin/account/edit
- * 
+ *
  * Author: CE181518 Dương An Kiếm
  */
 @WebServlet(name = "AccountEditServlet", urlPatterns = {"/admin/account/edit"})
@@ -31,10 +31,10 @@ public class AccountEditServlet extends HttpServlet {
             throws ServletException, IOException {
 
         HttpSession session = request.getSession();
-        AccountDTO currentUser  = (AccountDTO) session.getAttribute("account");
+        AccountDTO currentUser = (AccountDTO) session.getAttribute("account");
 
         // Kiểm tra quyền truy cập của người dùng
-        if (currentUser  == null || currentUser .getRole() != 0) {
+        if (currentUser == null || currentUser.getRole() != 0) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
@@ -66,10 +66,10 @@ public class AccountEditServlet extends HttpServlet {
 
         request.setCharacterEncoding("UTF-8");
         HttpSession session = request.getSession();
-        AccountDTO currentUser  = (AccountDTO) session.getAttribute("account");
+        AccountDTO currentUser = (AccountDTO) session.getAttribute("account");
 
         // Kiểm tra quyền truy cập của người dùng
-        if (currentUser  == null || currentUser .getRole() != 0) {
+        if (currentUser == null || currentUser.getRole() != 0) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
@@ -128,7 +128,7 @@ public class AccountEditServlet extends HttpServlet {
             boolean success = dao.updateAccountByAdmin(updated);
 
             if (success) {
-                 session.setAttribute("message", "Account \"" + username + "\" updated successfully.");
+                session.setAttribute("message", "Account \"" + username + "\" updated successfully.");
                 response.sendRedirect("list");
             } else {
                 request.setAttribute("error", "Failed to update account.");

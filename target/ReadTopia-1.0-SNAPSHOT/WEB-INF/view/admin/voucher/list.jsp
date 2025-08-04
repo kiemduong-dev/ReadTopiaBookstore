@@ -57,7 +57,7 @@
                 <div style="display: flex; gap: 10px; padding-right: 30px">
                     <a href="${pageContext.request.contextPath}/admin/voucher/add" class="btn btn-primary">Add New</a>
                 <a href="${pageContext.request.contextPath}/admin/voucher/logs" class="btn btn-primary">Log</a>
-            </div>
+</div>
         </form>
 
         <div class="table-container">
@@ -116,7 +116,7 @@
                                 <c:if test="${sessionScope.role == 0 && v.vouStatus == 0}">
                                     <form method="post" action="${pageContext.request.contextPath}/admin/voucher/approve?vouID=${v.vouID}" 
                                           style="display:inline">
-                                        <button type="submit" class="btn btn-primary btn-sm" title="Approve">Approve</button>
+<button type="submit" class="btn btn-primary btn-sm" title="Approve">Approve</button>
                                     </form>
                                     <form method="post" action="${pageContext.request.contextPath}/admin/voucher/decline?vouID=${v.vouID}" 
                                           style="display:inline">
@@ -165,8 +165,8 @@
                     <span class="close-button" onclick="hideDeleteModal()">&times;</span>
                 </div>
                 <div class="custom-modal-body">
-                    Are you sure you want to delete voucher "<span id="notificationTitleText"></span>"?
-                    <input type="hidden" name="notID" id="deleteNotID" />
+                    Are you sure you want to delete voucher "<span id="voucherNameText"></span>"?
+                    <input type="hidden" name="vouID" id="deleteVouID" />
                 </div>
                 <div class="custom-modal-footer">
                     <button type="button" class="btn btn-secondary" onclick="hideDeleteModal()">No</button>
@@ -181,7 +181,7 @@
 
         <script>
             function showDeleteModal(vouID, vouName) {
-                document.getElementById("notificationTitleText").innerText = vouName;
+document.getElementById("voucherNameText").innerText = vouName;
                 document.getElementById("hiddenDeleteID").value = vouID;
                 document.getElementById("confirmDeleteModal").style.display = "block";
             }

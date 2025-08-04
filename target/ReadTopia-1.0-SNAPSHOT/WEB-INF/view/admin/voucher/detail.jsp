@@ -19,7 +19,7 @@
         <div class="card" style="margin-left: 100px; margin-right: 100px">
             <h3 class="card-title">Voucher Information</h3>
 
-            <div class="row" style="padding-left: 50px">
+            <div class="row" style="padding-left: 100px">
                 <div class="col" style="display: flex; width: 40%; float: left; margin-right: 4%;">
                     <label class="form-label">Voucher ID: </label>
                     <p>${voucher.vouID}</p>
@@ -30,7 +30,7 @@
                 </div>
             </div>
 
-            <div class="row">
+            <div class="row" style="padding-left: 100px">
                 <div class="col" style="display: flex; width: 40%; float: left; margin-right: 4%;">
                     <label class="form-label">Code:</label>
                     <p>${voucher.vouCode}</p>
@@ -41,7 +41,7 @@
                 </div>
             </div>
 
-            <div class="row">
+            <div class="row" style="padding-left: 100px">
                 <div class="col" style="display: flex; width: 40%; float: left; margin-right: 4%;">
                     <label class="form-label">Start Date: </label>
                     <p>${voucher.startDate}</p>
@@ -52,7 +52,7 @@
                 </div>
             </div>
 
-            <div class="row">
+            <div class="row" style="padding-left: 100px">
                 <div class="col" style="display: flex; width: 40%; float: left; margin-right: 4%;">
                     <label class="form-label">Quantity: </label>
                     <p>${voucher.quantity}</p>
@@ -64,7 +64,7 @@
                             <c:when test="${voucher.vouStatus == 1}">
                                 <span class="status-badge active">ACTIVE</span>
                             </c:when>
-                            <c:otherwise>
+<c:otherwise>
                                 <span class="status-badge inactive">INACTIVE</span>
                             </c:otherwise>
                         </c:choose>
@@ -72,7 +72,7 @@
                 </div>
             </div>
 
-            <div class="row">
+            <div class="row" style="padding-left: 100px">
                 <div class="col" style="display: flex; width: 40%; float: left; margin-right: 4%;">
                     <label class="form-label">Created by: </label>
                     <p>
@@ -83,16 +83,24 @@
                     </p>
                 </div>
                 <div class="col" style="display: flex; width: 40%; float: left;">
-                    <label class="form-label">Approved by: </label>
+                    <label class="form-label">
+                        Approved by:
+                    </label>
                     <p>
                         <c:choose>
-                            <c:when test="${voucher.approverRole == 0}">Admin</c:when>
-                            <c:otherwise>Seller Staff</c:otherwise>
+                            <c:when test="${voucher.vouStatus == 0}">
+                                Not approved yet
+                            </c:when>
+                            <c:when test="${voucher.approverRole == 0}">
+                                Admin
+                            </c:when>
+                            <c:otherwise>
+                                Seller Staff
+                            </c:otherwise>
                         </c:choose>
                     </p>
                 </div>
             </div>
-
             <div style="clear: both;"></div>
 
             <div class="btn-group" style="margin-top: 20px;">

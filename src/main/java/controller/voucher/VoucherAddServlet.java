@@ -71,7 +71,7 @@ public class VoucherAddServlet extends HttpServlet {
                 errors.add("Discount percentage must be greater than 0 and less than 100!");
             }
 
-            if (quantity < 0) {
+            if (quantity <= 0) {
                 errors.add("The quantity cannot be negative!");
             }
 

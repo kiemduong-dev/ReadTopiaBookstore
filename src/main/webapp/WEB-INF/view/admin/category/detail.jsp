@@ -19,6 +19,11 @@
                 <textarea class="form-input" rows="4" readonly>${category.categoryDescription}</textarea>
             </div>
 
+            <div class="form-group">
+                <label class="form-label">Parent Category:</label>
+                <input type="text" class="form-input" value="${category.parentName != null ? category.parentName : 'None'}" readonly />
+            </div>
+
             <div class="btn-group">
                 <a href="${pageContext.request.contextPath}/admin/category/list" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Back

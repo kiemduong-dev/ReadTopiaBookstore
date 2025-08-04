@@ -10,11 +10,11 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * AccountListServlet – Displays all accounts for admin.
- * Only Admin (role = 0) is allowed to access.
+ * AccountListServlet – Displays all accounts for admin. Only Admin (role = 0)
+ * is allowed to access.
  *
  * URL: /admin/account/list
- * 
+ *
  * @author CE181518 Dương An Kiếm
  */
 @WebServlet(name = "AccountListServlet", urlPatterns = {"/admin/account/list"})
@@ -41,11 +41,10 @@ public class AccountListServlet extends HttpServlet {
 
             // Message (if redirected from create/update/delete)
             String message = (String) session.getAttribute("message");
-if (message != null) {
-    request.setAttribute("flashMessage", message); // 🔁 Đổi tên tránh xung đột
-    session.removeAttribute("message");
-}
-
+            if (message != null) {
+                request.setAttribute("flashMessage", message); // 🔁 Đổi tên tránh xung đột
+                session.removeAttribute("message");
+            }
 
             request.getRequestDispatcher("/WEB-INF/view/admin/account/list.jsp").forward(request, response);
 

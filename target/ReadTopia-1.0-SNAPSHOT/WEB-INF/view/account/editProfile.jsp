@@ -9,16 +9,11 @@
 <jsp:include page="/WEB-INF/includes/header.jsp" />
 
 <div class="main-content">
-    <div class="form-container"
-         style="max-width: 600px; margin: 50px auto; background: #fff;
-         border-radius: 15px; padding: 30px;
-         box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+    <div class="form-container" style="max-width: 600px; margin: 50px auto; background: #fff; border-radius: 15px; padding: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
 
         <!-- Logo -->
         <div class="text-center mb-4">
-            <img src="${pageContext.request.contextPath}/assets/img/logo.png"
-                 alt="ReadTopia Logo"
-                 style="height: 50px;" />
+            <img src="${pageContext.request.contextPath}/assets/img/logo.png" alt="ReadTopia Logo" style="height: 50px;" />
         </div>
 
         <!-- Title -->
@@ -36,10 +31,10 @@
             </div>
         </c:if>
 
-        <!-- Format date -->
+        <!-- Format Date -->
         <fmt:formatDate value="${user.dob}" pattern="dd/MM/yyyy" var="dobFormatted" />
 
-        <!-- Role label -->
+        <!-- Role Mapping -->
         <c:choose>
             <c:when test="${user.role == 0}">
                 <c:set var="roleLabel" value="Admin" />
@@ -58,60 +53,64 @@
             </c:otherwise>
         </c:choose>
 
-        <!-- Edit Form -->
+        <!-- Form -->
         <form action="${pageContext.request.contextPath}/edit-profile" method="post">
-            <div class="form-row">
-                <div class="form-group mb-3">
-                    <label class="form-label">Username</label>
-                    <input type="text" class="form-control" value="${user.username}" readonly />
-                </div>
-                <div class="form-group mb-3">
-                    <label class="form-label">Date of Birth</label>
-                    <input type="text" name="dob" class="form-control" value="${dobFormatted}" placeholder="dd/MM/yyyy" required />
-                </div>
+            <!-- Username (readonly) -->
+            <div class="form-group mb-3">
+                <label class="form-label">Username</label>
+                <input type="text" class="form-control" value="${user.username}" readonly />
             </div>
 
-            <div class="form-row">
-                <div class="form-group mb-3">
-                    <label class="form-label">First Name</label>
-                    <input type="text" name="firstName" class="form-control" value="${user.firstName}" required />
-                </div>
-                <div class="form-group mb-3">
-                    <label class="form-label">Last Name</label>
-                    <input type="text" name="lastName" class="form-control" value="${user.lastName}" required />
-                </div>
+            <!-- Date of Birth -->
+            <div class="form-group mb-3">
+                <label class="form-label">Date of Birth</label>
+                <input type="text" name="dob" class="form-control" value="${dobFormatted}" placeholder="dd/MM/yyyy" required />
             </div>
 
-            <div class="form-row">
-                <div class="form-group mb-3">
-                    <label class="form-label">Email</label>
-                    <input type="email" class="form-control" value="${user.email}" readonly />
-                </div>
-                <div class="form-group mb-3">
-                    <label class="form-label">Role</label>
-                    <input type="text" class="form-control" value="${roleLabel}" readonly />
-                </div>
+            <!-- First + Last Name -->
+            <div class="form-group mb-3">
+                <label class="form-label">First Name</label>
+                <input type="text" name="firstName" class="form-control" value="${user.firstName}" required />
+            </div>
+            <div class="form-group mb-3">
+                <label class="form-label">Last Name</label>
+                <input type="text" name="lastName" class="form-control" value="${user.lastName}" required />
             </div>
 
-            <div class="form-row">
-                <div class="form-group mb-3">
-                    <label class="form-label">Phone</label>
-                    <input type="text" class="form-control" value="${user.phone}" readonly />
-                </div>
-                <div class="form-group mb-3">
-                    <label class="form-label">Gender</label>
-                    <select name="sex" class="form-control" required>
-                        <option value="1" ${user.sex == 1 ? 'selected' : ''}>Male</option>
-                        <option value="0" ${user.sex == 0 ? 'selected' : ''}>Female</option>
-                    </select>
-                </div>
+            <!-- Email + Phone (readonly but hidden inputs to pass data) -->
+            <div class="form-group mb-3">
+                <label class="form-label">Email</label>
+                <input type="text" class="form-control" value="${user.email}" readonly />
+                <input type="hidden" name="email" value="${user.email}" />
+            </div>
+            <div class="form-group mb-3">
+                <label class="form-label">Phone</label>
+                <input type="text" class="form-control" value="${user.phone}" readonly />
+                <input type="hidden" name="phone" value="${user.phone}" />
             </div>
 
+            <!-- Role -->
+            <div class="form-group mb-3">
+                <label class="form-label">Role</label>
+                <input type="text" class="form-control" value="${roleLabel}" readonly />
+            </div>
+
+            <!-- Gender -->
+            <div class="form-group mb-3">
+                <label class="form-label">Gender</label>
+                <select name="sex" class="form-control" required>
+                    <option value="1" <c:if test="${user.sex == 1}">selected</c:if>>Male</option>
+                    <option value="0" <c:if test="${user.sex == 0}">selected</c:if>>Female</option>
+                </select>
+            </div>
+
+            <!-- Address -->
             <div class="form-group mb-4">
                 <label class="form-label">Address</label>
                 <textarea name="address" class="form-control" rows="3" required>${user.address}</textarea>
             </div>
 
+            <!-- Actions -->
             <div class="d-flex justify-content-between">
                 <a href="${pageContext.request.contextPath}/profile" class="btn btn-secondary">↩ Cancel</a>
                 <button type="submit" class="btn btn-primary">Save Changes</button>

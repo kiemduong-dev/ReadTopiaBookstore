@@ -1,3 +1,13 @@
+/**
+ * Category Detail Servlet - Displays details of a specific category.
+ *
+ * Retrieves a category by ID and forwards it to the detail JSP page. Redirects
+ * to the category list page if the category is not found.
+ *
+ * URL: /admin/category/detail?id={categoryID}
+ *
+ * Author: CE182018 Vuong Chi Bao
+ */
 package controller.category;
 
 import dao.CategoryDAO;
@@ -11,16 +21,6 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-/**
- * Category Detail Servlet - Displays details of a specific category.
- *
- * Retrieves a category by ID and forwards it to the detail JSP page. Redirects
- * to the category list page if the category is not found.
- *
- * URL: /admin/category/detail?id={categoryID}
- *
- * Author: CE182018 Vuong Chi Bao
- */
 @WebServlet("/admin/category/detail")
 public class CategoryDetailServlet extends HttpServlet {
 

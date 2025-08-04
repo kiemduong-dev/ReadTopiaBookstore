@@ -17,8 +17,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 /**
- * AccountAddServlet – Handles account creation by Admin (role 0 only).
- * Only Admin or Staff Manager roles (0, 1) can be created.
+ * AccountAddServlet – Handles account creation by Admin (role 0 only). Only
+ * Admin or Staff Manager roles (0, 1) can be created.
  *
  * @author CE181518 Dương An Kiếm
  */
@@ -139,8 +139,8 @@ public class AccountAddServlet extends HttpServlet {
     }
 
     private void bindAccountToRequest(HttpServletRequest request, String username, String password,
-                                      String firstName, String lastName, Date dob, String email, String phone,
-                                      int role, String address, int sex) {
+            String firstName, String lastName, Date dob, String email, String phone,
+            int role, String address, int sex) {
         AccountDTO account = new AccountDTO(username, password, firstName, lastName,
                 dob, email, phone, role, address, sex, 1, null);
         request.setAttribute("account", account);

@@ -43,7 +43,7 @@
                                 <i class="bi bi-cart-x display-1 text-muted"></i>
                                 <h3 class="mt-3">Your cart is empty</h3>
                                 <p class="text-muted">You haven't added any products yet.</p>
-                                <a href="${pageContext.request.contextPath}//book/list"
+                                <a href="${pageContext.request.contextPath}/homepage/book/list"
                                    class="btn mt-3"
                                    style="background-color: #0d84e9; color: white; padding: 10px 25px; border-radius: 30px; font-weight: 500;">
                                     <i></i> Browse Books

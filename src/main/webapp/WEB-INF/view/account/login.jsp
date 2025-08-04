@@ -74,7 +74,7 @@
 
                     <!-- Back to Home -->
                     <div class="text-center mt-3">
-                        <a href="${pageContext.request.contextPath}/customer/book/list" class="text-decoration-none">
+                        <a href="${pageContext.request.contextPath}/homepage/book/list" class="text-decoration-none">
                             ← Back to Homepage
                         </a>
                     </div>

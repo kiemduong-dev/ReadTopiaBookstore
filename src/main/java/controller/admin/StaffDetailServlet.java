@@ -10,14 +10,13 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 
 /**
- * StaffDetailServlet – Displays detailed information of a staff member based on staffID.
- * Accessible by:
- * - Admin (0): view role 1,2,3 (but not another Admin)
- * - Staff Manager (1): view role 2,3 (not another Staff)
- * - Seller (2) / Warehouse (3): view role 2,3
- * 
+ * StaffDetailServlet – Displays detailed information of a staff member based on
+ * staffID. Accessible by: - Admin (0): view role 1,2,3 (but not another Admin)
+ * - Staff Manager (1): view role 2,3 (not another Staff) - Seller (2) /
+ * Warehouse (3): view role 2,3
+ *
  * URL: /admin/staff/detail?staffID=...
- * 
+ *
  * @author CE181518
  */
 @WebServlet(name = "StaffDetailServlet", urlPatterns = {"/admin/staff/detail"})
