@@ -24,11 +24,11 @@ public class CartDAO {
             ps.setInt(3, cart.getQuantity());
 
             int result = ps.executeUpdate();
-            System.out.println("✅ Added to cart: " + cart.toString());
+            System.out.println("Added to cart: " + cart.toString());
             return result > 0;
 
         } catch (Exception e) {
-            System.err.println("❌ addToCart error: " + e.getMessage());
+            System.err.println("addToCart error: " + e.getMessage());
             e.printStackTrace();
         }
         return false;
@@ -49,7 +49,7 @@ public class CartDAO {
             }
 
         } catch (Exception e) {
-            System.err.println("❌ findByUsernameAndBookID error: " + e.getMessage());
+            System.err.println("findByUsernameAndBookID error: " + e.getMessage());
             e.printStackTrace();
         }
         return null;
@@ -68,7 +68,7 @@ public class CartDAO {
                 }
             }
         } catch (Exception e) {
-            System.err.println("❌ findByCartID error: " + e.getMessage());
+            System.err.println("findByCartID error: " + e.getMessage());
             e.printStackTrace();
         }
         return null;
@@ -84,13 +84,13 @@ public class CartDAO {
             ps.setString(3, cart.getUsername());
 
             int rowsAffected = ps.executeUpdate();
-            System.out.println("✅ Updated cart: cartID=" + cart.getCartID()
+            System.out.println("Updated cart: cartID=" + cart.getCartID()
                     + ", quantity=" + cart.getQuantity()
                     + ", rowsAffected=" + rowsAffected);
             return rowsAffected > 0;
 
         } catch (Exception e) {
-            System.err.println("❌ updateCart error: " + e.getMessage());
+            System.err.println("updateCart error: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -107,7 +107,7 @@ public class CartDAO {
 
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
-            System.err.println("❌ updateCartQuantity error: " + e.getMessage());
+            System.err.println("updateCartQuantity error: " + e.getMessage());
             e.printStackTrace();
         }
         return false;
@@ -127,9 +127,9 @@ public class CartDAO {
                 }
             }
 
-            System.out.println("✅ Retrieved " + list.size() + " cart items for user: " + username);
+            System.out.println("Retrieved " + list.size() + " cart items for user: " + username);
         } catch (Exception e) {
-            System.err.println("❌ getCartByUsername error: " + e.getMessage());
+            System.err.println("getCartByUsername error: " + e.getMessage());
             e.printStackTrace();
         }
         return list;
@@ -148,7 +148,7 @@ public class CartDAO {
                 }
             }
         } catch (Exception e) {
-            System.err.println("❌ getCartItemCount error: " + e.getMessage());
+            System.err.println("getCartItemCount error: " + e.getMessage());
             e.printStackTrace();
         }
         return 0;
@@ -163,11 +163,11 @@ public class CartDAO {
             ps.setString(2, username);
 
             int result = ps.executeUpdate();
-            System.out.println("✅ Deleted from cart: cartID=" + cartID + ", result=" + result);
+            System.out.println("Deleted from cart: cartID=" + cartID + ", result=" + result);
             return result > 0;
 
         } catch (Exception e) {
-            System.err.println("❌ deleteFromCart error: " + e.getMessage());
+            System.err.println("deleteFromCart error: " + e.getMessage());
             e.printStackTrace();
         }
         return false;
@@ -214,11 +214,11 @@ public class CartDAO {
             ps.setString(1, username);
 
             int result = ps.executeUpdate();
-            System.out.println("✅ Cleared cart for user: " + username + ", deleted " + result + " items");
+            System.out.println("Cleared cart for user: " + username + ", deleted " + result + " items");
             return result > 0;
 
         } catch (Exception e) {
-            System.err.println("❌ clearCartByUsername error: " + e.getMessage());
+            System.err.println("clearCartByUsername error: " + e.getMessage());
             e.printStackTrace();
         }
         return false;
@@ -269,7 +269,7 @@ public class CartDAO {
                 }
             }
         } catch (Exception e) {
-            System.err.println("❌ getCartTotal error: " + e.getMessage());
+            System.err.println("getCartTotal error: " + e.getMessage());
             e.printStackTrace();
         }
         return 0.0;

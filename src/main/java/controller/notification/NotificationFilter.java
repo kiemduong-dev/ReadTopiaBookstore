@@ -128,7 +128,7 @@ public class NotificationFilter implements Filter {
 
         // Tiếp tục xử lý
         chain.doFilter(request, response);
-        System.out.println("🔔 NotificationFilter triggered for: " + req.getRequestURI());
+        System.out.println("NotificationFilter triggered for: " + req.getRequestURI());
     }
 
     /**

@@ -80,7 +80,7 @@ book.setCategoryID(categoryId);
             if (bookId != -1) {
                 bookDAO.insertBookCategory(bookId, categoryId);
 
-                // ✅ Thông báo rõ ràng hơn
+                // Thông báo rõ ràng hơn
                 String successMessage = "Book \"" + book.getBookTitle() + "\" has been added successfully.";
                 request.getSession().setAttribute("success", successMessage);
 

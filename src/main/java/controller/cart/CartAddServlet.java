@@ -56,7 +56,7 @@ public class CartAddServlet extends HttpServlet {
             return;
         }
 
-        // ➤ Nếu là Buy Now → chuyển hướng đến trang thanh toán trực tiếp (không thêm vào giỏ)
+        // Nếu là Buy Now chuyển hướng đến trang thanh toán trực tiếp (không thêm vào giỏ)
         if ("buyNow".equals(action)) {
             if (quantity > book.getBookQuantity()) {
                 response.sendRedirect(request.getContextPath() + "/homepage/book/detail?id=" + bookID + "&error=outofstock");
@@ -72,7 +72,7 @@ public class CartAddServlet extends HttpServlet {
             return;
         }
 
-        // ➤ Nếu là Add to Cart
+        // Nếu là Add to Cart
         CartDAO cartDAO = new CartDAO();
         CartDTO existingItem = cartDAO.findByUsernameAndBookID(username, bookID);
 

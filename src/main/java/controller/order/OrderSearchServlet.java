@@ -54,7 +54,7 @@
             } catch (NumberFormatException e) {
                 request.setAttribute("error", "Invalid book ID format");
             } catch (Exception e) {
-                System.err.println("❌ OrderSearchServlet error: " + e.getMessage());
+                System.err.println("OrderSearchServlet error: " + e.getMessage());
                 e.printStackTrace();
                 request.setAttribute("error", "Search failed");
             }

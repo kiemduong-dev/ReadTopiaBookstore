@@ -40,7 +40,7 @@ public class AccountDeleteServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         AccountDTO loginUser = (session != null) ? (AccountDTO) session.getAttribute("account") : null;
 
-        // ❌ Must be Admin (role = 0)
+        // Must be Admin (role = 0)
         if (loginUser == null || loginUser.getRole() != 0) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied. Only Admin can delete accounts.");
             return;
@@ -48,7 +48,7 @@ public class AccountDeleteServlet extends HttpServlet {
 
         String username = request.getParameter("username");
         if (username == null || username.trim().isEmpty()) {
-            session.setAttribute("message", "⚠️ Username is required.");
+            session.setAttribute("message", " Username is required.");
             response.sendRedirect("list");
             return;
         }
@@ -65,26 +65,26 @@ public class AccountDeleteServlet extends HttpServlet {
 
             int targetRole = target.getRole();
 
-            // ❌ Cannot delete Admin, Seller, Warehouse
+            // Cannot delete Admin, Seller, Warehouse
             if (targetRole == 0 || targetRole == 2 || targetRole == 3) {
                 session.setAttribute("message", "You cannot delete Admin, Seller, or Warehouse Staff.");
                 response.sendRedirect("list");
                 return;
             }
 
-            // ❌ Cannot delete self
+            // Cannot delete self
             if (username.equals(loginUser.getUsername())) {
                 session.setAttribute("message", "You cannot delete your own account.");
                 response.sendRedirect("list");
                 return;
             }
 
-            // ✅ If Staff Manager → delete from Staff table too
+            //If Staff Manager → delete from Staff table too
             if (targetRole == 1) {
                 staffDAO.deleteByUsername(username);
             }
 
-            // ✅ Soft delete (accStatus = 0)
+            // Soft delete (accStatus = 0)
             target.setAccStatus(0);
             boolean deleted = accountDAO.updateAccountStatus(target);
 

@@ -60,7 +60,7 @@ public class AccountDAO {
             ps.setInt(9, acc.getAccStatus());
             ps.setDate(10, acc.getDob());
             ps.setInt(11, acc.getSex());
-            ps.setString(12, null); // ✅ code = null → KHÔNG CÓ OTP
+            ps.setString(12, null); // code = null → KHÔNG CÓ OTP
 
             return ps.executeUpdate() > 0;
 
@@ -141,7 +141,7 @@ public class AccountDAO {
                             rs.getString("address"),
                             rs.getInt("sex"),
                             rs.getInt("accStatus"),
-                            rs.getString("code") // ✅ sửa ở đây
+                            rs.getString("code") // sửa ở đây
                     );
                 }
             }

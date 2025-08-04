@@ -45,23 +45,23 @@ public class SupplierAddServlet extends HttpServlet {
 
         // Lưu error message theo field
         if (name == null || !NAME_PATTERN.matcher(name).matches()) {
-            request.setAttribute("nameError", "❌ Name must only contain letters and spaces.");
+            request.setAttribute("nameError", "Name must only contain letters and spaces.");
             hasError = true;
         }
         if (password == null || password.length() < 6) {
-            request.setAttribute("passwordError", "❌ Password must be at least 6 characters.");
+            request.setAttribute("passwordError", "Password must be at least 6 characters.");
             hasError = true;
         }
         if (email == null || !EMAIL_PATTERN.matcher(email).matches()) {
-            request.setAttribute("emailError", "❌ Invalid email format.");
+            request.setAttribute("emailError", "Invalid email format.");
             hasError = true;
         }
         if (phone == null || !PHONE_PATTERN.matcher(phone).matches()) {
-            request.setAttribute("phoneError", "❌ Phone must be 10 digits and start with 0.");
+            request.setAttribute("phoneError", "Phone must be 10 digits and start with 0.");
             hasError = true;
         }
         if (address == null || !ADDRESS_PATTERN.matcher(address).matches()) {
-            request.setAttribute("addressError", "❌ Address must only contain letters, commas and spaces.");
+            request.setAttribute("addressError", "Address must only contain letters, commas and spaces.");
             hasError = true;
         }
 

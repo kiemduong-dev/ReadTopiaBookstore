@@ -43,13 +43,13 @@ public class AccountAddServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         AccountDTO currentUser = (session != null) ? (AccountDTO) session.getAttribute("account") : null;
 
-        // ✅ Admin check
+        // Admin check
         if (currentUser == null || currentUser.getRole() != 0) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
 
-        // ✅ Get and trim input
+        // Get and trim input
         String username = request.getParameter("username").trim();
         String firstName = request.getParameter("firstName").trim();
         String lastName = request.getParameter("lastName").trim();
@@ -60,7 +60,7 @@ public class AccountAddServlet extends HttpServlet {
         int role = safeParseInt(request.getParameter("role"));
         int sex = safeParseInt(request.getParameter("sex"));
 
-        // ✅ Validate input
+        // Validate input
         if (!ValidationUtil.isValidUsername(username)
                 || !ValidationUtil.isValidName(firstName)
                 || !ValidationUtil.isValidName(lastName)
@@ -78,7 +78,7 @@ public class AccountAddServlet extends HttpServlet {
         }
 
         try {
-            // ✅ Only allow roles 0 (Admin) or 1 (Staff Manager)
+            // Only allow roles 0 (Admin) or 1 (Staff Manager)
             if (role != 0 && role != 1) {
                 request.setAttribute("error", "Only Admin or Staff Manager roles are allowed.");
                 bindAccountToRequest(request, username, null, firstName, lastName, null, email, phone, role, address, sex);
@@ -87,7 +87,7 @@ public class AccountAddServlet extends HttpServlet {
                 return;
             }
 
-            // ✅ Username must be unique
+            // Username must be unique
             if (accountDAO.findByUsername(username) != null) {
                 request.setAttribute("error", "Username already exists.");
                 bindAccountToRequest(request, username, null, firstName, lastName, null, email, phone, role, address, sex);
@@ -96,21 +96,21 @@ public class AccountAddServlet extends HttpServlet {
                 return;
             }
 
-            // ✅ Parse DOB
+            // Parse DOB
             LocalDate dobLocal = LocalDate.parse(dobRaw, formatter);
             Date dob = Date.valueOf(dobLocal);
 
-            // ✅ Generate random password and hash
+            // Generate random password and hash
             String rawPassword = PasswordUtil.generateRandomPassword(10);
             String hashedPassword = BCrypt.hashpw(rawPassword, BCrypt.gensalt());
 
-            // ✅ Create account object with code = null (no OTP)
+            // Create account object with code = null (no OTP)
             AccountDTO account = new AccountDTO(
                     username, hashedPassword, firstName, lastName,
                     dob, email, phone, role, address, sex, 1, null
             );
 
-            // ✅ Insert account
+            // Insert account
             if (accountDAO.addAccountByAdmin(account)) {
                 try {
                     MailUtil.sendPassword(email, username, rawPassword);

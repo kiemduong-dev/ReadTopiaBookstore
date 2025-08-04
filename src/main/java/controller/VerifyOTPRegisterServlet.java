@@ -75,16 +75,16 @@ public class VerifyOTPRegisterServlet extends HttpServlet {
                 session.removeAttribute("otpPurpose");
                 session.removeAttribute("pendingAccount");
 
-                request.setAttribute("success", "✅ Registration successful. You can now log in.");
+                request.setAttribute("success", "Registration successful. You can now log in.");
                 request.getRequestDispatcher("/WEB-INF/view/account/login.jsp").forward(request, response);
             } else {
-                request.setAttribute("error", "❌ Failed to create account. Please try again.");
+                request.setAttribute("error", "Failed to create account. Please try again.");
                 request.getRequestDispatcher("/WEB-INF/view/account/verify-otp-register.jsp").forward(request, response);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("error", "🚨 Server error: " + e.getMessage());
+            request.setAttribute("error", "Server error: " + e.getMessage());
             request.getRequestDispatcher("/WEB-INF/view/account/verify-otp-register.jsp").forward(request, response);
         }
     }

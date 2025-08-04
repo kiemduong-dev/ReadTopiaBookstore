@@ -43,7 +43,7 @@ public class StaffSearchServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         AccountDTO loginUser = (session != null) ? (AccountDTO) session.getAttribute("account") : null;
 
-        // ❌ Unauthorized access
+        //Unauthorized access
         if (loginUser == null || loginUser.getRole() > 3) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "You are not allowed to search staff.");
             return;

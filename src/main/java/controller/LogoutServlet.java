@@ -37,7 +37,7 @@ public class LogoutServlet extends HttpServlet {
 
             // Optional: Logging
             if (user != null) {
-                System.out.println("🔒 User logged out: " + user.getUsername());
+                System.out.println("User logged out: " + user.getUsername());
             }
 
             session.invalidate(); // Step 2: Invalidate session

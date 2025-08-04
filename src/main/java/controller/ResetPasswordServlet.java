@@ -74,19 +74,19 @@ public class ResetPasswordServlet extends HttpServlet {
         if (newPassword == null || confirmPassword == null
                 || newPassword.trim().isEmpty() || confirmPassword.trim().isEmpty()) {
 
-            request.setAttribute("error", "❌ Password fields cannot be empty.");
+            request.setAttribute("error", "Password fields cannot be empty.");
             request.getRequestDispatcher("/WEB-INF/view/account/resetPassword.jsp").forward(request, response);
             return;
         }
 
         if (!newPassword.equals(confirmPassword)) {
-            request.setAttribute("error", "❌ Confirm password does not match.");
+            request.setAttribute("error", "Confirm password does not match.");
             request.getRequestDispatcher("/WEB-INF/view/account/resetPassword.jsp").forward(request, response);
             return;
         }
 
         if (!ValidationUtil.isValidPassword(newPassword)) {
-            request.setAttribute("error", "❌ Password must be at least 8 characters and include uppercase, lowercase, number, and special character.");
+            request.setAttribute("error", "Password must be at least 8 characters and include uppercase, lowercase, number, and special character.");
             request.getRequestDispatcher("/WEB-INF/view/account/resetPassword.jsp").forward(request, response);
             return;
         }
@@ -105,10 +105,10 @@ public class ResetPasswordServlet extends HttpServlet {
             session.removeAttribute("verifiedReset");
 
             // Step 6: Redirect to login with success message
-            request.setAttribute("success", "✅ Password reset successful. Please log in.");
+            request.setAttribute("success", "Password reset successful. Please log in.");
             request.getRequestDispatcher("/WEB-INF/view/account/login.jsp").forward(request, response);
         } else {
-            request.setAttribute("error", "❌ Failed to reset password. Please try again.");
+            request.setAttribute("error", "Failed to reset password. Please try again.");
             request.getRequestDispatcher("/WEB-INF/view/account/resetPassword.jsp").forward(request, response);
         }
     }

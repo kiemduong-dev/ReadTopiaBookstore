@@ -41,7 +41,7 @@ public class PaymentConfirmServlet extends HttpServlet {
             String finalAmountRaw = request.getParameter("finalAmount");
             String[] selectedIds = request.getParameterValues("selectedCartIDs");
 
-            // ✅ Xử lý Voucher
+            // Xử lý Voucher
             String vouIDRaw = request.getParameter("voucherID");
             Integer vouID = null;
             if (vouIDRaw != null && !vouIDRaw.isEmpty()) {
@@ -90,7 +90,7 @@ public class PaymentConfirmServlet extends HttpServlet {
             order.setTotalAmount(finalAmount);
             order.setOrderStatus(5); // Bank transfer pending
             order.setOrderAddress(orderAddress);
-            order.setVouID(vouID); // ✅ Gán voucher nếu có
+            order.setVouID(vouID); // Gán voucher nếu có
 
             int orderID = orderDAO.createOrder(order);
 

@@ -50,11 +50,11 @@ public class CartEditServlet extends HttpServlet {
             CartDTO cartItem = cartDAO.findByCartID(cartID);
 
             // Debug log
-            System.out.println("🔍 Session username: " + username);
-            System.out.println("🛒 Cart item found: " + (cartItem != null));
+            System.out.println("Session username: " + username);
+            System.out.println("Cart item found: " + (cartItem != null));
             if (cartItem != null) {
-                System.out.println("🛒 Cart item username: " + cartItem.getUsername());
-                System.out.println("🛒 Book ID: " + cartItem.getBookID());
+                System.out.println("Cart item username: " + cartItem.getUsername());
+                System.out.println("Book ID: " + cartItem.getBookID());
             }
 
             // Kiểm tra quyền sở hữu giỏ hàng
@@ -74,18 +74,18 @@ public class CartEditServlet extends HttpServlet {
             boolean success = cartDAO.updateCart(cartItem);
 
             if (success) {
-                System.out.println("✅ Cập nhật giỏ thành công");
+                System.out.println("Cập nhật giỏ thành công");
                 response.sendRedirect(request.getContextPath() + "/cart/view?msg=updated");
             } else {
-                System.err.println("❌ Cập nhật giỏ thất bại");
+                System.err.println("Cập nhật giỏ thất bại");
                 response.sendRedirect(request.getContextPath() + "/cart/view?error=update_failed");
             }
 
         } catch (NumberFormatException e) {
-            System.err.println("❌ Lỗi định dạng số: " + e.getMessage());
+            System.err.println("Lỗi định dạng số: " + e.getMessage());
             response.sendRedirect(request.getContextPath() + "/cart/view?error=invalid_format");
         } catch (Exception e) {
-            System.err.println("❌ Lỗi server CartEditServlet: " + e.getMessage());
+            System.err.println("Lỗi server CartEditServlet: " + e.getMessage());
             e.printStackTrace();
             response.sendRedirect(request.getContextPath() + "/cart/view?error=server_error");
         }

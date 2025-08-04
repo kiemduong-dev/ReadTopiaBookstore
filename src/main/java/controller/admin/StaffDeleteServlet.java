@@ -40,7 +40,7 @@ public class StaffDeleteServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         AccountDTO loginUser = (session != null) ? (AccountDTO) session.getAttribute("account") : null;
 
-        // ❌ Must be Staff (role = 1)
+        // Must be Staff (role = 1)
         if (loginUser == null || loginUser.getRole() != 1) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied. Only Staff can delete.");
             return;
@@ -65,21 +65,21 @@ public class StaffDeleteServlet extends HttpServlet {
 
             int targetRole = target.getRole();
 
-            // ❌ Cannot delete Admin or Staff (role 0 or 1)
+            // Cannot delete Admin or Staff (role 0 or 1)
             if (targetRole == 0 || targetRole == 1) {
                 session.setAttribute("message", "You are not allowed to delete Admin or Staff.");
                 response.sendRedirect("list");
                 return;
             }
 
-            // ❌ Cannot delete self
+            // Cannot delete self
             if (target.getUsername().equals(loginUser.getUsername())) {
                 session.setAttribute("message", "You cannot delete your own account.");
                 response.sendRedirect("list");
                 return;
             }
 
-            // ✅ Proceed deletion
+            // Proceed deletion
             boolean deleted = staffDAO.deleteStaffByID(staffID);
             if (deleted) {
                 session.setAttribute("message", "Staff \"" + target.getUsername() + "\" deleted successfully.");

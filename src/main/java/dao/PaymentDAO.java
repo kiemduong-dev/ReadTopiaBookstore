@@ -34,7 +34,7 @@ public class PaymentDAO {
             }
 
         } catch (Exception e) {
-            System.err.println("❌ getPaymentById error: " + e.getMessage());
+            System.err.println("getPaymentById error: " + e.getMessage());
             e.printStackTrace();
         }
         return null;
@@ -55,7 +55,7 @@ public class PaymentDAO {
             }
 
         } catch (Exception e) {
-            System.err.println("❌ getPaymentsByOrderId error: " + e.getMessage());
+            System.err.println("getPaymentsByOrderId error: " + e.getMessage());
             e.printStackTrace();
         }
         return list;
@@ -71,12 +71,12 @@ public class PaymentDAO {
 
             boolean result = ps.executeUpdate() > 0;
             if (result) {
-                System.out.println("✅ Updated payment: " + payment.getPaymentId());
+                System.out.println("Updated payment: " + payment.getPaymentId());
             }
             return result;
 
         } catch (Exception e) {
-            System.err.println("❌ updatePayment error: " + e.getMessage());
+            System.err.println("updatePayment error: " + e.getMessage());
             e.printStackTrace();
         }
         return false;
@@ -93,7 +93,7 @@ public class PaymentDAO {
             }
 
         } catch (Exception e) {
-            System.err.println("❌ getAllPayments error: " + e.getMessage());
+            System.err.println("getAllPayments error: " + e.getMessage());
             e.printStackTrace();
         }
         return list;

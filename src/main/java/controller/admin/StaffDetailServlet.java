@@ -60,28 +60,28 @@ public class StaffDetailServlet extends HttpServlet {
             int viewerRole = loginUser.getRole();
             int targetRole = target.getRole();
 
-            // ❌ Admin không được xem Admin khác
+            // Admin không được xem Admin khác
             if (viewerRole == 0 && targetRole == 0 && !loginUser.getUsername().equals(target.getUsername())) {
                 session.setAttribute("message", "You are not allowed to view another Admin.");
                 response.sendRedirect("list");
                 return;
             }
 
-            // ❌ Staff Manager không được xem Staff Manager khác
+            // Staff Manager không được xem Staff Manager khác
             if (viewerRole == 1 && targetRole == 1 && !loginUser.getUsername().equals(target.getUsername())) {
                 session.setAttribute("message", "You cannot view another Staff Manager.");
                 response.sendRedirect("list");
                 return;
             }
 
-            // ❌ Seller/Warehouse chỉ được xem role 2 và 3
+            // Seller/Warehouse chỉ được xem role 2 và 3
             if ((viewerRole == 2 || viewerRole == 3) && (targetRole != 2 && targetRole != 3)) {
                 session.setAttribute("message", "You can only view Seller and Warehouse Staff.");
                 response.sendRedirect("list");
                 return;
             }
 
-            // ✅ Passed – Cho phép xem
+            // Passed – Cho phép xem
             request.setAttribute("staff", target);
             request.getRequestDispatcher("/WEB-INF/view/admin/staff/detail.jsp").forward(request, response);
 

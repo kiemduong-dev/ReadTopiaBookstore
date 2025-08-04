@@ -105,9 +105,9 @@ public class EditProfileServlet extends HttpServlet {
 
                 if (updated) {
                     session.setAttribute("account", account);
-                    request.setAttribute("success", "✅ Profile updated successfully.");
+                    request.setAttribute("success", "Profile updated successfully.");
                 } else {
-                    request.setAttribute("error", "❌ Failed to update profile. Please try again.");
+                    request.setAttribute("error", "Failed to update profile. Please try again.");
                 }
             }
 

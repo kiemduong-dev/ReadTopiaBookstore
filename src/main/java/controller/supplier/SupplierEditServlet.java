@@ -94,27 +94,27 @@ public class SupplierEditServlet extends HttpServlet {
 
             if (name == null || !NAME_PATTERN.matcher(name).matches()) {
                 hasError = true;
-                errorMsg.append("❌ Name must only contain letters and spaces.<br>");
+                errorMsg.append("Name must only contain letters and spaces.<br>");
             }
 
             if (password == null || password.length() < 6) {
                 hasError = true;
-                errorMsg.append("❌ Password must be at least 6 characters.<br>");
+                errorMsg.append("Password must be at least 6 characters.<br>");
             }
 
             if (email == null || !EMAIL_PATTERN.matcher(email).matches()) {
                 hasError = true;
-                errorMsg.append("❌ Email must end with @gmail.com or @fpt.edu.vn.<br>");
+                errorMsg.append("Email must end with @gmail.com or @fpt.edu.vn.<br>");
             }
 
             if (phone == null || !PHONE_PATTERN.matcher(phone).matches()) {
                 hasError = true;
-                errorMsg.append("❌ Phone must be 10 digits and start with 0.<br>");
+                errorMsg.append("Phone must be 10 digits and start with 0.<br>");
             }
 
             if (address == null || !ADDRESS_PATTERN.matcher(address).matches()) {
                 hasError = true;
-                errorMsg.append("❌ Address must not contain numbers or special characters.<br>");
+                errorMsg.append("Address must not contain numbers or special characters.<br>");
             }
 
             SupplierDTO supplier = new SupplierDTO(id, name, email, phone, address, password, imagePath, status);
@@ -133,7 +133,7 @@ public class SupplierEditServlet extends HttpServlet {
 
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("error", "❌ An error occurred while updating supplier.");
+            request.setAttribute("error", "An error occurred while updating supplier.");
             request.getRequestDispatcher("/WEB-INF/view/admin/supplier/edit.jsp").forward(request, response);
         }
     }

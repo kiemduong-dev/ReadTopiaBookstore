@@ -53,11 +53,11 @@ public class ChangePasswordServlet extends HttpServlet {
         if (oldPassword == null || newPassword == null || confirmPassword == null
                 || oldPassword.trim().isEmpty() || newPassword.trim().isEmpty() || confirmPassword.trim().isEmpty()) {
 
-            request.setAttribute("error", "❌ All fields are required.");
+            request.setAttribute("error", "All fields are required.");
         } else if (!newPassword.equals(confirmPassword)) {
-            request.setAttribute("error", "❌ Confirm password does not match.");
+            request.setAttribute("error", "Confirm password does not match.");
         } else if (!ValidationUtil.isValidPassword(newPassword)) {
-            request.setAttribute("error", "❌ Password must be at least 8 characters and include uppercase, lowercase, digit and special character.");
+            request.setAttribute("error", "Password must be at least 8 characters and include uppercase, lowercase, digit and special character.");
         } else {
             // Step 5: Business logic – update password if old password is valid
             AccountDAO dao = new AccountDAO();
@@ -65,9 +65,9 @@ public class ChangePasswordServlet extends HttpServlet {
 
             if (updated) {
                 session.setAttribute("account", account); // Optional: you can mask password here
-                request.setAttribute("success", "✅ Password changed successfully.");
+                request.setAttribute("success", "Password changed successfully.");
             } else {
-                request.setAttribute("error", "❌ Old password is incorrect.");
+                request.setAttribute("error", "Old password is incorrect.");
             }
         }
 

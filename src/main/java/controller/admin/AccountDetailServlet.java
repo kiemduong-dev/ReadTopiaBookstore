@@ -49,8 +49,8 @@ public class AccountDetailServlet extends HttpServlet {
             return;
         }
 
-        // ✅ Admin chỉ được xem thông tin role 0, 2, 3 → không được edit
-        // ✅ Được xem đầy đủ với role 1 và 4 (Staff & Customer)
+        // Admin chỉ được xem thông tin role 0, 2, 3 → không được edit
+        // Được xem đầy đủ với role 1 và 4 (Staff & Customer)
         request.setAttribute("account", account);
         request.getRequestDispatcher("/WEB-INF/view/admin/account/detail.jsp").forward(request, response);
     }

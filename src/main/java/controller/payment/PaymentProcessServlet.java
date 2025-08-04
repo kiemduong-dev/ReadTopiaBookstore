@@ -49,7 +49,7 @@ public class PaymentProcessServlet extends HttpServlet {
             BookDAO bookDAO = new BookDAO();
             OrderDAO orderDAO = new OrderDAO();
             OrderDetailDAO orderDetailDAO = new OrderDetailDAO();
-            VoucherDAO voucherDAO = new VoucherDAO(); // ✅ Thay thế PromotionDAO
+            VoucherDAO voucherDAO = new VoucherDAO(); // Thay thế PromotionDAO
 
             List<CartDTO> cartItems = new ArrayList<>();
             List<Integer> selectedCartIDs = new ArrayList<>();
@@ -128,7 +128,7 @@ public class PaymentProcessServlet extends HttpServlet {
                 try {
                     int voucherID = Integer.parseInt(voucherIdRaw.trim());
                     if (voucherID != 0) {
-                        order.setVouID(voucherID); // ✅ Đổi từ setProID thành setVouID
+                        order.setVouID(voucherID); // Đổi từ setProID thành setVouID
                     }
                 } catch (NumberFormatException e) {
                     // Ignore invalid voucher ID
@@ -137,7 +137,7 @@ public class PaymentProcessServlet extends HttpServlet {
 
             int orderID = orderDAO.createOrder(order);
 
-            // ✅ Nếu có mã voucher, trừ số lượng
+            // Nếu có mã voucher, trừ số lượng
             if (order.getVouID() != null) {
                 voucherDAO.decreaseVoucherQuantity(order.getVouID());
             }

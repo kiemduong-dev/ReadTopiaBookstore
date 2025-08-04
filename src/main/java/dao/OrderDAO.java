@@ -69,14 +69,14 @@ public class OrderDAO {
                 try ( ResultSet rs = ps.getGeneratedKeys()) {
                     if (rs.next()) {
                         int orderID = rs.getInt(1);
-                        System.out.println("✅ Created order with ID: " + orderID);
+                        System.out.println("Created order with ID: " + orderID);
                         return orderID;
                     }
                 }
             }
 
         } catch (Exception e) {
-            System.err.println("❌ createOrder error: " + e.getMessage());
+            System.err.println("createOrder error: " + e.getMessage());
             e.printStackTrace();
         }
 
@@ -93,12 +93,12 @@ public class OrderDAO {
 
             boolean result = ps.executeUpdate() > 0;
             if (result) {
-                System.out.println("✅ Updated order address: " + order.getOrderID());
+                System.out.println("Updated order address: " + order.getOrderID());
             }
             return result;
 
         } catch (Exception e) {
-            System.err.println("❌ updateOrderAddress error: " + e.getMessage());
+            System.err.println("updateOrderAddress error: " + e.getMessage());
             e.printStackTrace();
         }
         return false;
@@ -116,11 +116,11 @@ public class OrderDAO {
 
             boolean result = ps.executeUpdate() > 0;
             if (result) {
-                System.out.println("✅ Added order detail: " + detail.toString());
+                System.out.println("Added order detail: " + detail.toString());
             }
             return result;
         } catch (Exception e) {
-            System.err.println("❌ addOrderDetail error: " + e.getMessage());
+            System.err.println("addOrderDetail error: " + e.getMessage());
             e.printStackTrace();
         }
         return false;
@@ -146,9 +146,9 @@ public class OrderDAO {
                 }
             }
 
-            System.out.println("✅ Retrieved " + list.size() + " orders for user: " + username);
+            System.out.println("Retrieved " + list.size() + " orders for user: " + username);
         } catch (Exception e) {
-            System.err.println("❌ getOrderHistoryByUsername error: " + e.getMessage());
+            System.err.println("getOrderHistoryByUsername error: " + e.getMessage());
             e.printStackTrace();
         }
         return list;
@@ -173,9 +173,9 @@ public class OrderDAO {
                 }
             }
 
-            System.out.println("✅ Retrieved " + list.size() + " orders for bookID: " + bookID);
+            System.out.println("Retrieved " + list.size() + " orders for bookID: " + bookID);
         } catch (Exception e) {
-            System.err.println("❌ getOrdersByBookID error: " + e.getMessage());
+            System.err.println("getOrdersByBookID error: " + e.getMessage());
             e.printStackTrace();
         }
         return list;
@@ -196,9 +196,9 @@ public class OrderDAO {
                 list.add(order);
             }
 
-            System.out.println("✅ Retrieved " + list.size() + " total orders");
+            System.out.println("Retrieved " + list.size() + " total orders");
         } catch (Exception e) {
-            System.err.println("❌ getAllOrders error: " + e.getMessage());
+            System.err.println("getAllOrders error: " + e.getMessage());
             e.printStackTrace();
         }
         return list;
@@ -221,7 +221,7 @@ public class OrderDAO {
                 }
             }
         } catch (Exception e) {
-            System.err.println("❌ searchOrdersByID error: " + e.getMessage());
+            System.err.println("searchOrdersByID error: " + e.getMessage());
             e.printStackTrace();
         }
         return list;
@@ -268,7 +268,7 @@ public class OrderDAO {
                 }
             }
         } catch (Exception e) {
-            System.err.println("❌ getOrderByID error: " + e.getMessage());
+            System.err.println("getOrderByID error: " + e.getMessage());
             e.printStackTrace();
         }
         return null;
@@ -284,11 +284,11 @@ public class OrderDAO {
 
             boolean result = ps.executeUpdate() > 0;
             if (result) {
-                System.out.println("✅ Updated order status: orderID=" + orderID + ", newStatus=" + newStatus);
+                System.out.println("Updated order status: orderID=" + orderID + ", newStatus=" + newStatus);
             }
             return result;
         } catch (Exception e) {
-            System.err.println("❌ updateOrderStatus error: " + e.getMessage());
+            System.err.println("updateOrderStatus error: " + e.getMessage());
             e.printStackTrace();
         }
         return false;
@@ -328,9 +328,9 @@ public class OrderDAO {
                 }
             }
 
-            System.out.println("✅ Retrieved " + list.size() + " order details for orderID: " + orderID);
+            System.out.println("Retrieved " + list.size() + " order details for orderID: " + orderID);
         } catch (Exception e) {
-            System.err.println("❌ getOrderDetails error: " + e.getMessage());
+            System.err.println("getOrderDetails error: " + e.getMessage());
             e.printStackTrace();
         }
         return list;
@@ -405,12 +405,12 @@ public class OrderDAO {
                 }
 
                 conn.commit(); // Thành công
-                System.out.println("✅ Order #" + orderID + " updated to status " + newStatus + " and stock restored.");
+                System.out.println("Order #" + orderID + " updated to status " + newStatus + " and stock restored.");
                 return true;
 
             } catch (Exception ex) {
                 conn.rollback(); // Lỗi → rollback
-                System.err.println("❌ Error restoring stock: " + ex.getMessage());
+                System.err.println("Error restoring stock: " + ex.getMessage());
                 ex.printStackTrace();
             } finally {
                 conn.setAutoCommit(true);

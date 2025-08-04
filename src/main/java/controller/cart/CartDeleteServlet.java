@@ -64,10 +64,10 @@ public class CartDeleteServlet extends HttpServlet {
             }
 
         } catch (NumberFormatException e) {
-            System.err.println("❌ Invalid cartID format: " + e.getMessage());
+            System.err.println("Invalid cartID format: " + e.getMessage());
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid cart ID format");
         } catch (Exception e) {
-            System.err.println("❌ CartDeleteServlet error: " + e.getMessage());
+            System.err.println("CartDeleteServlet error: " + e.getMessage());
             e.printStackTrace();
             response.sendRedirect(request.getContextPath() + "/cart/view?msg=delete_failed");
         }

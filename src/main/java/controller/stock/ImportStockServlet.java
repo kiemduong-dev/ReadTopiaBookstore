@@ -49,7 +49,7 @@ public class ImportStockServlet extends HttpServlet {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("errorMessage", "❌ Unexpected error: " + e.getMessage());
+            request.setAttribute("errorMessage", "Unexpected error: " + e.getMessage());
             request.getRequestDispatcher("/WEB-INF/view/admin/stock/list.jsp").forward(request, response);
         }
     }
@@ -109,7 +109,7 @@ public class ImportStockServlet extends HttpServlet {
 
             if (bookIDs == null || quantities == null || prices == null
                     || bookIDs.length == 0 || bookIDs.length != quantities.length || quantities.length != prices.length) {
-                request.setAttribute("errorMessage", "❌ Please fill in all book details.");
+                request.setAttribute("errorMessage", "Please fill in all book details.");
                 forwardAddPage(request, response);
                 return;
             }
@@ -121,7 +121,7 @@ public class ImportStockServlet extends HttpServlet {
                 double price = Double.parseDouble(prices[i]);
 
                 if (quantity <= 0 || price <= 0) {
-                    request.setAttribute("errorMessage", "❌ Quantity and price must be positive.");
+                    request.setAttribute("errorMessage", "Quantity and price must be positive.");
                     forwardAddPage(request, response);
                     return;
                 }
@@ -138,7 +138,7 @@ public class ImportStockServlet extends HttpServlet {
 
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("errorMessage", "❌ Failed to save. Please check your input.");
+            request.setAttribute("errorMessage", "Failed to save. Please check your input.");
             forwardAddPage(request, response);
         }
     }
