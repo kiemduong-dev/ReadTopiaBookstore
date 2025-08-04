@@ -2,16 +2,28 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <jsp:include page="/WEB-INF/includes/head-admin.jsp" />
 <jsp:include page="/WEB-INF/includes/sidebar-admin.jsp" />
-
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <div class="main-content">
     <div class="content-area">
         <h1 class="page-title">Supplier Management</h1>
         <c:if test="${not empty sessionScope.successMessage}">
-            <div id="successMessage" class="alert-success-custom">
-                ${sessionScope.successMessage}
+            <div class="alert alert-success alert-dismissible fade show" id="autoDismissAlert" role="alert">
+                <i class="fas fa-check-circle me-1"></i>
+                <span>${sessionScope.successMessage}</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
             <c:remove var="successMessage" scope="session" />
         </c:if>
+
+        <c:if test="${not empty sessionScope.errorMessage}">
+            <div class="alert alert-danger alert-dismissible fade show" id="autoDismissAlert" role="alert">
+                <i class="fas fa-exclamation-circle me-1"></i>
+                <span>${sessionScope.errorMessage}</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <c:remove var="errorMessage" scope="session" />
+        </c:if>
+
 
 
         <div class="toolbar">
@@ -92,8 +104,7 @@
                             if (msg) {
                                 setTimeout(() => {
                                     msg.style.display = "none";
-                                }, 3000); 
+                                }, 3000);
                             }
                         });
 </script>
-

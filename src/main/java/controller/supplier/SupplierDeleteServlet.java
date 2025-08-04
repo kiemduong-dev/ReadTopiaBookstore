@@ -14,18 +14,28 @@ public class SupplierDeleteServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String idRaw = request.getParameter("id");
+        HttpSession session = request.getSession();
 
         if (idRaw != null) {
             try {
                 int id = Integer.parseInt(idRaw);
                 SupplierDAO dao = new SupplierDAO();
-                dao.deleteSupplier(id);
+
+                if (dao.hasImportStock(id)) {
+                    session.setAttribute("errorMessage",
+                        "Cannot delete this supplier because it has associated import records.");
+                } else {
+                    dao.deleteSupplier(id);
+                    session.setAttribute("successMessage", "Supplier deleted successfully!");
+                }
+
             } catch (NumberFormatException e) {
-                System.out.println("Invalid ID: " + e.getMessage());
+                session.setAttribute("errorMessage", "Invalid supplier ID.");
             }
+        } else {
+            session.setAttribute("errorMessage", "Supplier ID is missing.");
         }
-  HttpSession session = request.getSession();
-            session.setAttribute("successMessage", " Supplier Delete successfully!");
+
         response.sendRedirect(request.getContextPath() + "/admin/supplier/list");
     }
 }

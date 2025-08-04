@@ -240,4 +240,18 @@ public class SupplierDAO {
     }
     return list;
 }
+     public boolean hasImportStock(int supplierId) {
+        String sql = "SELECT COUNT(*) FROM ImportStock WHERE supID = ?";
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, supplierId);
+            try ( ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("hasImportStock: " + e);
+        }
+        return false;
+    }
 }

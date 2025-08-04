@@ -51,14 +51,15 @@
                         <!-- Uses Remaining -->                     
                         <p class="text-muted mb-1">
                             <i class="bi bi-clock-history"></i>
-                            Uses remaining <strong>${voucher.quantityUsed}/${voucher.maxQuantity}</strong>
+                            Total vouchers: <strong>${voucher.maxQuantity}</strong>
                         </p>
                         <div class="progress mb-2" style="height: 8px;">
                             <div class="progress-bar bg-success" role="progressbar" 
-                                 style="width: ${voucher.quantityUsed * 100 / voucher.maxQuantity}%;" 
-                                 aria-valuenow="${voucher.quantityUsed}" 
+                                 style="width: 100%;" 
+                                 aria-valuenow="${voucher.maxQuantity}" 
                                  aria-valuemin="0" aria-valuemax="${voucher.maxQuantity}"></div>
                         </div>
+
                     </div>
                 </div>
             </div>
